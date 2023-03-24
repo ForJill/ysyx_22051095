@@ -20,4 +20,18 @@
 
 word_t expr(char *e, bool *success);
 
+typedef struct watchpoint {
+  int NO;
+  struct watchpoint *next;
+  int result;
+  char expr[128];
+  /* TODO: Add more members if necessary */
+} WP;
+
+void init_wp_pool() ;
+WP* new_wp();
+void free_wp(WP *wp);
+bool checkWP();
+void printWP();
+void deleteWP(int num);
 #endif

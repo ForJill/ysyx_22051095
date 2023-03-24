@@ -14,6 +14,12 @@
 ***************************************************************************************/
 
 #include <common.h>
+#include <isa.h>
+#include <cpu/cpu.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+#include "/home/ljw/Desktop/ysyx-workbench/nemu/src/monitor/sdb/sdb.h"
+#include <memory/vaddr.h>
 
 void init_monitor(int, char *[]);
 void am_init_monitor();
@@ -27,9 +33,7 @@ int main(int argc, char *argv[]) {
 #else
   init_monitor(argc, argv);
 #endif
-
-  /* Start engine. */
   engine_start();
-
   return is_exit_status_bad();
 }
+

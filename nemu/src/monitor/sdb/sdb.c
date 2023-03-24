@@ -18,6 +18,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
+#include <memory/vaddr.h>
 
 static int is_batch_mode = false;
 
@@ -49,10 +50,23 @@ static int cmd_c(char *args) {
 
 
 static int cmd_q(char *args) {
+  nemu_state.state = NEMU_QUIT;
   return -1;
 }
 
 static int cmd_help(char *args);
+
+static int cmd_si(char *args);
+
+static int cmd_info(char *args);
+
+static int cmd_x(char *args);
+
+static int cmd_p(char *args);
+
+static int cmd_w(char *args);
+
+static int cmd_d(char *args);
 
 static struct {
   const char *name;
@@ -64,7 +78,12 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
 
   /* TODO: Add more commands */
-
+  {"si", "Step into",cmd_si},
+  {"info", "Print the program status", cmd_info},
+  {"x", "Scan memory", cmd_x},
+  {"p", "Calculate the expression", cmd_p},
+  {"w", "Set the watchpoint", cmd_w},
+  {"d", "Delete the watchpoint", cmd_d},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
@@ -89,6 +108,81 @@ static int cmd_help(char *args) {
     }
     printf("Unknown command '%s'\n", arg);
   }
+  return 0;
+}
+
+static int cmd_si(char *args){
+  char *step = strtok(args, " ");
+  int n;
+  if(step == NULL){
+    cpu_exec(1);
+    return 0;
+  }
+  sscanf(step,"%d",&n);
+  if(n<=0){
+    printf("Invalid Input, please input positive number");
+    return 0;
+  }else{
+      cpu_exec(n);
+      return 0;
+    }
+  }
+
+  static int cmd_info(char *args){
+    char *SUBCMD = strtok(args, " ");
+    if (strcmp(SUBCMD,"r") == 0){
+      isa_reg_display();
+    }
+    else if (strcmp(SUBCMD,"w") == 0){
+      printWP();
+    }
+    else{
+      printf("Invalid Input, please input r or w");
+    }
+    return 0;
+  }
+
+
+
+  static int cmd_x(char *args){
+    char *N    = strtok(args," ");
+    char *EXPR = strtok(NULL," ");
+    int  n    = atoi(N);
+    char *str;
+    vaddr_t addr = strtol(EXPR,&str,16);
+    for(int i=0;i<n;i++){
+        word_t data = vaddr_read(addr+i*32,4);
+        printf("0x%016lx  " , addr + i * 32 );
+        for (int j=0;j<32;j=j+8){
+          printf("0x%04lx " , data & 0xff);
+          data = data >> 8;
+        }
+        printf("\n");
+    }
+    return 0;
+
+  }
+
+static int cmd_p(char *args){
+	bool *success = false;
+	word_t i;
+	i = expr(args, success);
+	if (!success){
+		  printf("0x%lx\n", i);
+	}
+	return 0;
+}
+
+static int cmd_w(char *args){
+  WP *p = new_wp(args);
+  printf("Watchpoint %d: %s\n", p->NO, p->expr);
+  return 0;
+}
+
+static int cmd_d(char *args){
+  char *N = strtok(args," ");
+  int n = atoi(N);
+  deleteWP(n);
   return 0;
 }
 

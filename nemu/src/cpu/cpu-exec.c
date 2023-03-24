@@ -17,18 +17,35 @@
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
 #include <locale.h>
-
+#include "ringbuf.h"
+#include "ftrace.h"
+#include "/home/ljw/Desktop/ysyx-workbench/nemu/src/monitor/sdb/sdb.h"
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
  * This is useful when you use the `si' command.
  * You can modify this value as you want.
  */
-#define MAX_INST_TO_PRINT 10
+#define MAX_INST_TO_PRINT 20
 
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
+//irringbuf
+int inst_len[1024] = {0};
+ringbuf r;
+//ftrace
+int space = 0;
+int inst_num = 0;
+extern FILE *fd;
+extern Elf64_Ehdr ehdr;
+Elf64_Shdr shdr;
+Elf64_Sym symdr;
+Elf64_Off symbol_base = 0;
+Elf64_Off str_base = 0;
+vaddr_t addr[1000]={0};
+int call[1000]={0};
+unsigned char strtab[1000]={0};
 
 void device_update();
 
@@ -38,6 +55,12 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+  #ifdef CONFIG_WATCHPOINT
+  bool hit_watchpoint = checkWP();
+  if (hit_watchpoint){
+	  nemu_state.state = NEMU_STOP;
+  }
+  #endif
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
@@ -64,7 +87,29 @@ static void exec_once(Decode *s, vaddr_t pc) {
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
       MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst.val, ilen);
+#endif     
+#ifdef CONFIG_MTRACE
+  //把p指向的内容赋给q
+  char *q = s->logbuf;
+  *q = *p;
+  //把q的内容写入ringbuf
+  strcat(q, "\n");
+  ringbuf_write(&r,q,strlen(q));
+  inst_len[g_nr_guest_inst] = strlen(q);
 #endif
+#ifdef CONFIG_FTRACE
+  if ((BITS(s->isa.inst.val,6,0) == 0x67 && BITS(s->isa.inst.val,14,12) == 0x0 && s->isa.inst.val != 0x8067) || BITS(s->isa.inst.val,6,0)==0x6f){
+    addr[inst_num] = s->pc;
+    call[inst_num] = 1;
+    inst_num++;
+  }
+  else if(s->isa.inst.val == 0x8067){
+    addr[inst_num] = s->pc;
+    call[inst_num] = 0;
+    inst_num++;
+  }
+#endif
+
 }
 
 static void execute(uint64_t n) {
@@ -76,6 +121,52 @@ static void execute(uint64_t n) {
     if (nemu_state.state != NEMU_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
   }
+#ifdef CONFIG_FTRACE
+  str_base = find_strtab(fd, shdr, ehdr);
+  symbol_base = find_symtab(fd, shdr, ehdr, symdr);
+  int i=0;
+  int a=0;
+  for(i=0;i<inst_num;i++){
+    //初始化指针
+    fseek(fd, symbol_base, SEEK_SET);
+    a = fread(&shdr, sizeof(Elf64_Shdr), 1, fd);
+    fseek(fd, shdr.sh_offset, SEEK_SET);
+    a = fread(&symdr, sizeof(Elf64_Sym), 1, fd);
+    //找到对应的函数名
+    int num = shdr.sh_size/shdr.sh_entsize;
+    for(int j=0; j < num; j++){
+      if (a == 0)
+        {
+          printf("fail to read symbol_entry\n");
+          exit(0);
+        }
+      if(symdr.st_info == 18 && addr[i] >= symdr.st_value && addr[i] < symdr.st_value + symdr.st_size){
+        Elf64_Word start = symdr.st_name;
+        fseek(fd, str_base, SEEK_SET);
+        a = fread(&shdr, sizeof(Elf64_Shdr), 1, fd);
+        fseek(fd, shdr.sh_offset+start, SEEK_SET);
+        a = fread(strtab, sizeof(Elf64_Sym), 1, fd);
+        if(call[i])
+        {
+          space ++;
+          printf("%lx:",addr[i]);
+          printf("%*s",space,"");
+          printf("call[%s@%lx]\n",strtab,symdr.st_value);
+        }
+        else 
+        {
+          space --;
+          printf("%lx:",addr[i]);
+          printf("%*s",space,"");
+          printf("ret[%s@%lx]\n",strtab,symdr.st_value);
+        }
+        memset(strtab, 0 ,sizeof(strtab));
+        break;
+      }
+      else a = fread(&symdr,sizeof(Elf64_Sym),1,fd);
+    }
+  }
+#endif
 }
 
 static void statistic() {
@@ -85,6 +176,16 @@ static void statistic() {
   Log("total guest instructions = " NUMBERIC_FMT, g_nr_guest_inst);
   if (g_timer > 0) Log("simulation frequency = " NUMBERIC_FMT " inst/s", g_nr_guest_inst * 1000000 / g_timer);
   else Log("Finish running in less than 1 us and can not calculate the simulation frequency");
+
+#ifdef CONFIG_MTRACE
+  Log("Wrong instruction trace:\n");
+  char buf[1024];
+  while (ringbuf_read(&r, buf, 1024) > 0){
+    printf("%s",buf);
+  }
+  printf("wrong instruction upper here\n");
+  ringbuf_destroy(&r);
+#endif
 }
 
 void assert_fail_msg() {
@@ -94,6 +195,9 @@ void assert_fail_msg() {
 
 /* Simulate how the CPU works. */
 void cpu_exec(uint64_t n) {
+  #ifdef CONFIG_MTRACE
+  ringbuf_create(&r, 1024);
+  #endif
   g_print_step = (n < MAX_INST_TO_PRINT);
   switch (nemu_state.state) {
     case NEMU_END: case NEMU_ABORT:

@@ -26,10 +26,13 @@ $(BINARY): compile_git
 
 override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
 override ARGS += $(ARGS_DIFF)
+override ARGS += -b
+override ARGS += --readelf=$(NEMU_HOME)/add-riscv64-nemu.elf
+
 
 # Command to execute NEMU
 IMG ?=
-NEMU_EXEC := $(BINARY) $(ARGS) $(IMG)
+NEMU_EXEC := $(BINARY) $(ARGS) $(IMG) #默认启动批处理模式
 
 run-env: $(BINARY) $(DIFF_REF_SO)
 
