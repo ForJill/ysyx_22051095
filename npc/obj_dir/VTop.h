@@ -32,8 +32,9 @@ class VTop VL_NOT_FINAL : public VerilatedModel {
     VL_IN8(&reset,0,0);
     VL_OUT8(&io_ctrl_RegWen,0,0);
     VL_OUT8(&io_ctrl_OP,3,0);
+    VL_OUT8(&io_ctrl_J_JUMP,0,0);
     VL_OUT8(&io_op,3,0);
-    VL_OUT(&io_inst,31,0);
+    VL_IN(&io_inst,31,0);
     VL_OUT64(&io_pc,63,0);
     VL_OUT64(&io_resultALU,63,0);
     VL_OUT64(&io_rs1,63,0);

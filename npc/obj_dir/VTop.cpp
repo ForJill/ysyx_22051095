@@ -16,6 +16,7 @@ VTop::VTop(VerilatedContext* _vcontextp__, const char* _vcname__)
     , reset{vlSymsp->TOP.reset}
     , io_ctrl_RegWen{vlSymsp->TOP.io_ctrl_RegWen}
     , io_ctrl_OP{vlSymsp->TOP.io_ctrl_OP}
+    , io_ctrl_J_JUMP{vlSymsp->TOP.io_ctrl_J_JUMP}
     , io_op{vlSymsp->TOP.io_op}
     , io_inst{vlSymsp->TOP.io_inst}
     , io_pc{vlSymsp->TOP.io_pc}

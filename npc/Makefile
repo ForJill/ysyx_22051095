@@ -2,33 +2,30 @@ TOP = Top
 BUILD_DIR = ./buildCPU
 SCALA_FILE = $(shell find ./src/main/scala -name '*.scala')
 TOP_V = $(BUILD_DIR)/$(TOP).v
-
+DPI_V = $(BUILD_DIR)/DPI.v
 export PATH := $(PATH):$(abspath ./utils)
+V_FLAGS += -Wno-fatal --trace --cc --exe --build
+V_FLAGS += -Wno-UNUSED 
+V_FLAGS += -Wno-PINCONNECTEMPTY
+V_FLAGS += -Wno-UNDRIVEN
+V_FLAGS += -I./vsrc -y ./vsrc
+V_FLAGS += --top-module $(TOP)
+
+VSRC = $(wildcard ./vsrc/*.v -or -name "*.cc")
+CSRC = $(wildcard ./csrc/*.cpp)
+
+CXXSRC = csrc/disasm.cc
+CXXFLAGS = $(shell llvm-config-11 --cxxflags) -fPIE
+LIBS = $(shell llvm-config-11 --libs)
 
 test:
 	sbt "testOnly /home/ljw/Desktop/ysyx-workbench/npc/test/InstMemTest.scala"
 
 verilog:
-	mkdir -p $(BUILD_DIR)
-	mill chiselModule.runMain $(TOP)Main -td $(BUILD_DIR) --output-file Top.v 
-
-help:
-	mill -i __.test.runMain Elaborate --help
-
-compile:
-	mill -i __.compile
-
-bsp:
-	mill -i mill.bsp.BSP/install
-
-reformat:
-	mill -i __.reformat
-
-checkformat:
-	mill -i __.checkFormat
+	sbt "runMain rv64i.TopMain"
 
 clean:
-	-rm -rf $(BUILD_DIR)
+	-rm -rf obj_dir
 
 .PHONY: test verilog help compile bsp reformat checkformat clean
 
@@ -36,14 +33,15 @@ sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by yourself."
 
-verilator:
-	verilator -Wall --trace --cc $(TOP_V) --exe /TestBench/tb_$(TOP).cpp
+	@echo "-----------------verilate------------"
+	@verilator $(V_FLAGS) $(VSRC) $(CSRC) --LDFLAGS "$(LIBS) $(CXXFLAGS)"
+
+	@echo "-----------------compile-------------"
 	make -C obj_dir -f V$(TOP).mk V$(TOP)
+
+run: $(clean) $(sim) $(IMAGE)
+	make clean; make sim;./obj_dir/V$(TOP)
 gtk:
-	./obj_dir/V$(TOP)
 	gtkwave waveform.vcd
 
-clean: 
-	rm -rf obj_dir
-	rm -rf waveform.vcd
 include ../Makefile

@@ -11,6 +11,7 @@ class RegisterIO extends Bundle {
   val rdata1 = Output(UInt(DATA_WIDTH.W))
   val rdata2 = Output(UInt(DATA_WIDTH.W))
   val reg    = Input(Flipped(new RegIO))
+  val regs = Output(Vec(32, UInt(64.W)))
 }
 class Registers extends Module {
   val io        = IO(new RegisterIO)
@@ -20,4 +21,8 @@ class Registers extends Module {
   io.rdata2 := Mux(io.reg.rs2 === 0.U, 0.U, registers(io.reg.rs2))
 
   registers(io.reg.rd) := Mux(io.wen, io.wdata, registers(io.reg.rd))
+  //通过rf存储registers的值
+  for (i <- 0 until 32) {
+    io.regs(i) := registers(i)
+  }
 }

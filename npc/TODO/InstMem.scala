@@ -17,11 +17,8 @@ class InstMem extends Module {
   val mem = Mem(INST_Mem_SIZE, UInt(INST_WIDTH.W))
   mem.write("x80000000".U, "b00000001000001000000000010110011".U(32.W))
   mem.write("x80000004".U, "b00000000000100000000000010010011".U(32.W))
-  mem.write("x80000008".U, "b00000000000100000000000001110011".U(32.W))
-  /*loadMemoryFromFile(
-    mem,
-    "src/test/scala/rv64i/InstMem.hex",
-    MemoryLoadFileType.Hex
-  )*/
-  io.inst := mem.read(io.addr) // 读取对应位置的指令并输出
+  mem.write("x80000008".U, "b00000000000000001001000100010111".U(32.W))
+  mem.write("x8000000c".U, "b10000000000000000000000000110111".U(32.W))
+  mem.write("x80000010".U, "b00000000000100000000000001110011".U(32.W))//ebreak
+  io.inst := mem(io.addr) // 读取对应位置的指令并输出
 }

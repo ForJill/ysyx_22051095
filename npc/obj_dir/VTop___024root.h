@@ -21,11 +21,15 @@ class VTop___024root final : public VerilatedModule {
     VL_IN8(reset,0,0);
     VL_OUT8(io_ctrl_RegWen,0,0);
     VL_OUT8(io_ctrl_OP,3,0);
+    VL_OUT8(io_ctrl_J_JUMP,0,0);
     VL_OUT8(io_op,3,0);
+    CData/*1:0*/ Top__DOT__decoder__DOT__ImmType;
+    CData/*4:0*/ Top__DOT__registers__DOT__registers_io_rdata1_MPORT_addr;
     CData/*0:0*/ __Vtrigrprev__TOP__clock;
     CData/*0:0*/ __VactContinue;
-    VL_OUT(io_inst,31,0);
+    VL_IN(io_inst,31,0);
     IData/*31:0*/ __VstlIterCount;
+    IData/*31:0*/ __VicoIterCount;
     IData/*31:0*/ __VactIterCount;
     VL_OUT64(io_pc,63,0);
     VL_OUT64(io_resultALU,63,0);
@@ -34,11 +38,14 @@ class VTop___024root final : public VerilatedModule {
     VL_OUT64(io_imm,63,0);
     QData/*63:0*/ Top__DOT__PC__DOT__init;
     QData/*63:0*/ Top__DOT__PC__DOT___init_T_1;
+    QData/*63:0*/ Top__DOT__alu__DOT__op1;
+    QData/*63:0*/ Top__DOT__alu__DOT___result_T_3;
     QData/*63:0*/ Top__DOT__registers__DOT__registers_MPORT_data;
-    VlUnpacked<IData/*31:0*/, 1024> Top__DOT__instmem__DOT__mem;
     VlUnpacked<QData/*63:0*/, 32> Top__DOT__registers__DOT__registers;
+    VlUnpacked<QData/*63:0*/, 32> Top__DOT__dpi__DOT__rf;
     VlUnpacked<CData/*0:0*/, 2> __Vm_traceActivity;
     VlTriggerVec<1> __VstlTriggered;
+    VlTriggerVec<1> __VicoTriggered;
     VlTriggerVec<1> __VactTriggered;
     VlTriggerVec<1> __VnbaTriggered;
 

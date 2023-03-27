@@ -16,8 +16,14 @@ extern "C" {
 
 
     // DPI IMPORTS
-    // DPI import at buildCPU/DPI.v:2:30
+    // DPI import at vsrc/DPI.v:2:30
     extern void ebreak(int flag);
+    // DPI import at vsrc/DPI.v:4:30
+    extern void get_inst(int inst);
+    // DPI import at vsrc/DPI.v:5:30
+    extern void get_pc(long long pc);
+    // DPI import at vsrc/DPI.v:3:30
+    extern void set_gpr_ptr(const svOpenArrayHandle a);
 
 #ifdef __cplusplus
 }

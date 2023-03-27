@@ -19,9 +19,27 @@ object Configs {
 object OP {
   val ALU_ADD    = 0.U(4.W)
   val ALU_ADDI   = 1.U(4.W)
-  val ebreak     = 2.U(4.W)
+  val ALU_LUI    = 2.U(4.W)
+  val ALU_AUIPC  = 3.U(4.W)
+  val ALU_EBREAK = 4.U(4.W)
+  val ALU_JAL    = 5.U(4.W)
+  val ALU_JALR   = 6.U(4.W)
+  val ALU_SD    = 7.U(4.W)
 }
 
 object Imm{
-    val IMM_I = 0.U(2.W)
+  val IMM_I = 0.U(2.W)
+  val IMM_U = 1.U(2.W)
+  val IMM_J = 2.U(2.W)
 }
+/*
+object OP_TYPE{
+    val R_TYPE = 0.U(2.W)
+    val I_TYPE = 1.U(2.W)
+    val S_TYPE = 2.U(2.W)
+    val B_TYPE = 3.U(2.W)
+    val U_TYPE = 4.U(2.W)
+    val J_TYPE = 5.U(2.W)
+    val N_TYPE = 6.U(2.W)
+}
+*/
