@@ -9,8 +9,11 @@ class ControlIO extends Bundle {
   //val AluSrc = Output(Bool())
   //val Signed = Output(Bool())
   val RegWen = Output(Bool())
-  val OP = Output(UInt(4.W))
+  val OP = Output(UInt(6.W))
   val J_JUMP = Output(Bool())
+  val MemWen = Output(Bool())
+  val wmask = Output(UInt(8.W))
+  val MemLoad = Output(Bool())
   //val OPType = Output(UInt(3.W))
   //val IsImm = Output(Bool())
   //val ImmType = Output(UInt(2.W))
@@ -24,6 +27,6 @@ class RegIO extends Bundle {
 }
 
 class AluCtrlIO extends Bundle {
-  val alu_op = Input(UInt(4.W))
+  val alu_op = Input(UInt(6.W))
   //val op_type = Input(UInt(3.W))
 }

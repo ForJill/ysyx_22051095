@@ -17,7 +17,12 @@ VTop::VTop(VerilatedContext* _vcontextp__, const char* _vcname__)
     , io_ctrl_RegWen{vlSymsp->TOP.io_ctrl_RegWen}
     , io_ctrl_OP{vlSymsp->TOP.io_ctrl_OP}
     , io_ctrl_J_JUMP{vlSymsp->TOP.io_ctrl_J_JUMP}
+    , io_ctrl_MemWen{vlSymsp->TOP.io_ctrl_MemWen}
+    , io_ctrl_wmask{vlSymsp->TOP.io_ctrl_wmask}
+    , io_ctrl_MemLoad{vlSymsp->TOP.io_ctrl_MemLoad}
     , io_op{vlSymsp->TOP.io_op}
+    , io_MemWen{vlSymsp->TOP.io_MemWen}
+    , io_MemLoad{vlSymsp->TOP.io_MemLoad}
     , io_inst{vlSymsp->TOP.io_inst}
     , io_pc{vlSymsp->TOP.io_pc}
     , io_resultALU{vlSymsp->TOP.io_resultALU}

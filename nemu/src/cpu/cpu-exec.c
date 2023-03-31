@@ -123,7 +123,7 @@ static void execute(uint64_t n) {
   }
 #ifdef CONFIG_FTRACE
   str_base = find_strtab(fd, shdr, ehdr);
-  symbol_base = find_symtab(fd, shdr, ehdr, symdr);
+  symbol_base = find_symtab(fd, shdr, ehdr);
   int i=0;
   int a=0;
   for(i=0;i<inst_num;i++){

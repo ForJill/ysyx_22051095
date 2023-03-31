@@ -1,23 +1,22 @@
 TOP = Top
 BUILD_DIR = ./buildCPU
 SCALA_FILE = $(shell find ./src/main/scala -name '*.scala')
-TOP_V = $(BUILD_DIR)/$(TOP).v
+TOPARGS_V = $(BUILD_DIR)/$(TOP).v
 DPI_V = $(BUILD_DIR)/DPI.v
 export PATH := $(PATH):$(abspath ./utils)
 V_FLAGS += -Wno-fatal --trace --cc --exe --build
-V_FLAGS += -Wno-UNUSED 
-V_FLAGS += -Wno-PINCONNECTEMPTY
-V_FLAGS += -Wno-UNDRIVEN
 V_FLAGS += -I./vsrc -y ./vsrc
 V_FLAGS += --top-module $(TOP)
 
-VSRC = $(wildcard ./vsrc/*.v -or -name "*.cc")
+VSRC = $(wildcard ./vsrc/*.v )
 CSRC = $(wildcard ./csrc/*.cpp)
+CSRC += $(wildcard ./csrc/*.h)
+override ARGS ?= --log=nemu-log.txt
+override ARGS += --readelf=$(NPC_HOME)/dummy-riscv64-nemu.elf
 
 CXXSRC = csrc/disasm.cc
 CXXFLAGS = $(shell llvm-config-11 --cxxflags) -fPIE
 LIBS = $(shell llvm-config-11 --libs)
-
 test:
 	sbt "testOnly /home/ljw/Desktop/ysyx-workbench/npc/test/InstMemTest.scala"
 
@@ -34,7 +33,7 @@ sim:
 	@echo "Write this Makefile by yourself."
 
 	@echo "-----------------verilate------------"
-	@verilator $(V_FLAGS) $(VSRC) $(CSRC) --LDFLAGS "$(LIBS) $(CXXFLAGS)"
+	@verilator $(V_FLAGS) $(VSRC) $(CSRC) --CFLAGS "$(CXXFLAGS)" --LDFLAGS "-ldl $(LIBS)"
 
 	@echo "-----------------compile-------------"
 	make -C obj_dir -f V$(TOP).mk V$(TOP)

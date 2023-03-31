@@ -10,13 +10,15 @@ import config.OP._
 
 class TopIO extends Bundle {
   val pc      = Output(UInt(ADDR_WIDTH.W))
-  val inst      = Input(UInt(INST_WIDTH.W))
   val ctrl      = new ControlIO()
   val resultALU = Output(UInt(DATA_WIDTH.W))
   val rs1       = Output(UInt(DATA_WIDTH.W))
   val rs2       = Output(UInt(DATA_WIDTH.W))
   val imm      = Output(UInt(DATA_WIDTH.W))
   val op    = Output(UInt(4.W))
+  val MemWen = Output(Bool())
+  val MemLoad = Output(Bool())
+  val inst = Output(UInt(32.W))
 }
 
 class Top extends Module {
@@ -27,20 +29,28 @@ class Top extends Module {
   //val instmem    = Module(new InstMem)
   val registers  = Module(new Registers)
   val Controller = Module(new Controller)
+  val dpi = Module(new DPI)
+  val ifu = Module(new IFU)
+  
 
-  //InstMem in
-  //instmem.io.addr <> PC.io.pc
-
+  def Sext(x: UInt, n: Int): UInt = Cat(Fill(64 - n, x(n - 1)), x)
   //PC in 
   PC.io.is_j <> decoder.io.ctrl.J_JUMP
   PC.io.j_branch <> alu.io.j_branch
+  PC.io.is_b <> alu.io.is_b
+  PC.io.b_branch <> alu.io.out
 
   //Decoder in
-  decoder.io.inst <> io.inst//io.inst
+  decoder.io.inst <> ifu.io.inst
   
   //Register in
   registers.io.reg <> decoder.io.reg
-  registers.io.wdata <> alu.io.out
+  registers.io.wdata <> Mux(decoder.io.ctrl.MemLoad,
+                        Mux(decoder.io.ctrl.OP === ALU_LBU,ifu.io.rdata(7,0),
+                        Mux(decoder.io.ctrl.OP === ALU_LH,Sext(ifu.io.rdata(15,0),16),
+                        Mux(decoder.io.ctrl.OP === ALU_LHU,ifu.io.rdata(15,0),
+                        Mux(decoder.io.ctrl.OP === ALU_LD,ifu.io.rdata(63,0),
+                        Mux(decoder.io.ctrl.OP === ALU_LW,Sext(ifu.io.rdata(31,0),32),alu.io.out))))),alu.io.out)
   registers.io.wen <> decoder.io.ctrl.RegWen
 
   //Alu in
@@ -50,21 +60,31 @@ class Top extends Module {
   alu.io.imm <> decoder.io.imm
   alu.io.pc  <> PC.io.pc
 
+
   //controller in
   Controller.io.ControlIO_In <> decoder.io.ctrl
 
   //top
   io.pc <> PC.io.pc
-  //io.inst <> instmem.io.inst
   io.ctrl <> decoder.io.ctrl
   io.rs1       <> registers.io.rdata1
   io.rs2       <> registers.io.rdata2
   io.imm       <> decoder.io.imm
   io.op     <> decoder.io.ctrl.OP
   io.resultALU <> alu.io.out
+  io.MemWen <> decoder.io.ctrl.MemWen
+  io.inst <> ifu.io.inst
+  io.MemLoad <> decoder.io.ctrl.MemLoad
+
+  //IFU in 
+  ifu.io.pc <> PC.io.pc
+  ifu.io.raddr <> alu.io.out
+  ifu.io.waddr <> alu.io.out
+  ifu.io.wdata <> registers.io.rdata2
+  ifu.io.wmask <> decoder.io.ctrl.wmask
+  ifu.io.wen   <> decoder.io.ctrl.MemWen
 
   //DPI in
-  val dpi = Module(new DPI)
   dpi.io.flag := Mux(decoder.io.ctrl.OP === ALU_EBREAK || decoder.io.ctrl.OP === ALU_JALR && decoder.io.reg.rd === 0.U , 1.U(32.W), 0.U(32.W))
   dpi.io.rf_0 := registers.io.regs(0)
   dpi.io.rf_1 := registers.io.regs(1)
@@ -98,8 +118,9 @@ class Top extends Module {
   dpi.io.rf_29 := registers.io.regs(29) 
   dpi.io.rf_30 := registers.io.regs(30) 
   dpi.io.rf_31 := registers.io.regs(31)
-  dpi.io.inst  := io.inst
+  dpi.io.inst  := ifu.io.inst
   dpi.io.pc    := io.pc
+  
 }
 
 object TopMain extends App {

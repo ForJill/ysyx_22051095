@@ -1,7 +1,7 @@
 
 import "DPI-C" function void ebreak (input int flag);
 import "DPI-C" function void set_gpr_ptr(input logic [63:0] a []);
-import "DPI-C" function void get_inst(input int inst);
+import "DPI-C" function void get_inst(input longint inst);
 import "DPI-C" function void get_pc(input longint pc);
 module DPI(
     input [31:0] flag,
@@ -37,7 +37,7 @@ module DPI(
     input [63:0] rf_29,
     input [63:0] rf_30,
     input [63:0] rf_31,
-    input [31:0] inst,
+    input [63:0] inst,
     input [63:0] pc
 );
 wire [63:0]rf[31:0];

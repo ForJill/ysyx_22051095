@@ -4,6 +4,6 @@
 #include <stdio.h>
 
 Elf64_Off find_strtab(FILE *fd, Elf64_Shdr shdr, Elf64_Ehdr ehdr);
-Elf64_Off find_symtab(FILE *fd, Elf64_Shdr shdr, Elf64_Ehdr ehdr, Elf64_Sym symdr);
+Elf64_Off find_symtab(FILE *fd, Elf64_Shdr shdr, Elf64_Ehdr ehdr);
 
 #endif
