@@ -46,11 +46,13 @@ class Top extends Module {
   //Register in
   registers.io.reg <> decoder.io.reg
   registers.io.wdata <> Mux(decoder.io.ctrl.MemLoad,
+                        Mux(decoder.io.ctrl.OP === ALU_LB,Sext(ifu.io.rdata(7,0),8),
                         Mux(decoder.io.ctrl.OP === ALU_LBU,ifu.io.rdata(7,0),
                         Mux(decoder.io.ctrl.OP === ALU_LH,Sext(ifu.io.rdata(15,0),16),
                         Mux(decoder.io.ctrl.OP === ALU_LHU,ifu.io.rdata(15,0),
                         Mux(decoder.io.ctrl.OP === ALU_LD,ifu.io.rdata(63,0),
-                        Mux(decoder.io.ctrl.OP === ALU_LW,Sext(ifu.io.rdata(31,0),32),alu.io.out))))),alu.io.out)
+                        Mux(decoder.io.ctrl.OP === ALU_LWU,ifu.io.rdata(31,0),
+                        Mux(decoder.io.ctrl.OP === ALU_LW,Sext(ifu.io.rdata(31,0),32),alu.io.out))))))),alu.io.out)
   registers.io.wen <> decoder.io.ctrl.RegWen
 
   //Alu in
@@ -85,7 +87,7 @@ class Top extends Module {
   ifu.io.wen   <> decoder.io.ctrl.MemWen
 
   //DPI in
-  dpi.io.flag := Mux(decoder.io.ctrl.OP === ALU_EBREAK || decoder.io.ctrl.OP === ALU_JALR && decoder.io.reg.rd === 0.U , 1.U(32.W), 0.U(32.W))
+  dpi.io.flag := Mux(decoder.io.ctrl.OP === ALU_EBREAK, 1.U(32.W), 0.U(32.W))
   dpi.io.rf_0 := registers.io.regs(0)
   dpi.io.rf_1 := registers.io.regs(1)
   dpi.io.rf_2 := registers.io.regs(2)

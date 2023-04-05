@@ -109,7 +109,6 @@ static void exec_once(Decode *s, vaddr_t pc) {
     inst_num++;
   }
 #endif
-
 }
 
 static void execute(uint64_t n) {

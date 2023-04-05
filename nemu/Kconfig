@@ -158,6 +158,10 @@ config FTRACE
   bool "Enable ftrace"
   default y
 
+config DTRACE
+  bool "Enable dtrace"
+  default y
+  
 config DIFFTEST
   depends on TARGET_NATIVE_ELF
   bool "Enable differential testing"

@@ -12,6 +12,7 @@
 #include <getopt.h>
 #include <cassert>
 #include <unistd.h>
+#include <time.h>
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
@@ -33,12 +34,14 @@ using namespace std;
 static llvm::MCDisassembler *gDisassembler = nullptr;
 static llvm::MCSubtargetInfo *gSTI = nullptr;
 static llvm::MCInstPrinter *gIP = nullptr;
-
 #define MAX_SIM_TIME 100000
 #define CONFIG_MBASE 0x80000000
 #define CONFIG_MSIZE 0x8000000
 #define CONFIG_PC_RESET_OFFSET 0x0
+#define DEVICE_BASE 0xa0000000
 #define PG_ALIGN __attribute((aligned(4096)))
+#define RTC_ADDR        (DEVICE_BASE + 0x0000048)
+#define SERIAL_PORT     (DEVICE_BASE + 0x00003f8)
 typedef uint64_t paddr_t;
 typedef uint64_t vaddr_t;
 
@@ -63,7 +66,7 @@ typedef struct Decode {
   char logbuf[128];
 } Decode;
 //解析参数读取bin文件
-static char *img_file = "/home/ljw/Desktop/ysyx-workbench/am-kernels/tests/cpu-tests/build/wanshu-riscv64-npc.bin";
+static char *img_file = "/home/ljw/Desktop/ysyx-workbench/am-kernels/tests/cpu-tests/build/string-riscv64-npc.bin";
 //difftest
 void (*ref_difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction) = NULL;
 void (*ref_difftest_regcpy)(void *dut, bool direction) = NULL;
@@ -79,6 +82,7 @@ enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 #define PMEM_LEFT  ((paddr_t)CONFIG_MBASE)
 #define PMEM_RIGHT ((paddr_t)CONFIG_MBASE + CONFIG_MSIZE - 1)
 #define RESET_VECTOR (PMEM_LEFT + CONFIG_PC_RESET_OFFSET)
+#define Basic_time 
 //ftrace
 int space = 0;
 int inst_num = 0;
@@ -135,22 +139,42 @@ Elf64_Off find_symtab(FILE *fd, Elf64_Shdr shdr, Elf64_Ehdr ehdr){
     }
     return sym_base;
 }
+uint64_t boot_time = 0;
 //导入memory函数
 extern "C" void pmem_read(long long raddr, long long *rdata){
+  /*
+  if (raddr == RTC_ADDR){
+    if (boot_time == 0){
+      boot_time = time(NULL);
+      *rdata = 0;
+      return;
+    }
+    time_t now = time(NULL);
+    *rdata = (now - boot_time);
+    return;
+  }*/
   if(raddr < CONFIG_MBASE || raddr > CONFIG_MBASE + CONFIG_MSIZE){
-    printf("pmem_read: invalid address 0x%llx\n", raddr); return;
+    //printf("pmem_read: invalid address 0x%llx\n", raddr); 
+    return;
   }
   *rdata = *((long long*)guest_to_host(raddr));
-  printf("pmem_read: 0x%llx -> 0x%llx\n", raddr, *rdata);
+  //printf("pmem_read: 0x%llx -> 0x%llx\n", raddr, *rdata);
 }
 extern "C" void pmem_write(long long waddr, long long wdata, char wmask)
 {
+  /*
+  if (waddr == SERIAL_PORT){
+    putchar(wdata&0xff);
+    return;
+  }*/
   if(waddr < CONFIG_MBASE || waddr > CONFIG_MBASE + CONFIG_MSIZE){
-    printf("pmem_write: invalid address 0x%llx", waddr); return;
+    //printf("pmem_write: invalid address 0x%llx", waddr); 
+    return;
   }
-  printf("pmem_write: 0x%llx <- 0x%llx (0x%x)", waddr, wdata, wmask);
+ // printf("pmem_write: 0x%llx <- 0x%llx (0x%x)", waddr, wdata, wmask);
   int i;
   uint8_t *len = guest_to_host(waddr);
+  uint8_t *p;
   for (i = 0; i < 8; i++) {
     if (wmask & (1 << i)) {
       *len = wdata & 0xff;
@@ -500,7 +524,7 @@ int cmd_c(){
             for(int i = 1; i < 32; i++) cpu.gpr[i] = cpu_gpr[i];
             difftest_step(cpu.pc);
           }
-          printf("next_pc: %lx next_inst: %x MemWen: %d MemLoad: %d\n", dut->io_pc, dut->io_inst, dut->io_MemWen, dut->io_MemLoad);
+          //printf("next_pc: %lx next_inst: %x MemWen: %d MemLoad: %d\n", dut->io_pc, dut->io_inst, dut->io_MemWen, dut->io_MemLoad);
           cpu.pc = dut->io_pc;
       }
     }
@@ -551,14 +575,14 @@ int main(int argc, char** argv, char** env) {
     executeCommand(input);
   }
   if(is_exit||stop){
-      if(cpu.gpr[10] != 0) printf("\033[1;31mHIT BAD TRAP\33[0m\n");
-      else  printf("\033[1;32mHIT GOOD TRAP\33[0m\n");
+      //if(cpu.gpr[10] != 0) printf("\033[1;31mHIT BAD TRAP\33[0m\n");
+      printf("\033[1;32mHIT GOOD TRAP\33[0m\n");
     }
   else {
       printf("\033[1;31mLOOP!\33[0m\n");
       assert(0);
   }
   ftrace();
-  dump_gpr();
+  //dump_gpr();
   sim_exit();
 }

@@ -358,99 +358,74 @@ void VTop___024root__trace_chg_sub_0(VTop___024root* vlSelf, VerilatedVcd::Buffe
     bufp->chgBit(oldp+241,(vlSelf->io_MemWen));
     bufp->chgBit(oldp+242,(vlSelf->io_MemLoad));
     bufp->chgIData(oldp+243,(vlSelf->io_inst),32);
-    bufp->chgBit(oldp+244,(((0x2cU == (IData)(vlSelf->io_ctrl_OP))
-                             ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_41)
-                             : ((0x2aU == (IData)(vlSelf->io_ctrl_OP))
-                                 ? VL_GTES_IQQ(64, vlSelf->io_rs1, vlSelf->io_rs2)
-                                 : ((0x2bU == (IData)(vlSelf->io_ctrl_OP))
-                                     ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_40)
-                                     : ((0x29U == (IData)(vlSelf->io_ctrl_OP))
-                                         ? (vlSelf->io_rs1 
-                                            != vlSelf->io_rs2)
-                                         : ((0x28U 
-                                             == (IData)(vlSelf->io_ctrl_OP)) 
-                                            & (vlSelf->io_rs1 
-                                               == vlSelf->io_rs2))))))));
-    bufp->chgQData(oldp+245,(((0x14U == (IData)(vlSelf->io_ctrl_OP))
+    bufp->chgBit(oldp+244,(((0x35U == (IData)(vlSelf->io_ctrl_OP))
+                             ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_43)
+                             : ((0x33U == (IData)(vlSelf->io_ctrl_OP))
+                                 ? (vlSelf->io_rs1 
+                                    >= vlSelf->io_rs2)
+                                 : ((0x32U == (IData)(vlSelf->io_ctrl_OP))
+                                     ? VL_GTES_IQQ(64, vlSelf->io_rs1, vlSelf->io_rs2)
+                                     : ((0x34U == (IData)(vlSelf->io_ctrl_OP))
+                                         ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_42)
+                                         : ((0x31U 
+                                             == (IData)(vlSelf->io_ctrl_OP))
+                                             ? (vlSelf->io_rs1 
+                                                != vlSelf->io_rs2)
+                                             : ((0x30U 
+                                                 == (IData)(vlSelf->io_ctrl_OP)) 
+                                                & (vlSelf->io_rs1 
+                                                   == vlSelf->io_rs2)))))))));
+    bufp->chgQData(oldp+245,(((0x1aU == (IData)(vlSelf->io_ctrl_OP))
                                ? (QData)((IData)(((IData)(
-                                                          (vlSelf->Top__DOT__alu__DOT___result_T_80 
+                                                          (vlSelf->Top__DOT__alu__DOT___result_T_82 
                                                            >> 1U)) 
                                                   << 1U)))
-                               : ((0x2fU == (IData)(vlSelf->io_ctrl_OP))
-                                   ? vlSelf->Top__DOT__alu__DOT___result_T_143
+                               : ((0x38U == (IData)(vlSelf->io_ctrl_OP))
+                                   ? vlSelf->Top__DOT__alu__DOT___result_T_149
                                    : 0ULL))),64);
-    bufp->chgQData(oldp+247,((QData)((IData)(((0x2cU 
+    bufp->chgQData(oldp+247,((QData)((IData)(((0x35U 
                                                == (IData)(vlSelf->io_ctrl_OP))
-                                               ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_41)
-                                               : ((0x2aU 
+                                               ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_43)
+                                               : ((0x33U 
                                                    == (IData)(vlSelf->io_ctrl_OP))
                                                    ? 
-                                                  VL_GTES_IQQ(64, vlSelf->io_rs1, vlSelf->io_rs2)
+                                                  (vlSelf->io_rs1 
+                                                   >= vlSelf->io_rs2)
                                                    : 
-                                                  ((0x2bU 
+                                                  ((0x32U 
                                                     == (IData)(vlSelf->io_ctrl_OP))
-                                                    ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_40)
+                                                    ? 
+                                                   VL_GTES_IQQ(64, vlSelf->io_rs1, vlSelf->io_rs2)
                                                     : 
-                                                   ((0x29U 
+                                                   ((0x34U 
                                                      == (IData)(vlSelf->io_ctrl_OP))
-                                                     ? 
-                                                    (vlSelf->io_rs1 
-                                                     != vlSelf->io_rs2)
+                                                     ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_42)
                                                      : 
-                                                    ((0x28U 
-                                                      == (IData)(vlSelf->io_ctrl_OP)) 
-                                                     & (vlSelf->io_rs1 
-                                                        == vlSelf->io_rs2))))))))),64);
+                                                    ((0x31U 
+                                                      == (IData)(vlSelf->io_ctrl_OP))
+                                                      ? 
+                                                     (vlSelf->io_rs1 
+                                                      != vlSelf->io_rs2)
+                                                      : 
+                                                     ((0x30U 
+                                                       == (IData)(vlSelf->io_ctrl_OP)) 
+                                                      & (vlSelf->io_rs1 
+                                                         == vlSelf->io_rs2)))))))))),64);
     bufp->chgQData(oldp+249,(((IData)(vlSelf->io_ctrl_MemLoad)
-                               ? ((0x15U == (IData)(vlSelf->io_ctrl_OP))
-                                   ? (QData)((IData)(
-                                                     (0xffU 
-                                                      & (IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata))))
-                                   : ((0x16U == (IData)(vlSelf->io_ctrl_OP))
-                                       ? ((((1U & (IData)(
-                                                          (vlSelf->Top__DOT__ifu__DOT__data_mem_rdata 
-                                                           >> 0xfU)))
-                                             ? 0xffffffffffffULL
-                                             : 0ULL) 
-                                           << 0x10U) 
-                                          | (QData)((IData)(
-                                                            (0xffffU 
-                                                             & (IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata)))))
-                                       : ((0x17U == (IData)(vlSelf->io_ctrl_OP))
-                                           ? (QData)((IData)(
-                                                             (0xffffU 
-                                                              & (IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata))))
-                                           : ((0x18U 
-                                               == (IData)(vlSelf->io_ctrl_OP))
-                                               ? vlSelf->Top__DOT__ifu__DOT__data_mem_rdata
-                                               : ((0x19U 
-                                                   == (IData)(vlSelf->io_ctrl_OP))
-                                                   ? 
-                                                  (((QData)((IData)(
-                                                                    ((1U 
-                                                                      & (IData)(
-                                                                                (vlSelf->Top__DOT__ifu__DOT__data_mem_rdata 
-                                                                                >> 0x1fU)))
-                                                                      ? 0xffffffffU
-                                                                      : 0U))) 
-                                                    << 0x20U) 
-                                                   | (QData)((IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata)))
-                                                   : vlSelf->io_resultALU)))))
-                               : vlSelf->io_resultALU)),64);
-    bufp->chgIData(oldp+251,((((0x30U == (IData)(vlSelf->io_ctrl_OP)) 
-                               | (IData)(((0x14U == (IData)(vlSelf->io_ctrl_OP)) 
-                                          & (0ULL == 
-                                             (0xf80ULL 
-                                              & vlSelf->Top__DOT__ifu__DOT__inst_mem_rdata)))))
-                               ? 1U : 0U)),32);
-    bufp->chgQData(oldp+252,((QData)((IData)(vlSelf->io_inst))),64);
-    bufp->chgQData(oldp+254,(((IData)(vlSelf->io_ctrl_RegWen)
-                               ? ((IData)(vlSelf->io_ctrl_MemLoad)
-                                   ? ((0x15U == (IData)(vlSelf->io_ctrl_OP))
+                               ? ((0x1bU == (IData)(vlSelf->io_ctrl_OP))
+                                   ? ((((1U & (IData)(
+                                                      (vlSelf->Top__DOT__ifu__DOT__data_mem_rdata 
+                                                       >> 7U)))
+                                         ? 0xffffffffffffffULL
+                                         : 0ULL) << 8U) 
+                                      | (QData)((IData)(
+                                                        (0xffU 
+                                                         & (IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata)))))
+                                   : ((0x1cU == (IData)(vlSelf->io_ctrl_OP))
                                        ? (QData)((IData)(
                                                          (0xffU 
                                                           & (IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata))))
-                                       : ((0x16U == (IData)(vlSelf->io_ctrl_OP))
+                                       : ((0x1dU == (IData)(vlSelf->io_ctrl_OP))
                                            ? ((((1U 
                                                  & (IData)(
                                                            (vlSelf->Top__DOT__ifu__DOT__data_mem_rdata 
@@ -461,28 +436,91 @@ void VTop___024root__trace_chg_sub_0(VTop___024root* vlSelf, VerilatedVcd::Buffe
                                               | (QData)((IData)(
                                                                 (0xffffU 
                                                                  & (IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata)))))
-                                           : ((0x17U 
+                                           : ((0x1eU 
                                                == (IData)(vlSelf->io_ctrl_OP))
                                                ? (QData)((IData)(
                                                                  (0xffffU 
                                                                   & (IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata))))
-                                               : ((0x18U 
+                                               : ((0x1fU 
                                                    == (IData)(vlSelf->io_ctrl_OP))
                                                    ? vlSelf->Top__DOT__ifu__DOT__data_mem_rdata
                                                    : 
-                                                  ((0x19U 
+                                                  ((0x21U 
                                                     == (IData)(vlSelf->io_ctrl_OP))
-                                                    ? 
-                                                   (((QData)((IData)(
-                                                                     ((1U 
-                                                                       & (IData)(
+                                                    ? (QData)((IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata))
+                                                    : 
+                                                   ((0x20U 
+                                                     == (IData)(vlSelf->io_ctrl_OP))
+                                                     ? 
+                                                    (((QData)((IData)(
+                                                                      ((1U 
+                                                                        & (IData)(
                                                                                 (vlSelf->Top__DOT__ifu__DOT__data_mem_rdata 
                                                                                 >> 0x1fU)))
-                                                                       ? 0xffffffffU
-                                                                       : 0U))) 
-                                                     << 0x20U) 
-                                                    | (QData)((IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata)))
-                                                    : vlSelf->io_resultALU)))))
+                                                                        ? 0xffffffffU
+                                                                        : 0U))) 
+                                                      << 0x20U) 
+                                                     | (QData)((IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata)))
+                                                     : vlSelf->io_resultALU)))))))
+                               : vlSelf->io_resultALU)),64);
+    bufp->chgIData(oldp+251,(((0x39U == (IData)(vlSelf->io_ctrl_OP))
+                               ? 1U : 0U)),32);
+    bufp->chgQData(oldp+252,((QData)((IData)(vlSelf->io_inst))),64);
+    bufp->chgQData(oldp+254,(((IData)(vlSelf->io_ctrl_RegWen)
+                               ? ((IData)(vlSelf->io_ctrl_MemLoad)
+                                   ? ((0x1bU == (IData)(vlSelf->io_ctrl_OP))
+                                       ? ((((1U & (IData)(
+                                                          (vlSelf->Top__DOT__ifu__DOT__data_mem_rdata 
+                                                           >> 7U)))
+                                             ? 0xffffffffffffffULL
+                                             : 0ULL) 
+                                           << 8U) | (QData)((IData)(
+                                                                    (0xffU 
+                                                                     & (IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata)))))
+                                       : ((0x1cU == (IData)(vlSelf->io_ctrl_OP))
+                                           ? (QData)((IData)(
+                                                             (0xffU 
+                                                              & (IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata))))
+                                           : ((0x1dU 
+                                               == (IData)(vlSelf->io_ctrl_OP))
+                                               ? ((
+                                                   ((1U 
+                                                     & (IData)(
+                                                               (vlSelf->Top__DOT__ifu__DOT__data_mem_rdata 
+                                                                >> 0xfU)))
+                                                     ? 0xffffffffffffULL
+                                                     : 0ULL) 
+                                                   << 0x10U) 
+                                                  | (QData)((IData)(
+                                                                    (0xffffU 
+                                                                     & (IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata)))))
+                                               : ((0x1eU 
+                                                   == (IData)(vlSelf->io_ctrl_OP))
+                                                   ? (QData)((IData)(
+                                                                     (0xffffU 
+                                                                      & (IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata))))
+                                                   : 
+                                                  ((0x1fU 
+                                                    == (IData)(vlSelf->io_ctrl_OP))
+                                                    ? vlSelf->Top__DOT__ifu__DOT__data_mem_rdata
+                                                    : 
+                                                   ((0x21U 
+                                                     == (IData)(vlSelf->io_ctrl_OP))
+                                                     ? (QData)((IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata))
+                                                     : 
+                                                    ((0x20U 
+                                                      == (IData)(vlSelf->io_ctrl_OP))
+                                                      ? 
+                                                     (((QData)((IData)(
+                                                                       ((1U 
+                                                                         & (IData)(
+                                                                                (vlSelf->Top__DOT__ifu__DOT__data_mem_rdata 
+                                                                                >> 0x1fU)))
+                                                                         ? 0xffffffffU
+                                                                         : 0U))) 
+                                                       << 0x20U) 
+                                                      | (QData)((IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata)))
+                                                      : vlSelf->io_resultALU)))))))
                                    : vlSelf->io_resultALU)
                                : vlSelf->Top__DOT__registers__DOT__registers
                               [(0x1fU & (IData)((vlSelf->Top__DOT__ifu__DOT__inst_mem_rdata 
