@@ -66,7 +66,7 @@ typedef struct Decode {
   char logbuf[128];
 } Decode;
 //解析参数读取bin文件
-static char *img_file = "/home/ljw/Desktop/ysyx-workbench/am-kernels/tests/cpu-tests/build/string-riscv64-npc.bin";
+static char *img_file = "/home/ljw/Desktop/ysyx-workbench/am-kernels/kernels/typing-game/build/typing-game-riscv64-nemu.bin";
 //difftest
 void (*ref_difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction) = NULL;
 void (*ref_difftest_regcpy)(void *dut, bool direction) = NULL;
@@ -142,7 +142,6 @@ Elf64_Off find_symtab(FILE *fd, Elf64_Shdr shdr, Elf64_Ehdr ehdr){
 uint64_t boot_time = 0;
 //导入memory函数
 extern "C" void pmem_read(long long raddr, long long *rdata){
-  /*
   if (raddr == RTC_ADDR){
     if (boot_time == 0){
       boot_time = time(NULL);
@@ -152,7 +151,7 @@ extern "C" void pmem_read(long long raddr, long long *rdata){
     time_t now = time(NULL);
     *rdata = (now - boot_time);
     return;
-  }*/
+  }
   if(raddr < CONFIG_MBASE || raddr > CONFIG_MBASE + CONFIG_MSIZE){
     //printf("pmem_read: invalid address 0x%llx\n", raddr); 
     return;
@@ -162,11 +161,10 @@ extern "C" void pmem_read(long long raddr, long long *rdata){
 }
 extern "C" void pmem_write(long long waddr, long long wdata, char wmask)
 {
-  /*
   if (waddr == SERIAL_PORT){
     putchar(wdata&0xff);
     return;
-  }*/
+  }
   if(waddr < CONFIG_MBASE || waddr > CONFIG_MBASE + CONFIG_MSIZE){
     //printf("pmem_write: invalid address 0x%llx", waddr); 
     return;
@@ -522,7 +520,7 @@ int cmd_c(){
           if(sim_time >= 2){
             cpu.gpr[0] = 0;
             for(int i = 1; i < 32; i++) cpu.gpr[i] = cpu_gpr[i];
-            difftest_step(cpu.pc);
+            //difftest_step(cpu.pc);
           }
           //printf("next_pc: %lx next_inst: %x MemWen: %d MemLoad: %d\n", dut->io_pc, dut->io_inst, dut->io_MemWen, dut->io_MemLoad);
           cpu.pc = dut->io_pc;
@@ -568,7 +566,7 @@ void executeCommand(char input) {
 int main(int argc, char** argv, char** env) {
   Decode s;
   img_size = load_img(img_file);
-  init_difftest(img_size);
+  //init_difftest(img_size);
   init();
   while(sim_time < MAX_SIM_TIME && !stop && !is_exit){
     char input = readChar();
