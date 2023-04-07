@@ -14,13 +14,22 @@
 ***************************************************************************************/
 
 #include <isa.h>
-
+int intr_time = 0;
 word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   /* TODO: Trigger an interrupt/exception with ``NO''.
    * Then return the address of the interrupt/exception vector.
    */
-
-  return 0;
+  cpu.csr.mcause = NO;
+  cpu.csr.mepc = epc;
+  #ifdef CONFIG_ETRACE
+  {
+    intr_time ++;
+    printf("Raise interrupt %ld at epc = 0x%08lx, intr_time = %d\n", NO, epc, intr_time);
+    printf("cpu.csr.mepc = 0x%08lx, cpu.csr.mtvec = 0x%08lx, cpu.csr.mstatus = 0x%08lx, cpu.csr.mcause = 0x%08lx\n", cpu.csr.mepc, cpu.csr.mtvec, cpu.csr.mstatus, cpu.csr.mcause);
+  }
+  #endif
+  //printf("Raise interrupt %ld at epc = 0x%08lx\n", NO, epc);
+  return cpu.csr.mtvec;
 }
 
 word_t isa_query_intr() {

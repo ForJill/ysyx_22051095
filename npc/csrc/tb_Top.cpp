@@ -12,6 +12,7 @@
 #include <getopt.h>
 #include <cassert>
 #include <unistd.h>
+#include <sys/time.h>
 #include <time.h>
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
@@ -66,7 +67,7 @@ typedef struct Decode {
   char logbuf[128];
 } Decode;
 //解析参数读取bin文件
-static char *img_file = "/home/ljw/Desktop/ysyx-workbench/am-kernels/kernels/typing-game/build/typing-game-riscv64-nemu.bin";
+static char *img_file = "/home/ljw/Desktop/ysyx-workbench/fceux-am/build/fceux-riscv64-npc.bin";
 //difftest
 void (*ref_difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction) = NULL;
 void (*ref_difftest_regcpy)(void *dut, bool direction) = NULL;
@@ -139,17 +140,21 @@ Elf64_Off find_symtab(FILE *fd, Elf64_Shdr shdr, Elf64_Ehdr ehdr){
     }
     return sym_base;
 }
-uint64_t boot_time = 0;
+long long boot_time = 0;
+struct timeval now;
+long long now_time = 0;
 //导入memory函数
 extern "C" void pmem_read(long long raddr, long long *rdata){
   if (raddr == RTC_ADDR){
     if (boot_time == 0){
-      boot_time = time(NULL);
+      gettimeofday(&now,NULL);
+      boot_time = now.tv_sec*1000000 + now.tv_usec;
       *rdata = 0;
       return;
     }
-    time_t now = time(NULL);
-    *rdata = (now - boot_time);
+    gettimeofday(&now,NULL);
+    now_time = now.tv_sec*1000000 + now.tv_usec;
+    *rdata = now_time - boot_time;
     return;
   }
   if(raddr < CONFIG_MBASE || raddr > CONFIG_MBASE + CONFIG_MSIZE){
@@ -204,7 +209,7 @@ uint64_t now_pc = 0;
 int stop = 0;
 int is_exit = 0;
 VTop* dut = NULL;
-VerilatedVcdC *m_trace = NULL;
+//VerilatedVcdC *m_trace = NULL;
 FILE *log_fp = NULL;
 static char *log_file = "npc-log.txt";
 #define FMT_WORD "0x%016" PRIx64
@@ -409,9 +414,9 @@ void difftest_step(vaddr_t pc/*, vaddr_t npc*/) {
 void init(){
   dut = new VTop;
   Verilated::traceEverOn(true);
-  m_trace = new VerilatedVcdC;
-  dut->trace(m_trace, 99);
-  m_trace->open("waveform.vcd");
+  //m_trace = new VerilatedVcdC;
+  //dut->trace(m_trace, 99);
+  //m_trace->open("waveform.vcd");
   init_disasm("riscv64");
   init_log(log_file);
   printf("init sim success\n");
@@ -419,7 +424,7 @@ void init(){
 //退出仿真
 void sim_exit(){
   delete dut;
-  m_trace->close();
+  //m_trace->close();
   exit(EXIT_SUCCESS);
 }
 
@@ -537,7 +542,7 @@ int cmd_c(){
   if(sim_time % 2 == 1){
     dut->clock = 0;
   }
-  m_trace->dump(sim_time);
+  //m_trace->dump(sim_time);
   sim_time++;
   return 0;
 }

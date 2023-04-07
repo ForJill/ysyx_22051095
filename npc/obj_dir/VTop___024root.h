@@ -56,12 +56,11 @@ class VTop___024root final : public VerilatedModule {
         VlWide<4>/*126:0*/ Top__DOT__alu__DOT___result_T_39;
         IData/*31:0*/ Top__DOT__alu__DOT___GEN_1;
         IData/*31:0*/ Top__DOT__alu__DOT___result_T_68;
-        VlWide<4>/*126:0*/ Top__DOT__alu__DOT___result_T_108;
         IData/*31:0*/ Top__DOT__alu__DOT___result_T_120;
         VlWide<4>/*127:0*/ Top__DOT__alu__DOT___result_T_179;
         VlWide<4>/*127:0*/ Top__DOT__alu__DOT___result_T_203;
-        VlWide<4>/*127:0*/ Top__DOT__alu__DOT___result_T_229;
-        VlWide<4>/*127:0*/ Top__DOT__alu__DOT___result_T_261;
+        VlWide<4>/*127:0*/ Top__DOT__alu__DOT___result_T_227;
+        VlWide<4>/*127:0*/ Top__DOT__alu__DOT___result_T_259;
         IData/*31:0*/ Top__DOT__alu__DOT____VdfgTmp_hf93d7fde__0;
         IData/*31:0*/ Top__DOT__alu__DOT____VdfgTmp_h1b235318__0;
         VlWide<3>/*83:0*/ Top__DOT__decoder__DOT___io_imm_T_9;
@@ -83,9 +82,9 @@ class VTop___024root final : public VerilatedModule {
         QData/*63:0*/ Top__DOT__alu__DOT___result_T_149;
         QData/*63:0*/ Top__DOT__decoder__DOT___J_T_4;
         QData/*63:0*/ Top__DOT__registers__DOT__registers_io_rdata1_MPORT_data;
+        QData/*63:0*/ Top__DOT__registers__DOT__registers_io_rdata2_MPORT_data;
     };
     struct {
-        QData/*63:0*/ Top__DOT__registers__DOT__registers_io_rdata2_MPORT_data;
         QData/*63:0*/ Top__DOT__registers__DOT__registers_MPORT_data;
         QData/*63:0*/ Top__DOT__ifu__DOT__inst_mem_rdata;
         QData/*63:0*/ Top__DOT__ifu__DOT__data_mem_rdata;

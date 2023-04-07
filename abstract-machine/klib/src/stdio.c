@@ -104,7 +104,7 @@ int vsprintf(char *out, const char *fmt, va_list ap){
 }
 int printf(const char *fmt, ...) {
   va_list ap;
-  char buf[1024];
+  char buf[10240];
   va_start(ap, fmt);
   int len = vsprintf(buf, fmt, ap);
   va_end(ap);

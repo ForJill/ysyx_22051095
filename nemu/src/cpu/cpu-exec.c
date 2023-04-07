@@ -12,12 +12,10 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
-
 #include <cpu/cpu.h>
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
 #include <locale.h>
-#include "ringbuf.h"
 #include "ftrace.h"
 #include "/home/ljw/Desktop/ysyx-workbench/nemu/src/monitor/sdb/sdb.h"
 /* The assembly code of instructions executed is only output to the screen
@@ -26,14 +24,22 @@
  * You can modify this value as you want.
  */
 #define MAX_INST_TO_PRINT 20
-
+#define MAX_IRINGBUF 16
+typedef struct {
+  word_t pc;
+  uint32_t inst;
+} ItraceNode;
+extern ItraceNode iringbuf[MAX_IRINGBUF];
+extern int p_cur;
+extern bool full;
+void display_inst();
+void trace_inst();
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 //irringbuf
 int inst_len[1024] = {0};
-ringbuf r;
 //ftrace
 int space = 0;
 int inst_num = 0;
@@ -69,6 +75,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   isa_exec_once(s);
   cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
+  trace_inst(s->pc,s->isa.inst.val);
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
   int ilen = s->snpc - s->pc;
@@ -86,17 +93,8 @@ static void exec_once(Decode *s, vaddr_t pc) {
 
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
-      MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst.val, ilen);
+      MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst.val, ilen);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
 #endif     
-#ifdef CONFIG_MTRACE
-  //把p指向的内容赋给q
-  char *q = s->logbuf;
-  *q = *p;
-  //把q的内容写入ringbuf
-  strcat(q, "\n");
-  ringbuf_write(&r,q,strlen(q));
-  inst_len[g_nr_guest_inst] = strlen(q);
-#endif
 #ifdef CONFIG_FTRACE
   if ((BITS(s->isa.inst.val,6,0) == 0x67 && BITS(s->isa.inst.val,14,12) == 0x0 && s->isa.inst.val != 0x8067) || BITS(s->isa.inst.val,6,0)==0x6f){
     addr[inst_num] = s->pc;
@@ -125,8 +123,11 @@ static void execute(uint64_t n) {
   symbol_base = find_symtab(fd, shdr, ehdr);
   int i=0;
   int a=0;
+  FILE *fp;
+  fp = fopen("ftrace.txt","a+");
   for(i=0;i<inst_num;i++){
     //初始化指针
+    //创建文件存放输出信息
     fseek(fd, symbol_base, SEEK_SET);
     a = fread(&shdr, sizeof(Elf64_Shdr), 1, fd);
     fseek(fd, shdr.sh_offset, SEEK_SET);
@@ -148,16 +149,24 @@ static void execute(uint64_t n) {
         if(call[i])
         {
           space ++;
-          printf("%lx:",addr[i]);
-          printf("%*s",space,"");
-          printf("call[%s@%lx]\n",strtab,symdr.st_value);
+          //输出内容到文件中
+          fprintf(fp,"%lx:",addr[i]);
+          fprintf(fp,"%*s",space,"");
+          fprintf(fp,"call[%s@%lx]\n",strtab,symdr.st_value);
+          //printf("%lx:",addr[i]);
+          //printf("%*s",space,"");
+          //printf("call[%s@%lx]\n",strtab,symdr.st_value);
         }
         else 
         {
           space --;
-          printf("%lx:",addr[i]);
-          printf("%*s",space,"");
-          printf("ret[%s@%lx]\n",strtab,symdr.st_value);
+          //输出内容到文件中
+          fprintf(fp,"%lx:",addr[i]);
+          fprintf(fp,"%*s",space,"");
+          fprintf(fp,"ret[%s@%lx]\n",strtab,symdr.st_value);
+          //printf("%lx:",addr[i]);
+          //printf("%*s",space,"");
+          //printf("ret[%s@%lx]\n",strtab,symdr.st_value);
         }
         memset(strtab, 0 ,sizeof(strtab));
         break;
@@ -165,6 +174,7 @@ static void execute(uint64_t n) {
       else a = fread(&symdr,sizeof(Elf64_Sym),1,fd);
     }
   }
+  fclose(fp);
 #endif
 }
 
@@ -176,18 +186,12 @@ static void statistic() {
   if (g_timer > 0) Log("simulation frequency = " NUMBERIC_FMT " inst/s", g_nr_guest_inst * 1000000 / g_timer);
   else Log("Finish running in less than 1 us and can not calculate the simulation frequency");
 
-#ifdef CONFIG_MTRACE
-  Log("Wrong instruction trace:\n");
-  char buf[1024];
-  while (ringbuf_read(&r, buf, 1024) > 0){
-    printf("%s",buf);
-  }
-  printf("wrong instruction upper here\n");
-  ringbuf_destroy(&r);
-#endif
 }
 
 void assert_fail_msg() {
+  //#ifdef CONFIG_ITRACE
+  display_inst();
+  //#endif
   isa_reg_display();
   statistic();
 }

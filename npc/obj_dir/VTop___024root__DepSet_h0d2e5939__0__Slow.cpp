@@ -54,7 +54,7 @@ VL_ATTR_COLD void VTop___024root___eval_settle(VTop___024root* vlSelf) {
 #ifdef VL_DEBUG
                 VTop___024root___dump_triggers__stl(vlSelf);
 #endif
-                VL_FATAL_MT("vsrc/Top.v", 995, "", "Settle region did not converge.");
+                VL_FATAL_MT("vsrc/Top.v", 997, "", "Settle region did not converge.");
             }
             vlSelf->__VstlIterCount = ((IData)(1U) 
                                        + vlSelf->__VstlIterCount);
@@ -158,15 +158,14 @@ VL_ATTR_COLD void VTop___024root___ctor_var_reset(VTop___024root* vlSelf) {
     vlSelf->Top__DOT__alu__DOT___result_T_73 = VL_RAND_RESET_Q(64);
     vlSelf->Top__DOT__alu__DOT___result_T_82 = VL_RAND_RESET_Q(64);
     vlSelf->Top__DOT__alu__DOT___result_T_92 = VL_RAND_RESET_I(1);
-    VL_RAND_RESET_W(127, vlSelf->Top__DOT__alu__DOT___result_T_108);
     vlSelf->Top__DOT__alu__DOT___result_T_117 = VL_RAND_RESET_Q(64);
     vlSelf->Top__DOT__alu__DOT___result_T_120 = VL_RAND_RESET_I(32);
     vlSelf->Top__DOT__alu__DOT___result_T_124 = VL_RAND_RESET_Q(64);
     vlSelf->Top__DOT__alu__DOT___result_T_149 = VL_RAND_RESET_Q(64);
     VL_RAND_RESET_W(128, vlSelf->Top__DOT__alu__DOT___result_T_179);
     VL_RAND_RESET_W(128, vlSelf->Top__DOT__alu__DOT___result_T_203);
-    VL_RAND_RESET_W(128, vlSelf->Top__DOT__alu__DOT___result_T_229);
-    VL_RAND_RESET_W(128, vlSelf->Top__DOT__alu__DOT___result_T_261);
+    VL_RAND_RESET_W(128, vlSelf->Top__DOT__alu__DOT___result_T_227);
+    VL_RAND_RESET_W(128, vlSelf->Top__DOT__alu__DOT___result_T_259);
     vlSelf->Top__DOT__alu__DOT____VdfgTmp_hf93d7fde__0 = 0;
     vlSelf->Top__DOT__alu__DOT____VdfgTmp_h1b235318__0 = 0;
     vlSelf->Top__DOT__alu__DOT____VdfgTmp_hf93d7461__0 = 0;

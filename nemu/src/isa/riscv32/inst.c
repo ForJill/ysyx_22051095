@@ -18,9 +18,13 @@
 #include <cpu/ifetch.h>
 #include <cpu/decode.h>
 
+#define MAX_IRINGBUF 16
+
 #define R(i) gpr(i)
 #define Mr vaddr_read
 #define Mw vaddr_write
+
+void trace_inst(word_t pc, uint32_t inst);
 
 enum {
   TYPE_I, TYPE_U, TYPE_S,
