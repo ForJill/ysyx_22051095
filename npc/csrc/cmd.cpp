@@ -89,6 +89,7 @@ int cmd_c()
 #ifdef CONFIG_ITRACE
           itrace(&s, now_pc, now_inst);
 #endif
+#ifdef CONFIG_FTRACE
           if ((BITS(now_inst, 6, 0) == 0x67 && BITS(now_inst, 14, 12) == 0x0 && now_inst != 0x8067) || BITS(now_inst, 6, 0) == 0x6f)
           {
             addr[inst_num] = cpu.pc;
@@ -101,6 +102,7 @@ int cmd_c()
             call[inst_num] = 0;
             inst_num++;
           }
+#endif
         }
         // printf("next_pc: %lx next_inst: %x MemWen: %d MemLoad: %d\n", dut->io_pc, dut->io_inst, dut->io_MemWen, dut->io_MemLoad);
         cpu.pc = dut->io_pc;

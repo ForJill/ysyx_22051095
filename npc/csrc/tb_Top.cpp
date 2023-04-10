@@ -7,14 +7,13 @@ static char *img_file = "/home/ljw/Desktop/ysyx-workbench/am-kernels/tests/am-te
 long img_size = 0;
 // ftrace
 int inst_num = 0;
-vaddr_t addr[1000] = {0};
-int call[1000] = {0};
+vaddr_t addr[100000] = {0};
+int call[100000] = {0};
 Decode s;
 static char *elf_file = "/home/ljw/Desktop/ysyx-workbench/am-kernels/tests/am-tests/build/amtest-riscv64-npc.elf";
 long long boot_time = 0;
 long long now_time = 0;
 struct timeval now;
-
 // 设置仿真所需变量初始值
 vluint64_t sim_time = 0;
 uint64_t *cpu_gpr = NULL;
@@ -55,11 +54,8 @@ int main(int argc, char **argv, char **env)
   init_difftest(img_size);
 #endif
   init();
-  while (sim_time < MAX_SIM_TIME && !stop && !is_exit)
-  {
-    char input = readChar();
-    executeCommand(input);
-  }
+  char input = readChar();
+  executeCommand(input);
   if (is_exit || stop)
   {
     // if(cpu.gpr[10] != 0) printf("\033[1;31mHIT BAD TRAP\33[0m\n");
