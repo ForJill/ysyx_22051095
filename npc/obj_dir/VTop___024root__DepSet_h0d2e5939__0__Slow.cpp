@@ -87,8 +87,6 @@ VL_ATTR_COLD void VTop___024root___eval_stl(VTop___024root* vlSelf) {
     // Body
     if (vlSelf->__VstlTriggered.at(0U)) {
         VTop___024root___stl_sequent__TOP__0(vlSelf);
-        vlSelf->__Vm_traceActivity[1U] = 1U;
-        vlSelf->__Vm_traceActivity[0U] = 1U;
     }
 }
 
@@ -153,53 +151,33 @@ VL_ATTR_COLD void VTop___024root___ctor_var_reset(VTop___024root* vlSelf) {
     VL_RAND_RESET_W(127, vlSelf->Top__DOT__alu__DOT___result_T_39);
     vlSelf->Top__DOT__alu__DOT___result_T_42 = VL_RAND_RESET_I(1);
     vlSelf->Top__DOT__alu__DOT___result_T_43 = VL_RAND_RESET_I(1);
-    vlSelf->Top__DOT__alu__DOT___GEN_1 = VL_RAND_RESET_I(32);
-    vlSelf->Top__DOT__alu__DOT___result_T_68 = VL_RAND_RESET_I(32);
-    vlSelf->Top__DOT__alu__DOT___result_T_73 = VL_RAND_RESET_Q(64);
+    vlSelf->Top__DOT__alu__DOT___result_T_59 = VL_RAND_RESET_I(32);
+    vlSelf->Top__DOT__alu__DOT___result_T_76 = VL_RAND_RESET_I(32);
     vlSelf->Top__DOT__alu__DOT___result_T_82 = VL_RAND_RESET_Q(64);
-    vlSelf->Top__DOT__alu__DOT___result_T_92 = VL_RAND_RESET_I(1);
-    vlSelf->Top__DOT__alu__DOT___result_T_117 = VL_RAND_RESET_Q(64);
-    vlSelf->Top__DOT__alu__DOT___result_T_120 = VL_RAND_RESET_I(32);
-    vlSelf->Top__DOT__alu__DOT___result_T_124 = VL_RAND_RESET_Q(64);
+    vlSelf->Top__DOT__alu__DOT___result_T_128 = VL_RAND_RESET_I(32);
     vlSelf->Top__DOT__alu__DOT___result_T_149 = VL_RAND_RESET_Q(64);
-    VL_RAND_RESET_W(128, vlSelf->Top__DOT__alu__DOT___result_T_179);
-    VL_RAND_RESET_W(128, vlSelf->Top__DOT__alu__DOT___result_T_203);
-    VL_RAND_RESET_W(128, vlSelf->Top__DOT__alu__DOT___result_T_227);
-    VL_RAND_RESET_W(128, vlSelf->Top__DOT__alu__DOT___result_T_259);
-    vlSelf->Top__DOT__alu__DOT____VdfgTmp_hf93d7fde__0 = 0;
+    VL_ZERO_RESET_W(128, vlSelf->Top__DOT__alu__DOT____VdfgTmp_h829cd78d__0);
+    VL_ZERO_RESET_W(128, vlSelf->Top__DOT__alu__DOT____VdfgTmp_h145ac756__0);
+    VL_ZERO_RESET_W(128, vlSelf->Top__DOT__alu__DOT____VdfgTmp_h5c4f0c40__0);
     vlSelf->Top__DOT__alu__DOT____VdfgTmp_h1b235318__0 = 0;
+    VL_ZERO_RESET_W(128, vlSelf->Top__DOT__alu__DOT____VdfgTmp_h9209046a__0);
     vlSelf->Top__DOT__alu__DOT____VdfgTmp_hf93d7461__0 = 0;
-    vlSelf->Top__DOT__decoder__DOT___crtlsignals_T_126 = VL_RAND_RESET_I(6);
-    vlSelf->Top__DOT__decoder__DOT___crtlsignals_T_141 = VL_RAND_RESET_I(6);
-    vlSelf->Top__DOT__decoder__DOT___crtlsignals_T_156 = VL_RAND_RESET_I(6);
-    vlSelf->Top__DOT__decoder__DOT___crtlsignals_T_209 = VL_RAND_RESET_I(1);
-    vlSelf->Top__DOT__decoder__DOT___crtlsignals_T_237 = VL_RAND_RESET_I(3);
-    vlSelf->Top__DOT__decoder__DOT___crtlsignals_T_252 = VL_RAND_RESET_I(3);
-    vlSelf->Top__DOT__decoder__DOT___crtlsignals_T_267 = VL_RAND_RESET_I(3);
+    vlSelf->Top__DOT__alu__DOT____VdfgTmp_hf93d7fde__0 = 0;
     vlSelf->Top__DOT__decoder__DOT__ImmType = VL_RAND_RESET_I(3);
-    vlSelf->Top__DOT__decoder__DOT___crtlsignals_T_295 = VL_RAND_RESET_I(1);
-    vlSelf->Top__DOT__decoder__DOT___crtlsignals_T_312 = VL_RAND_RESET_I(1);
-    vlSelf->Top__DOT__decoder__DOT___crtlsignals_T_329 = VL_RAND_RESET_I(1);
-    vlSelf->Top__DOT__decoder__DOT___crtlsignals_T_358 = VL_RAND_RESET_I(1);
-    vlSelf->Top__DOT__decoder__DOT___crtlsignals_T_375 = VL_RAND_RESET_I(1);
-    vlSelf->Top__DOT__decoder__DOT___crtlsignals_T_426 = VL_RAND_RESET_I(1);
     vlSelf->Top__DOT__decoder__DOT___J_T_4 = VL_RAND_RESET_Q(64);
-    VL_RAND_RESET_W(84, vlSelf->Top__DOT__decoder__DOT___io_imm_T_9);
     for (int __Vi0 = 0; __Vi0 < 32; ++__Vi0) {
         vlSelf->Top__DOT__registers__DOT__registers[__Vi0] = VL_RAND_RESET_Q(64);
     }
-    vlSelf->Top__DOT__registers__DOT__registers_io_rdata1_MPORT_data = VL_RAND_RESET_Q(64);
-    vlSelf->Top__DOT__registers__DOT__registers_io_rdata2_MPORT_data = VL_RAND_RESET_Q(64);
     vlSelf->Top__DOT__registers__DOT__registers_MPORT_data = VL_RAND_RESET_Q(64);
     for (int __Vi0 = 0; __Vi0 < 32; ++__Vi0) {
         vlSelf->Top__DOT__dpi__DOT__rf[__Vi0] = VL_RAND_RESET_Q(64);
     }
     vlSelf->Top__DOT__ifu__DOT__inst_mem_rdata = VL_RAND_RESET_Q(64);
     vlSelf->Top__DOT__ifu__DOT__data_mem_rdata = VL_RAND_RESET_Q(64);
+    vlSelf->__VdfgTmp_hd335b250__0 = 0;
+    vlSelf->__VdfgTmp_hd4000d9d__0 = 0;
+    VL_ZERO_RESET_W(84, vlSelf->__VdfgTmp_h99817e9b__0);
     vlSelf->__Vtask_pmem_read__4__rdata = 0;
     vlSelf->__Vtask_pmem_read__5__rdata = 0;
     vlSelf->__Vtrigrprev__TOP__clock = VL_RAND_RESET_I(1);
-    for (int __Vi0 = 0; __Vi0 < 2; ++__Vi0) {
-        vlSelf->__Vm_traceActivity[__Vi0] = 0;
-    }
 }

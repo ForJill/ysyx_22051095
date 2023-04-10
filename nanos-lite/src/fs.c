@@ -1,8 +1,9 @@
 #include <fs.h>
-
+int fs_offset = 0;
 typedef size_t (*ReadFn) (void *buf, size_t offset, size_t len);
 typedef size_t (*WriteFn) (const void *buf, size_t offset, size_t len);
-
+size_t ramdisk_read(void *buf, size_t offset, size_t len);
+size_t ramdisk_write(const void *buf, size_t offset, size_t len);
 typedef struct {
   char *name;
   size_t size;
@@ -30,7 +31,62 @@ static Finfo file_table[] __attribute__((used)) = {
   [FD_STDERR] = {"stderr", 0, 0, invalid_read, invalid_write},
 #include "files.h"
 };
+int fs_open(const char *pathname, int flags, int mode) {  
+  for (int i = 0; i < sizeof(file_table) / sizeof(file_table[0]); i ++) {
+    if (strcmp(pathname, file_table[i].name) == 0) {
+      return i;
+    }
+  }
+  panic("file %s not found", pathname);
+}
 
+size_t fs_read(int fd, void *buf, size_t len){
+  assert(fd >= 0 && fd < sizeof(file_table) / sizeof(file_table[0]));
+  Finfo *finfo = &file_table[fd];
+  if (finfo->read == NULL) {
+    panic("file %s is not readable", finfo->name);
+  }
+  return ramdisk_read(buf, finfo->disk_offset, len);
+}
+
+size_t fs_write(int fd, const void *buf, size_t len){
+  assert(fd >= 0 && fd < sizeof(file_table) / sizeof(file_table[0]));
+  Finfo *finfo = &file_table[fd];
+  if (finfo->write == NULL) {
+    panic("file %s is not writable", finfo->name);
+  }
+  //stdout
+  if(fd == 1){
+    for(int i = 0; i < len; i++){
+      putch(*(char*)(buf+i));
+    }
+    return len;
+  }
+  //stderr,目前无区别
+  if(fd == 2){
+    for(int i = 0; i < len; i++){
+      putch(*(char*)(buf+i));
+    }
+    return len;
+  }
+  return ramdisk_write(buf, finfo->disk_offset, len);
+}
+
+size_t fs_lseek(int fd, size_t offset, int whence) {
+  assert(fd >= 0 && fd < sizeof(file_table) / sizeof(file_table[0]));
+  Finfo *finfo = &file_table[fd];
+  switch (whence) {
+    case SEEK_SET: return (finfo->disk_offset = offset);
+    case SEEK_CUR: return (finfo->disk_offset += offset);
+    case SEEK_END: return (finfo->disk_offset = finfo->size + offset);
+    default: panic("invalid whence = %d", whence);
+  }
+}
+
+int fs_close(int fd) {
+  assert(fd >= 0 && fd < sizeof(file_table) / sizeof(file_table[0]));
+  return 0;
+}
 void init_fs() {
   // TODO: initialize the size of /dev/fb
 }
