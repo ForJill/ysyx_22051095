@@ -1,5 +1,4 @@
 #include <fs.h>
-int fs_offset = 0;
 typedef size_t (*ReadFn) (void *buf, size_t offset, size_t len);
 typedef size_t (*WriteFn) (const void *buf, size_t offset, size_t len);
 size_t ramdisk_read(void *buf, size_t offset, size_t len);
@@ -10,8 +9,9 @@ typedef struct {
   size_t disk_offset;
   ReadFn read;
   WriteFn write;
+  size_t shared_offset;
 } Finfo;
-
+Finfo *finfo = NULL;
 enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_FB};
 
 size_t invalid_read(void *buf, size_t offset, size_t len) {
@@ -34,6 +34,8 @@ static Finfo file_table[] __attribute__((used)) = {
 int fs_open(const char *pathname, int flags, int mode) {  
   for (int i = 0; i < sizeof(file_table) / sizeof(file_table[0]); i ++) {
     if (strcmp(pathname, file_table[i].name) == 0) {
+      finfo = &file_table[i];
+      finfo->shared_offset = finfo->disk_offset;
       return i;
     }
   }
@@ -42,28 +44,18 @@ int fs_open(const char *pathname, int flags, int mode) {
 
 size_t fs_read(int fd, void *buf, size_t len){
   assert(fd >= 0 && fd < sizeof(file_table) / sizeof(file_table[0]));
-  Finfo *finfo = &file_table[fd];
-  if (finfo->read == NULL) {
-    panic("file %s is not readable", finfo->name);
-  }
-  return ramdisk_read(buf, finfo->disk_offset, len);
+  finfo = &file_table[fd];
+  return ramdisk_read(buf, finfo->shared_offset, len);
 }
 
 size_t fs_write(int fd, const void *buf, size_t len){
   assert(fd >= 0 && fd < sizeof(file_table) / sizeof(file_table[0]));
-  Finfo *finfo = &file_table[fd];
+  finfo = &file_table[fd];
   if (finfo->write == NULL) {
     panic("file %s is not writable", finfo->name);
   }
   //stdout
-  if(fd == 1){
-    for(int i = 0; i < len; i++){
-      putch(*(char*)(buf+i));
-    }
-    return len;
-  }
-  //stderr,目前无区别
-  if(fd == 2){
+  if(fd == 1 || fd == 2){
     for(int i = 0; i < len; i++){
       putch(*(char*)(buf+i));
     }
@@ -74,7 +66,7 @@ size_t fs_write(int fd, const void *buf, size_t len){
 
 size_t fs_lseek(int fd, size_t offset, int whence) {
   assert(fd >= 0 && fd < sizeof(file_table) / sizeof(file_table[0]));
-  Finfo *finfo = &file_table[fd];
+  finfo = &file_table[fd];
   switch (whence) {
     case SEEK_SET: return (finfo->disk_offset = offset);
     case SEEK_CUR: return (finfo->disk_offset += offset);

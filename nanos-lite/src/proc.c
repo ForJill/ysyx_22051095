@@ -24,7 +24,8 @@ void init_proc() {
 
   Log("Initializing processes...");
   // load program here
-  naive_uload(NULL, "/home/ljw/Desktop/ysyx-workbench/navy-apps/tests/hello/build/ramdisk.img");
+  const char *filename = "/bin/hello";
+  naive_uload(NULL, filename);
 }
 
 Context* schedule(Context *prev) {
