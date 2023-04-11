@@ -24,8 +24,7 @@ void init_proc() {
 
   Log("Initializing processes...");
   // load program here
-  const char *filename = "/bin/hello";
-  naive_uload(NULL, filename);
+  naive_uload(NULL,"/bin/file-test");
 }
 
 Context* schedule(Context *prev) {
