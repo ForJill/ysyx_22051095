@@ -33,6 +33,7 @@ class Alu extends Module {
   imm     := io.imm
   src1    := io.in1
   src2    := io.in2
+
   result := MuxLookup(
     io.ctrl.alu_op,
     0.U,
@@ -44,7 +45,8 @@ class Alu extends Module {
       ALU_SUBW -> Sext((src1 - src2)(31, 0), 32),
       ALU_MUL -> (src1 * src2),
       ALU_MULW -> Sext((src1 * src2)(31, 0), 32),
-      ALU_DIV -> Mux(src2 === 0.U, 0.U, src1 / src2),
+      ALU_DIV -> Mux(src2 === 0.U, 0.U, (src1.asSInt / src2.asSInt).asUInt),//有符号数
+      ALU_DIVU -> Mux(src2 === 0.U, 0.U, src1 / src2),
       ALU_DIVW -> Sext(Mux(src2(31, 0) === 0.U, 0.U, src1(31, 0) / src2(31, 0)), 32),
       ALU_SLL -> (src1 << src2(5,0)),
       ALU_SLT -> (src1.asSInt < src2.asSInt),
@@ -54,8 +56,11 @@ class Alu extends Module {
       ALU_XOR -> (src1 ^ src2),
       ALU_SRA -> (src1 >> src2),
       ALU_OR -> (src1 | src2),
+      ALU_REM -> (src1.asSInt % src2.asSInt).asUInt,
+      ALU_REMU -> (src1 % src2),
       ALU_REMW -> Sext(Mux(src2(31, 0) === 0.U, 0.U, src1(31, 0) % src2(31, 0)), 32),
-      ALU_SRAW -> Sext((src1.asSInt(31, 0) >> src2(4, 0))(31, 0), 32),
+      ALU_REMUW -> Sext(Mux(src2(31, 0) === 0.U, 0.U, src1(31, 0) % src2(31, 0)), 32),
+      ALU_SRAW -> Sext((src1(31,0).asSInt() >> src2(4,0)).asUInt(), 32),
       ALU_SRLW -> Sext((src1(31, 0) >> src2(4, 0)), 32),
       //I_type
       ALU_ADDI -> (src1 + imm),

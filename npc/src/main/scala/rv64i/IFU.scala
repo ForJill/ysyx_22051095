@@ -16,7 +16,7 @@ class IFU extends Module {
   })
   val inst_mem = Module(new memory)
   inst_mem.io.raddr := io.pc
-  io.inst := inst_mem.io.rdata
+  io.inst := inst_mem.io.rdata(31,0)
   inst_mem.io.wen   := 0.U
   val data_mem = Module(new memory)
   data_mem.io.raddr := io.raddr

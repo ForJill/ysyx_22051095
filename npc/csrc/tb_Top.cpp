@@ -3,14 +3,14 @@ uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {0};
 uint8_t *guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 CPU_state cpu;
 // 解析参数读取bin文件
-static char *img_file = "/home/ljw/Desktop/ysyx-workbench/am-kernels/tests/am-tests/build/amtest-riscv64-npc.bin";
+static char *img_file = "/home/ljw/Desktop/ysyx-workbench/am-kernels/tests/am-tests/build/amtest-riscv64-npc.txt";
 long img_size = 0;
 // ftrace
 int inst_num = 0;
 vaddr_t addr[100000] = {0};
 int call[100000] = {0};
 Decode s;
-static char *elf_file = "/home/ljw/Desktop/ysyx-workbench/am-kernels/tests/am-tests/build/amtest-riscv64-npc.elf";
+static char *elf_file = "";
 long long boot_time = 0;
 long long now_time = 0;
 struct timeval now;
@@ -22,17 +22,21 @@ uint64_t now_pc = 0;
 int stop = 0;
 int is_exit = 0;
 VTop *dut = NULL;
-//VerilatedVcdC *m_trace = NULL;
+#ifdef CONFIG_WAVEFORM
+VerilatedVcdC *m_trace = NULL;
+#endif
 static char *log_file = "npc-log.txt";
 
 // 仿真初始化
 void init()
 {
   dut = new VTop;
-  //Verilated::traceEverOn(true);
-  //m_trace = new VerilatedVcdC;
-  //dut->trace(m_trace, 99);
-  //m_trace->open("waveform.vcd");
+#ifdef CONFIG_WAVEFORM
+  Verilated::traceEverOn(true);
+  m_trace = new VerilatedVcdC;
+  dut->trace(m_trace, 99);
+  m_trace->open("waveform.vcd");
+#endif
   init_disasm("riscv64");
 #ifdef CONFIG_ITRACE
   init_log(log_file);
@@ -43,7 +47,9 @@ void init()
 void sim_exit()
 {
   delete dut;
-  //m_trace->close();
+#ifdef CONFIG_WAVEFORM
+  m_trace->close();
+#endif
   exit(EXIT_SUCCESS);
 }
 
@@ -54,16 +60,18 @@ int main(int argc, char **argv, char **env)
   init_difftest(img_size);
 #endif
   init();
-  char input = readChar();
-  executeCommand(input);
-  if (is_exit || stop)
+  //char input = readChar();
+  //executeCommand(input);
+  while (!is_exit && !stop)
+      cmd_c();
+  if (stop)
   {
     // if(cpu.gpr[10] != 0) printf("\033[1;31mHIT BAD TRAP\33[0m\n");
     printf("\033[1;32mHIT GOOD TRAP\33[0m\n");
   }
-  else
+  if(is_exit)
   {
-    printf("\033[1;31mLOOP!\33[0m\n");
+    printf("\033[1;31mHIT BAD TRAP!\33[0m\n");
     assert(0);
   }
 #ifdef CONFIG_FTRACE

@@ -85,8 +85,9 @@ extern "C" void pmem_read(long long raddr, long long *rdata);
 extern "C" void pmem_write(long long waddr, long long wdata, char wmask);
 
 // config
-// #define CONFIG_ITRACE 1
-// #define CONFIG_DIFFTEST 1
-// #define CONFIG_FTRACE 1
+//#define CONFIG_ITRACE 1
+//#define CONFIG_DIFFTEST 1
+//#define CONFIG_FTRACE 1
+//#define CONFIG_WAVEFORM 1
 
 #endif

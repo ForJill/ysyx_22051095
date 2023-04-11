@@ -11,7 +11,7 @@ extern CPU_state cpu;
 extern Decode s;
 extern int sim_time;
 extern VTop *dut;
-//extern VerilatedVcdC *m_trace;
+extern VerilatedVcdC *m_trace;
 long load_img(char *img_file)
 {
   FILE *fp = fopen(img_file, "rb");
@@ -122,7 +122,9 @@ int cmd_c()
   {
     dut->clock = 0;
   }
-  //m_trace->dump(sim_time);
+#ifdef CONFIG_WAVEFORM
+  m_trace->dump(sim_time);
+#endif
   sim_time++;
   return 0;
 }

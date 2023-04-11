@@ -45,7 +45,6 @@ extern "C" void pmem_read(long long raddr, long long *rdata)
     gettimeofday(&now, NULL);
     now_time = now.tv_sec * 1000000 + now.tv_usec;
     *rdata = now_time - boot_time;
-    printf("time: %d\n", *rdata);
     return;
   }
   if (raddr < CONFIG_MBASE || raddr > CONFIG_MBASE + CONFIG_MSIZE)

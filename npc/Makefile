@@ -4,7 +4,7 @@ SCALA_FILE = $(shell find ./src/main/scala -name '*.scala')
 TOPARGS_V = $(BUILD_DIR)/$(TOP).v
 DPI_V = $(BUILD_DIR)/DPI.v
 export PATH := $(PATH):$(abspath ./utils)
-V_FLAGS += -Wno-fatal --cc --exe --build #--trace
+V_FLAGS += -Wno-fatal --cc --trace --exe --build
 V_FLAGS += -I./vsrc -y ./vsrc
 V_FLAGS += --top-module $(TOP)
 
@@ -39,7 +39,7 @@ sim:
 	make -C obj_dir -f V$(TOP).mk V$(TOP)
 
 run: $(clean) $(sim) $(IMAGE)
-	make clean; make sim;./obj_dir/V$(TOP)
+	make clean; make sim; ./obj_dir/V$(TOP)
 gtk:
 	gtkwave waveform.vcd
 
