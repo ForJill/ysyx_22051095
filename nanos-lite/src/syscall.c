@@ -1,6 +1,7 @@
 #include <common.h>
 #include "syscall.h"
 #include "fs.h"
+#include "timer.h"
 void do_syscall(Context *c)
 {
   uintptr_t a[4];
@@ -25,21 +26,14 @@ void do_syscall(Context *c)
     c->GPRx = fs_open((char *)a[1], a[2], a[3]);
     break;
   case SYS_write:
-    if(a[1] == 1 || a[1] == 2){
-      for(int i = 0; i < a[3]; i++){
-        putch(((char *)a[2])[i]);
-        c->GPRx = a[3];
-      }
-      break;
-    }
     c->GPRx = fs_write(a[1], (void *)a[2], a[3]);
     break;
   case SYS_read:
-    printf("SYS_read a[1] = %p, a[2] = %p, a[3] = %p\n", a[1], a[2], a[3]);
+    //printf("SYS_read a[1] = %d, a[2] = %p, a[3] = %p\n", a[1], a[2], a[3]);
     c->GPRx = fs_read(a[1], (void *)a[2], a[3]);
     break;
   case SYS_lseek:
-    printf("SYS_lseek a[1] = %p, a[2] = %p, a[3] = %p\n", a[1], a[2], a[3]);
+    //printf("SYS_lseek a[1] = %p, a[2] = %p, a[3] = %p\n", a[1], a[2], a[3]);
     c->GPRx = fs_lseek(a[1], a[2], a[3]);
     break;
   case SYS_close:
@@ -49,6 +43,9 @@ void do_syscall(Context *c)
   case SYS_brk:
     printf("SYS_brk\n");
     c->GPRx = 0;
+    break;
+  case SYS_gettimeofday:
+    c->GPRx = sys_gettimeofday(a);
     break;
 
   default:

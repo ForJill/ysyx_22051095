@@ -3,17 +3,22 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-static int evtdev = -1;
-static int fbdev = -1;
-static int screen_w = 0, screen_h = 0;
+#include <sys/time.h>
+#include <NDL.h>
+static int evtdev = 3;
+static int fbdev = 4;
+static int screen_w = 0;
+static int screen_h = 0;
 
 uint32_t NDL_GetTicks() {
-  return 0;
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  uint64_t now = tv.tv_sec * 1000000 + tv.tv_usec;
+  return now;
 }
 
 int NDL_PollEvent(char *buf, int len) {
-  return 0;
+  return read(evtdev, buf, len);
 }
 
 void NDL_OpenCanvas(int *w, int *h) {
@@ -34,9 +39,30 @@ void NDL_OpenCanvas(int *w, int *h) {
     }
     close(fbctl);
   }
+  //读取文件到buf
+  char buf[64];
+  int len = read(fbdev, buf, sizeof(buf) - 1);
+  if (len <= 0) {
+    printf("read fbdev failed");
+    exit(1);
+  }
+  buf[len] = '\0';
+  //解析buf,取每行冒号右边的值
+  char *wstr = strchr(buf, ':') + 1;
+  char *hstr = strchr(wstr, ':') + 1;
+  screen_w = atoi(wstr);
+  screen_h = atoi(hstr);
+  if(*w == 0 && *h == 0) {
+    *w = screen_w;
+    *h = screen_h;
+  }
+  printf("w = %d, h = %d\n", *w, *h);
+  printf("screen_w = %d, screen_h = %d", screen_w, screen_h);
 }
 
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
+  size_t len = ((size_t)w << 32 | (size_t)h);
+  write(fbdev, pixels, len);
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {
@@ -57,7 +83,10 @@ int NDL_Init(uint32_t flags) {
   if (getenv("NWM_APP")) {
     evtdev = 3;
   }
-  return 0;
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  int init_time = tv.tv_sec * 1000000 + tv.tv_usec;
+  return init_time;
 }
 
 void NDL_Quit() {

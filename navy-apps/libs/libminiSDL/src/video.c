@@ -3,16 +3,65 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include <stdio.h>
+#include <string.h>
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
   assert(dst && src);
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
+  //将一张画布中的指定矩形区域复制到另一张画布的指定位置
+  int sx = 0, sy = 0, sw = 0, sh = 0, dx = 0, dy = 0;
+  if(srcrect == NULL) {
+    sw = src->w;
+    sh = src->h;
+  }
+  else{
+    sx = srcrect->x;
+    sy = srcrect->y;
+    sw = srcrect->w;
+    sh = srcrect->h;
+  }
+  if(dstrect == NULL) {
+    dx = 0;
+    dy = 0;
+  }
+  else{
+    dx = dstrect->x;
+    dy = dstrect->y;
+  }
+  for(int i=0 ; i < sh; i++)
+    for(int j=0 ; j < sw; j++)
+      ((uint32_t *)dst->pixels)[(j + dx) + (i + dy) * dst->w] = 
+        ((uint32_t *)src->pixels)[(j + sx) + (i + sy) * src->w];
 }
 
 void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
+  //往画布的指定矩形区域中填充指定的颜色
+  int dx = 0, dy = 0, dw = 0, dh = 0;
+  if(dstrect == NULL) {
+    dx = 0;
+    dy = 0;
+    dw = dst->w;
+    dh = dst->h;
+  }
+  else{
+    dx = dstrect->x;
+    dy = dstrect->y;
+    dw = dstrect->w;
+    dh = dstrect->h;
+  }
+  for(int i=0 ; i < dh; i++)
+    for(int j=0 ; j < dw; j++)
+      ((uint32_t *)dst->pixels)[dx + j  + (dy+i)* dst->w] = color;
 }
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
+  if(x==0 && y==0 && w==0 && h==0) {
+    w = s->w;
+    h = s->h;
+  }
+  if(s->format->BytesPerPixel == 4){
+    NDL_DrawRect((uint32_t *)s->pixels, x, y, w, h);
+  }
 }
 
 // APIs below are already implemented.

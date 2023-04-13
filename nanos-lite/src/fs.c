@@ -1,18 +1,8 @@
 #include <fs.h>
-typedef size_t (*ReadFn) (void *buf, size_t offset, size_t len);
-typedef size_t (*WriteFn) (const void *buf, size_t offset, size_t len);
 size_t ramdisk_read(void *buf, size_t offset, size_t len);
 size_t ramdisk_write(const void *buf, size_t offset, size_t len);
-typedef struct {
-  char *name;
-  size_t size;
-  size_t disk_offset;
-  ReadFn read;
-  WriteFn write;
-  size_t open_offset;
-} Finfo;
-enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_FB};
-
+enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_EVENTS, FD_FB};
+#define N   32
 size_t invalid_read(void *buf, size_t offset, size_t len) {
   panic("should not reach here");
   return 0;
@@ -22,12 +12,17 @@ size_t invalid_write(const void *buf, size_t offset, size_t len) {
   panic("should not reach here");
   return 0;
 }
-
+size_t serial_write(const void *buf, size_t offset, size_t len);
+size_t events_read(void *buf, size_t offset, size_t len);
+size_t dispinfo_read(void *buf, size_t offset, size_t len);
+size_t fb_write(const void *buf, size_t offset, size_t len);
 /* This is the information about all files in disk. */
 static Finfo file_table[] __attribute__((used)) = {
   [FD_STDIN]  = {"stdin", 0, 0, invalid_read, invalid_write},
-  [FD_STDOUT] = {"stdout", 0, 0, invalid_read, invalid_write},
-  [FD_STDERR] = {"stderr", 0, 0, invalid_read, invalid_write},
+  [FD_STDOUT] = {"stdout", 0, 0, invalid_read, serial_write},
+  [FD_STDERR] = {"stderr", 0, 0, invalid_read, serial_write},
+  [FD_EVENTS] = {"/dev/events", 0, 0, events_read, serial_write},
+  [FD_FB]     = {"/dev/fb", 0, 0, dispinfo_read, fb_write},
 #include "files.h"
 };
 int fs_open(const char *pathname, int flags, int mode) {  
@@ -42,10 +37,12 @@ int fs_open(const char *pathname, int flags, int mode) {
 
 size_t fs_read(int fd, void *buf, size_t len){
   Finfo *finfo = &file_table[fd];
+  if(finfo->read != NULL)return finfo->read(buf, finfo->open_offset, len);
+  
   //边界隔离
   if(finfo->open_offset + len > finfo->size){
     len = finfo->size - finfo->open_offset;
-    Log("len is out of edge\n");
+    //Log("len is out of edge\n");
   }
   //printf("finfo->disk_offset = %d, finfo->open_offset = %d", finfo->disk_offset, finfo->open_offset);
   size_t r = ramdisk_read(buf, finfo->disk_offset+finfo->open_offset, len);
@@ -58,10 +55,13 @@ size_t fs_write(int fd, const void *buf, size_t len){
   assert(fd >= 0 && fd < sizeof(file_table) / sizeof(file_table[0]));
   Finfo *finfo = &file_table[fd];
   //stdout
+  if(finfo->write != NULL)return finfo->write(buf, finfo->open_offset, len);
+
   if(finfo->open_offset + len > finfo->size){
     len = finfo->size - finfo->open_offset;
     Log("write len is out of edge\n");
   }
+  
   size_t r = ramdisk_write(buf, finfo->disk_offset+finfo->open_offset, len);
   finfo->open_offset += len;
   return r;
@@ -84,4 +84,7 @@ int fs_close(int fd) {
 }
 void init_fs() {
   // TODO: initialize the size of /dev/fb
+  file_table[FD_FB].size = io_read(AM_GPU_CONFIG).width / N * io_read(AM_GPU_CONFIG).height / N * 4;
+  printf("file_width = %d, file_height = %d\n", io_read(AM_GPU_CONFIG).width, io_read(AM_GPU_CONFIG).height);
+  printf("init_fs: file_table[FD_FB].size = %d\n", file_table[FD_FB].size);
 }

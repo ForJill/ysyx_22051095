@@ -150,7 +150,49 @@ int printf(const char *fmt, ...) {
 
 
 int snprintf(char *out, size_t n, const char *fmt, ...) {
-  panic("Not implemented");
+  va_list ap;
+  char *start = out;
+  va_start(ap, fmt);
+  
+  for(;*fmt != '\0'; ++fmt){
+    n--;
+    if(n == 0) break;
+    if(*fmt != '%'){
+      *out = *fmt;
+      ++out;
+    }else{
+      switch(*(++fmt)){
+        case '%':
+          *out = *fmt;
+          ++out;
+          break;
+        case 'd':
+          out += itoa(va_arg(ap, int), out, 10); 
+          break;
+        case 's':
+          strcpy(out, va_arg(ap, char*));
+          out += strlen(out);
+          break;
+        case 'c':
+          *out = va_arg(ap, int);
+          ++out;
+          break;
+        case 'p':
+          *out = '0';
+          ++out;
+          *out = 'x';
+          ++out;
+          out += uitoa(va_arg(ap, int), out, 16);
+          break;
+        case 'x':
+          out += itoa(va_arg(ap, int), out, 16);
+          break;
+      }
+    }
+  }
+  *out = '\0';
+  va_end(ap);
+  return out - start;
 }
 
 int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
