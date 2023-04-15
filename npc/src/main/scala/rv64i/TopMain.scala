@@ -19,6 +19,7 @@ class TopIO extends Bundle {
   val MemWen = Output(Bool())
   val MemLoad = Output(Bool())
   val inst = Output(UInt(32.W))
+  //val wronginst = Output(Bool())
 }
 
 class Top extends Module {
@@ -62,7 +63,6 @@ class Top extends Module {
   alu.io.imm <> decoder.io.imm
   alu.io.pc  <> PC.io.pc
 
-
   //controller in
   Controller.io.ControlIO_In <> decoder.io.ctrl
 
@@ -77,6 +77,7 @@ class Top extends Module {
   io.MemWen <> decoder.io.ctrl.MemWen
   io.inst <> ifu.io.inst
   io.MemLoad <> decoder.io.ctrl.MemLoad
+  //io.wronginst <> decoder.io.ctrl.wronginst
 
   //IFU in 
   ifu.io.pc <> PC.io.pc

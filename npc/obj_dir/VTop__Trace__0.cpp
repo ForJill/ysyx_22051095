@@ -358,61 +358,61 @@ void VTop___024root__trace_chg_sub_0(VTop___024root* vlSelf, VerilatedVcd::Buffe
     bufp->chgBit(oldp+241,(vlSelf->io_MemWen));
     bufp->chgBit(oldp+242,(vlSelf->io_MemLoad));
     bufp->chgIData(oldp+243,(vlSelf->io_inst),32);
-    bufp->chgBit(oldp+244,(((0x35U == (IData)(vlSelf->io_ctrl_OP))
-                             ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_49)
-                             : ((0x33U == (IData)(vlSelf->io_ctrl_OP))
+    bufp->chgBit(oldp+244,(((0x37U == (IData)(vlSelf->io_ctrl_OP))
+                             ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_52)
+                             : ((0x35U == (IData)(vlSelf->io_ctrl_OP))
                                  ? (vlSelf->io_rs1 
                                     >= vlSelf->io_rs2)
-                                 : ((0x32U == (IData)(vlSelf->io_ctrl_OP))
+                                 : ((0x34U == (IData)(vlSelf->io_ctrl_OP))
                                      ? VL_GTES_IQQ(64, vlSelf->io_rs1, vlSelf->io_rs2)
-                                     : ((0x34U == (IData)(vlSelf->io_ctrl_OP))
-                                         ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_48)
-                                         : ((0x31U 
+                                     : ((0x36U == (IData)(vlSelf->io_ctrl_OP))
+                                         ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_51)
+                                         : ((0x33U 
                                              == (IData)(vlSelf->io_ctrl_OP))
                                              ? (vlSelf->io_rs1 
                                                 != vlSelf->io_rs2)
-                                             : ((0x30U 
+                                             : ((0x32U 
                                                  == (IData)(vlSelf->io_ctrl_OP)) 
                                                 & (vlSelf->io_rs1 
                                                    == vlSelf->io_rs2)))))))));
-    bufp->chgQData(oldp+245,(((0x1aU == (IData)(vlSelf->io_ctrl_OP))
+    bufp->chgQData(oldp+245,(((0x1bU == (IData)(vlSelf->io_ctrl_OP))
                                ? (QData)((IData)(((IData)(
-                                                          (vlSelf->Top__DOT__alu__DOT___result_T_103 
+                                                          (vlSelf->Top__DOT__alu__DOT___result_T_105 
                                                            >> 1U)) 
                                                   << 1U)))
-                               : ((0x38U == (IData)(vlSelf->io_ctrl_OP))
-                                   ? vlSelf->Top__DOT__alu__DOT___result_T_170
+                               : ((0x3aU == (IData)(vlSelf->io_ctrl_OP))
+                                   ? vlSelf->Top__DOT__alu__DOT___result_T_178
                                    : 0ULL))),64);
-    bufp->chgQData(oldp+247,((QData)((IData)(((0x35U 
+    bufp->chgQData(oldp+247,((QData)((IData)(((0x37U 
                                                == (IData)(vlSelf->io_ctrl_OP))
-                                               ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_49)
-                                               : ((0x33U 
+                                               ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_52)
+                                               : ((0x35U 
                                                    == (IData)(vlSelf->io_ctrl_OP))
                                                    ? 
                                                   (vlSelf->io_rs1 
                                                    >= vlSelf->io_rs2)
                                                    : 
-                                                  ((0x32U 
+                                                  ((0x34U 
                                                     == (IData)(vlSelf->io_ctrl_OP))
                                                     ? 
                                                    VL_GTES_IQQ(64, vlSelf->io_rs1, vlSelf->io_rs2)
                                                     : 
-                                                   ((0x34U 
+                                                   ((0x36U 
                                                      == (IData)(vlSelf->io_ctrl_OP))
-                                                     ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_48)
+                                                     ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_51)
                                                      : 
-                                                    ((0x31U 
+                                                    ((0x33U 
                                                       == (IData)(vlSelf->io_ctrl_OP))
                                                       ? 
                                                      (vlSelf->io_rs1 
                                                       != vlSelf->io_rs2)
                                                       : 
-                                                     ((0x30U 
+                                                     ((0x32U 
                                                        == (IData)(vlSelf->io_ctrl_OP)) 
                                                       & (vlSelf->io_rs1 
                                                          == vlSelf->io_rs2)))))))))),64);
     bufp->chgQData(oldp+249,(((IData)(vlSelf->io_ctrl_MemLoad)
-                               ? ((0x1bU == (IData)(vlSelf->io_ctrl_OP))
+                               ? ((0x1cU == (IData)(vlSelf->io_ctrl_OP))
                                    ? ((((1U & (IData)(
                                                       (vlSelf->Top__DOT__ifu__DOT__data_mem_rdata 
                                                        >> 7U)))
@@ -421,11 +421,11 @@ void VTop___024root__trace_chg_sub_0(VTop___024root* vlSelf, VerilatedVcd::Buffe
                                       | (QData)((IData)(
                                                         (0xffU 
                                                          & (IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata)))))
-                                   : ((0x1cU == (IData)(vlSelf->io_ctrl_OP))
+                                   : ((0x1dU == (IData)(vlSelf->io_ctrl_OP))
                                        ? (QData)((IData)(
                                                          (0xffU 
                                                           & (IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata))))
-                                       : ((0x1dU == (IData)(vlSelf->io_ctrl_OP))
+                                       : ((0x1eU == (IData)(vlSelf->io_ctrl_OP))
                                            ? ((((1U 
                                                  & (IData)(
                                                            (vlSelf->Top__DOT__ifu__DOT__data_mem_rdata 
@@ -436,20 +436,20 @@ void VTop___024root__trace_chg_sub_0(VTop___024root* vlSelf, VerilatedVcd::Buffe
                                               | (QData)((IData)(
                                                                 (0xffffU 
                                                                  & (IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata)))))
-                                           : ((0x1eU 
+                                           : ((0x1fU 
                                                == (IData)(vlSelf->io_ctrl_OP))
                                                ? (QData)((IData)(
                                                                  (0xffffU 
                                                                   & (IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata))))
-                                               : ((0x1fU 
+                                               : ((0x20U 
                                                    == (IData)(vlSelf->io_ctrl_OP))
                                                    ? vlSelf->Top__DOT__ifu__DOT__data_mem_rdata
                                                    : 
-                                                  ((0x21U 
+                                                  ((0x22U 
                                                     == (IData)(vlSelf->io_ctrl_OP))
                                                     ? (QData)((IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata))
                                                     : 
-                                                   ((0x20U 
+                                                   ((0x21U 
                                                      == (IData)(vlSelf->io_ctrl_OP))
                                                      ? 
                                                     (((QData)((IData)(
@@ -463,12 +463,12 @@ void VTop___024root__trace_chg_sub_0(VTop___024root* vlSelf, VerilatedVcd::Buffe
                                                      | (QData)((IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata)))
                                                      : vlSelf->io_resultALU)))))))
                                : vlSelf->io_resultALU)),64);
-    bufp->chgIData(oldp+251,(((0x39U == (IData)(vlSelf->io_ctrl_OP))
+    bufp->chgIData(oldp+251,(((0x3bU == (IData)(vlSelf->io_ctrl_OP))
                                ? 1U : 0U)),32);
     bufp->chgQData(oldp+252,((QData)((IData)(vlSelf->io_inst))),64);
     bufp->chgQData(oldp+254,(((IData)(vlSelf->io_ctrl_RegWen)
                                ? ((IData)(vlSelf->io_ctrl_MemLoad)
-                                   ? ((0x1bU == (IData)(vlSelf->io_ctrl_OP))
+                                   ? ((0x1cU == (IData)(vlSelf->io_ctrl_OP))
                                        ? ((((1U & (IData)(
                                                           (vlSelf->Top__DOT__ifu__DOT__data_mem_rdata 
                                                            >> 7U)))
@@ -477,11 +477,11 @@ void VTop___024root__trace_chg_sub_0(VTop___024root* vlSelf, VerilatedVcd::Buffe
                                            << 8U) | (QData)((IData)(
                                                                     (0xffU 
                                                                      & (IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata)))))
-                                       : ((0x1cU == (IData)(vlSelf->io_ctrl_OP))
+                                       : ((0x1dU == (IData)(vlSelf->io_ctrl_OP))
                                            ? (QData)((IData)(
                                                              (0xffU 
                                                               & (IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata))))
-                                           : ((0x1dU 
+                                           : ((0x1eU 
                                                == (IData)(vlSelf->io_ctrl_OP))
                                                ? ((
                                                    ((1U 
@@ -494,21 +494,21 @@ void VTop___024root__trace_chg_sub_0(VTop___024root* vlSelf, VerilatedVcd::Buffe
                                                   | (QData)((IData)(
                                                                     (0xffffU 
                                                                      & (IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata)))))
-                                               : ((0x1eU 
+                                               : ((0x1fU 
                                                    == (IData)(vlSelf->io_ctrl_OP))
                                                    ? (QData)((IData)(
                                                                      (0xffffU 
                                                                       & (IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata))))
                                                    : 
-                                                  ((0x1fU 
+                                                  ((0x20U 
                                                     == (IData)(vlSelf->io_ctrl_OP))
                                                     ? vlSelf->Top__DOT__ifu__DOT__data_mem_rdata
                                                     : 
-                                                   ((0x21U 
+                                                   ((0x22U 
                                                      == (IData)(vlSelf->io_ctrl_OP))
                                                      ? (QData)((IData)(vlSelf->Top__DOT__ifu__DOT__data_mem_rdata))
                                                      : 
-                                                    ((0x20U 
+                                                    ((0x21U 
                                                       == (IData)(vlSelf->io_ctrl_OP))
                                                       ? 
                                                      (((QData)((IData)(

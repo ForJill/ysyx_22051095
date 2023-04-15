@@ -14,6 +14,7 @@ class ControlIO extends Bundle {
   val MemWen = Output(Bool())
   val wmask = Output(UInt(8.W))
   val MemLoad = Output(Bool())
+  //val wronginst = Output(Bool())
   //val OPType = Output(UInt(3.W))
   //val IsImm = Output(Bool())
   //val ImmType = Output(UInt(2.W))
