@@ -3,7 +3,7 @@ uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {0};
 uint8_t *guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 CPU_state cpu;
 // 解析参数读取bin文件
-static char *img_file = "/home/ljw/Desktop/ysyx-workbench/fceux-am/build/fceux-riscv64-npc.bin";
+static char *img_file = "/home/ljw/Desktop/ysyx-workbench/am-kernels/tests/cpu-tests/build/shift-riscv64-npc.bin";
 long img_size = 0;
 // ftrace
 int inst_num = 0;
@@ -25,6 +25,7 @@ VTop *dut = NULL;
 #ifdef CONFIG_WAVEFORM
 VerilatedVcdC *m_trace = NULL;
 #endif
+#define MAX_TIME 100000
 static char *log_file = "npc-log.txt";
 
 // 仿真初始化
@@ -74,6 +75,10 @@ int main(int argc, char **argv, char **env)
     printf("\033[1;31mHIT BAD TRAP!\33[0m\n");
     assert(0);
   }
+  //if(sim_time >= MAX_TIME)
+  //{
+  //  printf("\033[1;31mTIME OUT!\33[0m\n");
+  //}
 #ifdef CONFIG_FTRACE
   ftrace(elf_file, inst_num, call, addr);
 #endif

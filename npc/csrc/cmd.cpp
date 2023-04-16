@@ -12,6 +12,7 @@ extern Decode s;
 extern int sim_time;
 extern VTop *dut;
 extern VerilatedVcdC *m_trace;
+#define MAX_TIME 100000
 long load_img(char *img_file)
 {
   FILE *fp = fopen(img_file, "rb");

@@ -359,14 +359,14 @@ void VTop___024root__trace_chg_sub_0(VTop___024root* vlSelf, VerilatedVcd::Buffe
     bufp->chgBit(oldp+242,(vlSelf->io_MemLoad));
     bufp->chgIData(oldp+243,(vlSelf->io_inst),32);
     bufp->chgBit(oldp+244,(((0x37U == (IData)(vlSelf->io_ctrl_OP))
-                             ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_52)
+                             ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_59)
                              : ((0x35U == (IData)(vlSelf->io_ctrl_OP))
                                  ? (vlSelf->io_rs1 
                                     >= vlSelf->io_rs2)
                                  : ((0x34U == (IData)(vlSelf->io_ctrl_OP))
                                      ? VL_GTES_IQQ(64, vlSelf->io_rs1, vlSelf->io_rs2)
                                      : ((0x36U == (IData)(vlSelf->io_ctrl_OP))
-                                         ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_51)
+                                         ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_58)
                                          : ((0x33U 
                                              == (IData)(vlSelf->io_ctrl_OP))
                                              ? (vlSelf->io_rs1 
@@ -377,15 +377,15 @@ void VTop___024root__trace_chg_sub_0(VTop___024root* vlSelf, VerilatedVcd::Buffe
                                                    == vlSelf->io_rs2)))))))));
     bufp->chgQData(oldp+245,(((0x1bU == (IData)(vlSelf->io_ctrl_OP))
                                ? (QData)((IData)(((IData)(
-                                                          (vlSelf->Top__DOT__alu__DOT___result_T_105 
+                                                          (vlSelf->Top__DOT__alu__DOT___result_T_115 
                                                            >> 1U)) 
                                                   << 1U)))
                                : ((0x3aU == (IData)(vlSelf->io_ctrl_OP))
-                                   ? vlSelf->Top__DOT__alu__DOT___result_T_178
+                                   ? vlSelf->Top__DOT__alu__DOT___result_T_188
                                    : 0ULL))),64);
     bufp->chgQData(oldp+247,((QData)((IData)(((0x37U 
                                                == (IData)(vlSelf->io_ctrl_OP))
-                                               ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_52)
+                                               ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_59)
                                                : ((0x35U 
                                                    == (IData)(vlSelf->io_ctrl_OP))
                                                    ? 
@@ -399,7 +399,7 @@ void VTop___024root__trace_chg_sub_0(VTop___024root* vlSelf, VerilatedVcd::Buffe
                                                     : 
                                                    ((0x36U 
                                                      == (IData)(vlSelf->io_ctrl_OP))
-                                                     ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_51)
+                                                     ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_58)
                                                      : 
                                                     ((0x33U 
                                                       == (IData)(vlSelf->io_ctrl_OP))
