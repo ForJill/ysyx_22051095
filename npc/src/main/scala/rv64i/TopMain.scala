@@ -15,10 +15,11 @@ class TopIO extends Bundle {
   val rs1       = Output(UInt(DATA_WIDTH.W))
   val rs2       = Output(UInt(DATA_WIDTH.W))
   val imm      = Output(UInt(DATA_WIDTH.W))
-  val op    = Output(UInt(4.W))
+  val op    = Output(UInt(8.W))
   val MemWen = Output(Bool())
   val MemLoad = Output(Bool())
   val inst = Output(UInt(32.W))
+  val is_b = Output(Bool())
   //val wronginst = Output(Bool())
 }
 
@@ -77,6 +78,7 @@ class Top extends Module {
   io.MemWen <> decoder.io.ctrl.MemWen
   io.inst <> ifu.io.inst
   io.MemLoad <> decoder.io.ctrl.MemLoad
+  io.is_b <> alu.io.is_b
   //io.wronginst <> decoder.io.ctrl.wronginst
 
   //IFU in 

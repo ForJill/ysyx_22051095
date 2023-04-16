@@ -30,7 +30,7 @@ class Decoder extends Module {
   val T = true.B
   val F = false.B
 
-  val default = List(ALU_ADD, T, IMM_I, F, F, F, F); //op,regwen,immtype,j_jump, MemWen, MemLoad,INV
+  val default = List(ALU_UNDEFINED, T, IMM_I, F, F, F, F); //op,regwen,immtype,j_jump, MemWen, MemLoad,INV
 
   val map = Array(
     //R-type
@@ -48,16 +48,16 @@ class Decoder extends Module {
     SLT -> List(ALU_SLT, T, IMM_I, F, F, F, F),
     SLTU -> List(ALU_SLTU, T, IMM_I, F, F, F, F),
     SLLW -> List(ALU_SLLW, T, IMM_I, F, F, F, F),
+    SRA -> List(ALU_SRA, T, IMM_I, F, F, F, F),
     SRAW -> List(ALU_SRAW, T, IMM_I, F, F, F, F),
     SRL -> List(ALU_SRL, T, IMM_I, F, F, F, F),
     SRLW -> List(ALU_SRLW, T, IMM_I, F, F, F, F),
     XOR -> List(ALU_XOR, T, IMM_I, F, F, F, F),
     AND -> List(ALU_AND, T, IMM_I, F, F, F, F),
-    SRA -> List(ALU_SRA, T, IMM_I, F, F, F, F),
     OR -> List(ALU_OR, T, IMM_I, F, F, F, F),
     REM -> List(ALU_REM, T, IMM_I, F, F, F, F),
-    REMW -> List(ALU_REMW, T, IMM_I, F, F, F, F),
     REMU -> List(ALU_REMU, T, IMM_I, F, F, F, F),
+    REMW -> List(ALU_REMW, T, IMM_I, F, F, F, F),
     REMUW -> List(ALU_REMUW, T, IMM_I, F, F, F, F),
 
     //I-type
@@ -75,37 +75,32 @@ class Decoder extends Module {
     SLLIW -> List(ALU_SLLIW, T, IMM_I, F, F, F, F),
     SRLI -> List(ALU_SRLI, T, IMM_I, F, F, F, F),
     SRLIW -> List(ALU_SRLIW, T, IMM_I, F, F, F, F),
-    SRAI -> List(ALU_SRAI, T, IMM_I, F, F, F, F),
-    SRAIW -> List(ALU_SRAIW, T, IMM_I, F, F, F, F),
     SLTI -> List(ALU_SLTI, T, IMM_I, F, F, F, F),
     SLTIU -> List(ALU_SLTIU, T, IMM_I, F, F, F, F),
     ANDI -> List(ALU_ANDI, T, IMM_I, F, F, F, F),
     XORI -> List(ALU_XORI, T, IMM_I, F, F, F, F),
-
+    ORI -> List(ALU_ORI, T, IMM_I, F, F, F, F),
+    SRAI -> List(ALU_SRAI, T, IMM_I, F, F, F, F),
+    SRAIW -> List(ALU_SRAIW, T, IMM_I, F, F, F, F),
     //S-type
     SD -> List(ALU_SD, F, IMM_S, F, T, F, F),
     SB -> List(ALU_SB, F, IMM_S, F, T, F, F),
     SH -> List(ALU_SH, F, IMM_S, F, T, F, F),
     SW -> List(ALU_SW, F, IMM_S, F, T, F, F),
-
     //B-type
     BEQ -> List(ALU_BEQ, F, IMM_B, F, F, F, F),
     BNE -> List(ALU_BNE, F, IMM_B, F, F, F, F),
-    BGE -> List(ALU_BGE, F, IMM_B, F, F, F, F),
     BLT -> List(ALU_BLT, F, IMM_B, F, F, F, F),
+    BGE -> List(ALU_BGE, F, IMM_B, F, F, F, F),
+    BGEU -> List(ALU_BGEU, F, IMM_B, F, F, F, F),
     BLTU -> List(ALU_BLTU, F, IMM_B, F, F, F, F),
-
     //U-type
-    AUIPC -> List(ALU_AUIPC, T, IMM_U, F, F, F, F),
     LUI -> List(ALU_LUI, T, IMM_U, F, F, F, F),
-
+    AUIPC -> List(ALU_AUIPC, T, IMM_U, F, F, F, F),
     //J-type
     JAL -> List(ALU_JAL, T, IMM_J, T, F, F, F),
-
     //N-type
     EBREAK -> List(ALU_EBREAK, F, IMM_I, F, F, F, F),
-    //INV -> List(ALU_INV, F, IMM_I, F, F, F, T)
-
   )
 
   val crtlsignals = ListLookup(io.inst, default, map)

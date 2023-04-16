@@ -80,6 +80,7 @@ void isa_reg_display()
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t npc)
 {
   bool eqreg = true;
+      printf("\033[34mref_r->pc = 0x%08lx\n", ref_r->pc);
   for (int i = 0; i < 32; i++)
   {
     if (ref_r->gpr[i] != cpu.gpr[i])

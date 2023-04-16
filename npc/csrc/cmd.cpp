@@ -12,7 +12,7 @@ extern Decode s;
 extern int sim_time;
 extern VTop *dut;
 extern VerilatedVcdC *m_trace;
-#define MAX_TIME 100000
+#define MAX_TIME 50000000
 long load_img(char *img_file)
 {
   FILE *fp = fopen(img_file, "rb");
@@ -105,8 +105,13 @@ int cmd_c()
           }
 #endif
         }
-        // printf("next_pc: %lx next_inst: %x MemWen: %d MemLoad: %d\n", dut->io_pc, dut->io_inst, dut->io_MemWen, dut->io_MemLoad);
         cpu.pc = dut->io_pc;
+
+        if(dut->io_op == 62){ 
+        printf("\n\033[36munvalid inst\n");
+        printf("pc = %lx\n", cpu.pc);
+        return 1;
+  }
       }
     }
   }
@@ -122,6 +127,11 @@ int cmd_c()
   if (sim_time % 2 == 1)
   {
     dut->clock = 0;
+  }
+  if(sim_time >= MAX_TIME)
+  {
+    printf("\033[1;31mTIME OUT!\33[0m\n");
+    return 1;
   }
 #ifdef CONFIG_WAVEFORM
   m_trace->dump(sim_time);

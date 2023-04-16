@@ -23,6 +23,7 @@ VTop::VTop(VerilatedContext* _vcontextp__, const char* _vcname__)
     , io_op{vlSymsp->TOP.io_op}
     , io_MemWen{vlSymsp->TOP.io_MemWen}
     , io_MemLoad{vlSymsp->TOP.io_MemLoad}
+    , io_is_b{vlSymsp->TOP.io_is_b}
     , io_inst{vlSymsp->TOP.io_inst}
     , io_pc{vlSymsp->TOP.io_pc}
     , io_resultALU{vlSymsp->TOP.io_resultALU}
