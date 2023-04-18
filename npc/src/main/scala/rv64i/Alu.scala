@@ -28,8 +28,8 @@ class Alu extends Module {
   val result  = WireDefault(0.U(DATA_WIDTH.W))
   val default = WireDefault(0.U(DATA_WIDTH.W))
 
-  def Sext(x: UInt, n: Int): UInt = Cat(Fill(64 - n, x(n - 1)), x)
-  default := io.in1
+  def Sext(x: UInt, n: Int): UInt = Cat(Fill(64 - n, x(n - 1)), x(n-1,0))
+  default := 0.U
   imm     := io.imm
   src1    := io.in1
   src2    := io.in2
@@ -40,20 +40,20 @@ class Alu extends Module {
     Array(
       //R-type
       ALU_ADD -> (src1 + src2),
-      ALU_ADDW -> Sext(src1(31, 0) + src2(31, 0), 32),
+      ALU_ADDW -> Sext((src1(31, 0) + src2(31, 0)), 32),
       ALU_SUB -> (src1 - src2),
       ALU_SUBW -> Sext(src1(31, 0) - src2(31, 0), 32),
-      ALU_MUL -> (src1 * src2),
+      ALU_MUL -> (src1 * src2)(63,0),
       ALU_MULW -> Sext((src1(31, 0) * src2(31, 0)), 32),
       ALU_DIV -> Mux(src2 === 0.U, 0.U, (src1.asSInt / src2.asSInt).asUInt),//有符号数
       ALU_DIVU -> Mux(src2 === 0.U, 0.U, src1 / src2),
       ALU_DIVW -> Sext((src1(31,0).asSInt/src2(31,0).asSInt).asUInt, 32),
-      ALU_DIVUW -> Sext(src1(31,0)/src2(31,0), 32),
+      ALU_DIVUW -> Sext((src1(31,0)/src2(31,0)), 32),
       ALU_SLL -> (src1 << src2(5,0)),
-      ALU_SLT -> (src1.asSInt < src2.asSInt),
-      ALU_SLTU -> (src1 < src2),
+      ALU_SLT -> Mux((src1.asSInt < src2.asSInt),1.U,0.U),
+      ALU_SLTU -> Mux((src1 < src2),1.U,0.U),
       ALU_SLLW -> Sext((src1(31, 0) << src2(4, 0)), 32),
-      ALU_SRA -> (src1.asSInt >> src2(4,0)).asUInt,
+      ALU_SRA -> (src1.asSInt >> src2(5,0)).asUInt,
       ALU_SRAW -> Sext((src1(31,0).asSInt >> src2(4,0)).asUInt, 32),
       ALU_SRL -> (src1 >> src2(5,0)),
       ALU_SRLW -> Sext((src1(31,0) >> src2(4,0)), 32),
@@ -62,11 +62,11 @@ class Alu extends Module {
       ALU_OR -> (src1 | src2),
       ALU_REM -> (src1.asSInt % src2.asSInt).asUInt,
       ALU_REMU -> (src1 % src2),
-      ALU_REMW -> Sext((src1(31, 0).asSInt % src2(31, 0).asSInt).asUInt, 32),//#######此处有bug
+      ALU_REMW -> Sext((src1(31, 0).asSInt % src2(31, 0).asSInt).asUInt, 32),
       ALU_REMUW -> Sext(src1(31, 0) % src2(31, 0), 32),
       //I_type
       ALU_ADDI -> (src1 + imm),
-      ALU_ADDIW -> Sext((src1(31, 0) + imm)(31,0), 32),
+      ALU_ADDIW -> Sext((src1(31, 0) + imm), 32),
       ALU_JALR -> (io.pc + 4.U),
       ALU_LB -> (src1 + imm),
       ALU_LBU -> (src1 + imm),
@@ -79,8 +79,8 @@ class Alu extends Module {
       ALU_SLLIW -> (Sext((src1(31, 0) << imm(4, 0)), 32)),
       ALU_SRLI -> (src1 >> imm(5, 0)),
       ALU_SRLIW -> (Sext((src1(31, 0) >> imm(4, 0)), 32)),
-      ALU_SLTI -> (src1.asSInt < imm.asSInt),
-      ALU_SLTIU -> (src1 < imm),
+      ALU_SLTI -> Mux((src1.asSInt < imm.asSInt),1.U,0.U),
+      ALU_SLTIU -> Mux((src1 < imm),1.U, 0.U),
       ALU_ANDI -> (src1 & imm),
       ALU_XORI -> (src1 ^ imm),
       ALU_ORI -> (src1 | imm),
@@ -89,8 +89,8 @@ class Alu extends Module {
       //S_type
       ALU_SD -> (src1 + imm),
       ALU_SW -> (src1 + imm),
-      ALU_SB -> (src1 + imm),
       ALU_SH -> (src1 + imm),
+      ALU_SB -> (src1 + imm),
       //B_type
       ALU_BEQ -> (io.pc + imm),
       ALU_BNE -> (io.pc + imm),
@@ -111,7 +111,7 @@ class Alu extends Module {
     0.U,
     Array(
       ALU_JAL -> (io.pc + imm),
-      ALU_JALR -> (Cat((src1 + imm)(31, 1), 0.U))
+      ALU_JALR -> ((src1 + imm) & "hfffffffffffffffe".U)
     )
   )
 
@@ -119,12 +119,12 @@ class Alu extends Module {
     io.ctrl.alu_op,
     0.U,
     Array(
-      ALU_BEQ -> (src1 === src2),
-      ALU_BNE -> (src1 =/= src2),
-      ALU_BLT -> (src1.asSInt < src2.asSInt),
-      ALU_BGE -> (src1.asSInt >= src2.asSInt),
-      ALU_BGEU -> (src1 >= src2),
-      ALU_BLTU -> (src1 < src2)
+      ALU_BEQ -> Mux((src1 === src2),1.U,0.U),
+      ALU_BNE -> Mux((src1 =/= src2),1.U,0.U),
+      ALU_BLT -> Mux((src1.asSInt < src2.asSInt),1.U,0.U),
+      ALU_BGE -> Mux((src1.asSInt >= src2.asSInt),1.U,0.U),
+      ALU_BGEU -> Mux((src1 >= src2),1.U,0.U),
+      ALU_BLTU -> Mux((src1 < src2),1.U,0.U)
     )
   )
   io.out := result

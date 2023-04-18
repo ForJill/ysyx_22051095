@@ -20,9 +20,7 @@ class Registers extends Module {
   io.rdata1 := Mux(io.reg.rs1 === 0.U, 0.U ,registers(io.reg.rs1))
   io.rdata2 := Mux(io.reg.rs2 === 0.U, 0.U, registers(io.reg.rs2))
 
-  registers(io.reg.rd) := Mux(io.wen, io.wdata, registers(io.reg.rd))
+  registers(io.reg.rd) := Mux(io.wen&&io.reg.rd=/=0.U, io.wdata, registers(io.reg.rd))
   //通过rf存储registers的值
-  for (i <- 0 until 32) {
-    io.regs(i) := registers(i)
-  }
+  (0 until 32).foreach(i => io.regs(i) := registers(i))
 }

@@ -9,11 +9,11 @@ class PC extends Module {
     val pc4       = Output(UInt(ADDR_WIDTH.W))
     val is_j      = Input(Bool());
     val is_b      = Input(Bool());
-    val j_branch  = Input(UInt(ADDR_WIDTH.W))
-    val b_branch  = Input(UInt(ADDR_WIDTH.W))
+    val j_branch  = Input(UInt(DATA_WIDTH.W))
+    val b_branch  = Input(UInt(DATA_WIDTH.W))
   })
   val init = RegInit(START_ADDR.U(ADDR_WIDTH.W))
-  init   := Mux(io.is_j,io.j_branch,Mux(io.is_b,io.b_branch,io.pc+4.U))
   io.pc  := init
-  io.pc4 := init + 4.U
+  io.pc4 := io.pc + 4.U
+  init   := Mux(io.is_j,io.j_branch,Mux(io.is_b,io.b_branch,io.pc4))
 }

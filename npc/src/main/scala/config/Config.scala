@@ -84,7 +84,6 @@ object OP {
   val ALU_JAL    = 58.U(8.W)
   //N-TYP8
   val ALU_EBREAK = 59.U(8.W)
-  val ALU_INV  = 60.U(8.W)
 
   //UNDEFINED
   val ALU_UNDEFINED = 62.U(8.W)
