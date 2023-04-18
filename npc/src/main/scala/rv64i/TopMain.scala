@@ -14,12 +14,16 @@ class TopIO extends Bundle {
   val resultALU = Output(UInt(DATA_WIDTH.W))
   val rs1       = Output(UInt(DATA_WIDTH.W))
   val rs2       = Output(UInt(DATA_WIDTH.W))
+  val rd        = Output(UInt(5.W))
   val imm      = Output(UInt(DATA_WIDTH.W))
   val op    = Output(UInt(8.W))
   val MemWen = Output(Bool())
   val MemLoad = Output(Bool())
   val inst = Output(UInt(32.W))
   val is_b = Output(Bool())
+  val wmask = Output(UInt(8.W))
+  val rdata = Output(UInt(64.W))
+  val fmemwdata = Output(UInt(64.W))
   //val wronginst = Output(Bool())
 }
 
@@ -73,6 +77,7 @@ class Top extends Module {
   io.ctrl <> decoder.io.ctrl
   io.rs1       <> registers.io.rdata1
   io.rs2       <> registers.io.rdata2
+  io.rd        <> decoder.io.reg.rd
   io.imm       <> decoder.io.imm
   io.op     <> decoder.io.ctrl.OP
   io.resultALU <> alu.io.out
@@ -80,6 +85,16 @@ class Top extends Module {
   io.inst <> ifu.io.inst
   io.MemLoad <> decoder.io.ctrl.MemLoad
   io.is_b <> alu.io.is_b
+  io.wmask <> decoder.io.ctrl.wmask
+  io.rdata <> mem.io.rdata
+  io.fmemwdata <> Mux(decoder.io.ctrl.MemLoad,
+                        Mux(decoder.io.ctrl.OP === ALU_LB,Sext(mem.io.rdata(7,0),8),
+                        Mux(decoder.io.ctrl.OP === ALU_LBU,mem.io.rdata(7,0),
+                        Mux(decoder.io.ctrl.OP === ALU_LH,Sext(mem.io.rdata(15,0),16),
+                        Mux(decoder.io.ctrl.OP === ALU_LHU,mem.io.rdata(15,0),
+                        Mux(decoder.io.ctrl.OP === ALU_LD,mem.io.rdata(63,0),
+                        Mux(decoder.io.ctrl.OP === ALU_LWU,mem.io.rdata(31,0),
+                        Mux(decoder.io.ctrl.OP === ALU_LW,Sext(mem.io.rdata(31,0),32),alu.io.out))))))),alu.io.out)
   //io.wronginst <> decoder.io.ctrl.wronginst
 
   //IFU in 

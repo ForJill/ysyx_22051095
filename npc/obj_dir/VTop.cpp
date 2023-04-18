@@ -20,16 +20,20 @@ VTop::VTop(VerilatedContext* _vcontextp__, const char* _vcname__)
     , io_ctrl_MemWen{vlSymsp->TOP.io_ctrl_MemWen}
     , io_ctrl_wmask{vlSymsp->TOP.io_ctrl_wmask}
     , io_ctrl_MemLoad{vlSymsp->TOP.io_ctrl_MemLoad}
+    , io_rd{vlSymsp->TOP.io_rd}
     , io_op{vlSymsp->TOP.io_op}
     , io_MemWen{vlSymsp->TOP.io_MemWen}
     , io_MemLoad{vlSymsp->TOP.io_MemLoad}
     , io_is_b{vlSymsp->TOP.io_is_b}
+    , io_wmask{vlSymsp->TOP.io_wmask}
     , io_inst{vlSymsp->TOP.io_inst}
     , io_pc{vlSymsp->TOP.io_pc}
     , io_resultALU{vlSymsp->TOP.io_resultALU}
     , io_rs1{vlSymsp->TOP.io_rs1}
     , io_rs2{vlSymsp->TOP.io_rs2}
     , io_imm{vlSymsp->TOP.io_imm}
+    , io_rdata{vlSymsp->TOP.io_rdata}
+    , io_fmemwdata{vlSymsp->TOP.io_fmemwdata}
     , __PVT____024unit{vlSymsp->TOP.__PVT____024unit}
     , rootp{&(vlSymsp->TOP)}
 {

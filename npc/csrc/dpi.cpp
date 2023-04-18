@@ -7,7 +7,7 @@ extern uint64_t now_pc;
 extern long long boot_time;
 extern long long now_time;
 extern struct timeval now;
-
+extern VTop *dut;
 // 导入DPI函数
 void ebreak(int flag)
 {
@@ -33,24 +33,26 @@ extern "C" void get_pc(long long pc)
 // 导入memory函数
 extern "C" void pmem_read(long long raddr, long long *rdata)
 {
+  if (boot_time == 0)
+  {
+    gettimeofday(&now, NULL);
+    boot_time = now.tv_sec * 1000000 + now.tv_usec;
+  }
   if (raddr == RTC_ADDR)
   {
-    if (boot_time == 0)
-    {
-      gettimeofday(&now, NULL);
-      boot_time = now.tv_sec * 1000000 + now.tv_usec;
-      *rdata = 0;
-      return;
-    }
     gettimeofday(&now, NULL);
     now_time = now.tv_sec * 1000000 + now.tv_usec;
-    *rdata = now_time - boot_time;
+    *(uint32_t*)rdata = (uint32_t)(now_time- boot_time);
+    return;
+  }
+  if (raddr == RTC_ADDR+4)
+  {
+    *(uint32_t*)rdata = (uint32_t)((now_time-boot_time)>>32);
     return;
   }
   if (raddr < CONFIG_MBASE || raddr > CONFIG_MBASE + CONFIG_MSIZE)
   {
-    //printf("pmem_read: invalid address 0x%llx\n", raddr);
-    return;
+    return ;
   }
   *rdata = *((long long *)guest_to_host(raddr));
   // printf("pmem_read: 0x%llx -> 0x%llx\n", raddr, *rdata);
@@ -64,10 +66,8 @@ extern "C" void pmem_write(long long waddr, long long wdata, char wmask)
   }
   if (waddr < CONFIG_MBASE || waddr > CONFIG_MBASE + CONFIG_MSIZE)
   {
-    // printf("pmem_write: invalid address 0x%llx", waddr);
     return;
   }
-  // printf("pmem_write: 0x%llx <- 0x%llx (0x%x)", waddr, wdata, wmask);
   int i;
   uint8_t *len = guest_to_host(waddr);
   uint8_t *p;

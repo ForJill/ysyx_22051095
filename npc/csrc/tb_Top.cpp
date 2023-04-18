@@ -3,14 +3,14 @@ uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {0};
 uint8_t *guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 CPU_state cpu;
 // 解析参数读取bin文件
-static char *img_file = "/home/ljw/Desktop/ysyx-workbench/am-kernels/tests/am-tests/build/amtest-riscv64-npc.bin";
+static char *img_file = "/home/ljw/Desktop/ysyx-workbench/fceux-am/build/fceux-riscv64-npc.bin";
 long img_size = 0;
 // ftrace
 int inst_num = 0;
 vaddr_t addr[100000] = {0};
 int call[100000] = {0};
 Decode s;
-static char *elf_file = "";
+static char *elf_file = "/home/ljw/Desktop/ysyx-workbench/am-kernels/tests/am-tests/build/amtest-riscv64-nemu.elf";
 long long boot_time = 0;
 long long now_time = 0;
 struct timeval now;

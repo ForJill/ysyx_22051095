@@ -4,7 +4,6 @@ import chisel3._
 import chisel3.util._
 import chisel3.stage._
 import chisel3.util.experimental.BoringUtils
-import scala.collection.immutable.ArraySeq
 import scala.language.postfixOps
 
 import utils._
@@ -136,8 +135,8 @@ class Decoder extends Module {
     Array(
       ALU_SB -> "b1".asUInt(8.W),
       ALU_SH -> "b11".asUInt(8.W),
-      ALU_SW -> "b1111".asUInt(8.W),
-      ALU_SD -> "b11111111".asUInt(8.W)
+      ALU_SW -> "hf".asUInt(8.W),
+      ALU_SD -> "hff".asUInt(8.W)
     )
   )
 

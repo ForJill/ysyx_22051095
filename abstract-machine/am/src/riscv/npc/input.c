@@ -6,6 +6,7 @@
 #define KBD_ADDR        (DEVICE_BASE + 0x0000060)
 static inline uint32_t inl(uintptr_t addr) { return *(volatile uint32_t *)addr; }
 void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
+  /*
   kbd->keydown = 0;
   kbd->keycode = AM_KEY_NONE;
   //更新键盘
@@ -18,4 +19,5 @@ void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
     kbd->keydown = false;
     kbd->keycode = key;
   }
+  */
 }
