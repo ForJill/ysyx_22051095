@@ -70,23 +70,28 @@ object OP {
   val ALU_SB     = 47.U(8.W)
   val ALU_SH     = 48.U(8.W)
   val ALU_SW     = 49.U(8.W)
-  //B-TYP8
+  //B-TYPE
   val ALU_BEQ    = 50.U(8.W)
   val ALU_BNE    = 51.U(8.W)
   val ALU_BGE    = 52.U(8.W)
   val ALU_BGEU   = 53.U(8.W)
   val ALU_BLT    = 54.U(8.W)
   val ALU_BLTU   = 55.U(8.W)
-  //U-TYP8
+  //U-TYPE
   val ALU_LUI    = 56.U(8.W)
   val ALU_AUIPC  = 57.U(8.W)
-  //J-TYP8
+  //J-TYPE
   val ALU_JAL    = 58.U(8.W)
-  //N-TYP8
+  //N-TYPE
   val ALU_EBREAK = 59.U(8.W)
-
+  //CSR-TYPE
+  val ALU_CSRRW  = 60.U(8.W)
+  val ALU_CSRRS  = 61.U(8.W)
+  val ALU_CSRRC  = 62.U(8.W)
+  val ALU_ECALL  = 63.U(8.W)
+  val ALU_MRET   = 64.U(8.W)
   //UNDEFINED
-  val ALU_UNDEFINED = 62.U(8.W)
+  val ALU_UNDEFINED = 255.U(8.W)
 }
 
 object Imm{

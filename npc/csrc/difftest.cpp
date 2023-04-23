@@ -75,6 +75,10 @@ void isa_reg_display()
     printf("%s\t0x%08lx\n", regs[i + 1], cpu.gpr[i + 1]);
   }
   printf("pc\t0x%08lx\n", cpu.pc);
+  printf("mcause\t0x%08lx\n", cpu.csr.mcause);
+  printf("mepc\t0x%08lx\n", cpu.csr.mepc);
+  printf("mstatus\t0x%08lx\n", cpu.csr.mstatus);
+  printf("mtvec\t0x%08lx\n", cpu.csr.mtvec);
 }
 
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t npc)
@@ -112,27 +116,23 @@ static void checkregs(CPU_state *ref, vaddr_t pc)
 void difftest_step(vaddr_t pc /*, vaddr_t npc*/)
 {
   CPU_state ref_r;
-  /*
   if (skip_dut_nr_inst > 0) {
-    if (ref_r.pc == npc) {
-      skip_dut_nr_inst = 0;
-      checkregs(&ref_r, npc);
-      return;
-    }
+    //if (ref_r.pc == npc) {
+    //  skip_dut_nr_inst = 0;
+    //  checkregs(&ref_r, npc);
+    //  return;
+    //}
     skip_dut_nr_inst --;
     return;
   }
-  */
-  // ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
-  // checkregs(&ref_r, npc);
-  /*
+  ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
+  //checkregs(&ref_r, npc);
     if (is_skip_ref) {
       // to skip the checking of an instruction, just copy the reg state to reference design
       ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
       is_skip_ref = false;
       return;
     }
-  */
   ref_difftest_exec(1);
   ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
   checkregs(&ref_r, pc);

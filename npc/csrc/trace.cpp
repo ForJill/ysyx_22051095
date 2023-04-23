@@ -28,6 +28,7 @@ Elf64_Sym symdr;
 Elf64_Off symbol_base = 0;
 Elf64_Off str_base = 0;
 FILE *log_fp = NULL;
+FILE *ftrace_fp = NULL;
 extern "C" void init_disasm(const char *triple)
 {
   llvm::InitializeAllTargetInfos();
@@ -95,6 +96,16 @@ extern "C" void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int
 
 void init_log(const char *log_file)
 {
+  ftrace_fp = stdout;
+  if (log_file != NULL)
+  {
+    FILE *fp = fopen(log_file, "w");
+    ftrace_fp = fp;
+  }
+}
+
+void init_ftrace(const char *log_file)
+{
   log_fp = stdout;
   if (log_file != NULL)
   {
@@ -120,6 +131,14 @@ typedef struct Decode
     extern bool log_enable();     \
     fprintf(log_fp, __VA_ARGS__); \
     fflush(log_fp);               \
+  } while (0)
+#define flog_write(...)            \
+  do                              \
+  {                               \
+    extern FILE *ftrace_fp;          \
+    extern bool log_enable();     \
+    fprintf(ftrace_fp, __VA_ARGS__); \
+    fflush(ftrace_fp);               \
   } while (0)
 
 Elf64_Off find_strtab(FILE *fd)
@@ -212,16 +231,16 @@ void ftrace(char *elf_file, int inst_num, int *call, vaddr_t *addr)
         if (call[i])
         {
           space++;
-          printf("%lx:", addr[i]);
-          printf("%*s", space, "");
-          printf("call[%s@%lx]\n", strtab, symdr.st_value);
+          flog_write("%lx:", addr[i]);
+          flog_write("%*s", space, "");
+          flog_write("call[%s@%lx]\n", strtab, symdr.st_value);
         }
         else
         {
           space--;
-          printf("%lx:", addr[i]);
-          printf("%*s", space, "");
-          printf("ret[%s@%lx]\n", strtab, symdr.st_value);
+          flog_write("%lx:", addr[i]);
+          flog_write("%*s", space, "");
+          flog_write("ret[%s@%lx]\n", strtab, symdr.st_value);
         }
         memset(strtab, 0, sizeof(strtab));
         break;

@@ -37,10 +37,15 @@ module DPI(
     input [63:0] rf_29,
     input [63:0] rf_30,
     input [63:0] rf_31,
+    input [63:0] csr_0, 
+    input [63:0] csr_1,
+    input [63:0] csr_2,
+    input [63:0] csr_3,
+    input [63:0] csr_4,
     input [63:0] inst,
     input [63:0] pc
 );
-wire [63:0]rf[31:0];
+wire [63:0]rf[35:0];
 assign rf[0] = rf_0;
 assign rf[1] = rf_1;
 assign rf[2] = rf_2;
@@ -73,6 +78,11 @@ assign rf[28] = rf_28;
 assign rf[29] = rf_29; 
 assign rf[30] = rf_30; 
 assign rf[31] = rf_31;
+assign rf[32] = csr_0;
+assign rf[33] = csr_1;
+assign rf[34] = csr_2;
+assign rf[35] = csr_3;
+assign rf[36] = csr_4;
 initial set_gpr_ptr(rf); 
 always@(*) begin
   ebreak(flag);

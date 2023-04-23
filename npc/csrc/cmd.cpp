@@ -12,7 +12,7 @@ extern Decode s;
 extern int sim_time;
 extern VTop *dut;
 extern VerilatedVcdC *m_trace;
-#define MAX_TIME 1000000
+#define MAX_TIME 3000000
 long load_img(char *img_file)
 {
   FILE *fp = fopen(img_file, "rb");
@@ -84,36 +84,10 @@ int cmd_c()
           cpu.gpr[0] = 0;
           for (int i = 1; i < 32; i++)
             cpu.gpr[i] = cpu_gpr[i];
-          //if(now_pc==0x80001150)
-          //{
-          //  printf("pc = %lx inst= %lx,imm=%d,op=%d,rs1=%x,res=%lx\n", now_pc, now_inst,dut->io_imm, dut->io_op,dut->io_rs1,dut->io_resultALU);
-          //  isa_reg_display();
-          //}
-          //if(now_pc==0x80001154)
-          //{
-          //  printf("pc = %lx inst= %lx,imm=%d,op=%d,rs1=%x,res=%lx,rdata=%lx,reg_wdata=%d\n", now_pc, now_inst,dut->io_imm, dut->io_op,dut->io_rs1,dut->io_resultALU,dut->io_rdata,dut->io_fmemwdata);
-          //  isa_reg_display();
-          //}
-          //if(now_pc==0x80001158)
-          //{
-          //  printf("pc = %lx inst= %lx,imm=%d,op=%d,rs1=%x,res=%lx,rdata=%d,reg_wdata=%d\n", now_pc, now_inst,dut->io_imm, dut->io_op,dut->io_rs1,dut->io_resultALU,dut->io_rdata,dut->io_fmemwdata);
-          //  isa_reg_display();
-          //}
-          //if(now_pc==0x8000115c)
-          //{
-          //  printf("pc = %lx inst= %lx,imm=%d,op=%d,rs1=%x,res=%lx\n", now_pc, now_inst,dut->io_imm ,dut->io_op,dut->io_rs1,dut->io_resultALU);
-          //  isa_reg_display();
-          //}
-          //if(now_pc==0x80001160)
-          //{
-          //  printf("pc = %lx inst= %lx,imm=%d,op=%d,rs1=%x,res=%lx\n", now_pc, now_inst,dut->io_imm,dut->io_op,dut->io_rs1,dut->io_resultALU);
-          //  isa_reg_display();
-          //}
-          //if(now_pc==0x80001164)
-          //{
-          //  printf("pc = %lx inst= %lx,imm=%d,op=%d,rs1=%x,res=%lx\n", now_pc, now_inst,dut->io_imm,dut->io_op,dut->io_rs1,dut->io_resultALU);
-          //  isa_reg_display();
-          //}
+          cpu.csr.mcause = cpu_gpr[33];
+          cpu.csr.mepc = cpu_gpr[34];
+          cpu.csr.mstatus = cpu_gpr[35];
+          cpu.csr.mtvec = cpu_gpr[36];
 
 #ifdef CONFIG_DIFFTEST
           difftest_step(cpu.pc);
@@ -137,12 +111,21 @@ int cmd_c()
 #endif
         }
         cpu.pc = dut->io_pc;
-
-        if(dut->io_op == 62){ 
+        //if(dut->io_is_e){
+        //  printf("eeee!\npc = %lx inst= %lx\n", now_pc, now_inst);
+        //  isa_reg_display();
+        //  printf("reg17 = %d, ",dut->io_reg17);
+        //}
+        //if(dut->io_is_csr){
+        //  printf("csr!\npc = %lx inst= %lx\n", now_pc, now_inst);
+        //  isa_reg_display();
+        //}
+        if(dut->io_op == 255){ 
         printf("\n\033[36munvalid inst\n");
-        printf("pc = %lx inst= %lx\n", cpu.pc, now_inst);
+        printf("pc = %lx inst= %lx\n", now_pc, now_inst);
+        isa_reg_display();
         return 1;
-  }
+        }
       }
     }
   }

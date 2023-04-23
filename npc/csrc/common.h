@@ -37,10 +37,17 @@
 #define BITS(x, hi, lo) (((x) >> (lo)) & BITMASK((hi) - (lo) + 1))
 typedef uint64_t paddr_t;
 typedef uint64_t vaddr_t;
+typedef struct{
+  vaddr_t mcause;
+  vaddr_t mepc;
+  vaddr_t mstatus;
+  vaddr_t mtvec;
+} riscv64_CSR;
 typedef struct
 {
   uint64_t gpr[32];
   uint64_t pc;
+  riscv64_CSR csr;
 } CPU_state;
 typedef struct Decode
 {
@@ -58,6 +65,7 @@ Elf64_Off find_symtab(FILE *fd);
 void ftrace(char *elf_file, int inst_num, int *call, vaddr_t *addr);
 void itrace(Decode *s, uint64_t now_pc, uint32_t now_inst);
 void init_log(const char *log_file);
+void init_ftrace(const char *log_file);
 extern "C" void init_disasm(const char *triple);
 
 // difftest

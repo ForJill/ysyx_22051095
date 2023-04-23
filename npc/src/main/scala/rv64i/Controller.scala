@@ -16,6 +16,6 @@ class Controller extends Module {
 
   //alu
   io.AluCtrlIO_Out.alu_op     := io.ControlIO_In.OP
-  
+  io.AluCtrlIO_Out.csr_wen    := io.ControlIO_In.csr_wen
   io.Control_Out <> io.ControlIO_In
 }

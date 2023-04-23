@@ -28,10 +28,21 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
     dx = dstrect->x;
     dy = dstrect->y;
   }
-  for(int i=0 ; i < sh; i++)
-    for(int j=0 ; j < sw; j++)
-      ((uint32_t *)dst->pixels)[(j + dx) + (i + dy) * dst->w] = 
+  if(dst->format->BitsPerPixel == 32){
+    for(int i=0 ; i < sh; i++)
+      for(int j=0 ; j < sw; j++)
+        ((uint32_t *)dst->pixels)[(j + dx) + (i + dy) * dst->w] = 
         ((uint32_t *)src->pixels)[(j + sx) + (i + sy) * src->w];
+  }
+
+  //8位像素的特殊处理
+  else if(dst->format->BitsPerPixel == 8){
+    printf("8bit blit");
+    for(int i=0 ; i < sh; i++)
+      for(int j=0 ; j < sw; j++)
+        (dst->pixels)[(j + dx) + (i + dy) * dst->w] = 
+        (src->pixels)[(j + sx) + (i + sy) * src->w];
+  }
 }
 
 void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
@@ -61,6 +72,17 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
   }
   if(s->format->BytesPerPixel == 4){
     NDL_DrawRect((uint32_t *)s->pixels, x, y, w, h);
+  }
+  else if(s->format->BytesPerPixel == 1){
+    printf("SDL_UpdateRect: 8-bit color is not supported yet.");
+    uint32_t *pal_color_xy = malloc(w * h * sizeof(uint32_t));
+    for(int i=0 ; i < h; i++)
+      for(int j=0 ; j < w; j++)
+        pal_color_xy[j + i * w] = s->format->palette->colors[((uint32_t *)s->pixels)[x + j + (y + i) * s->w]].r << 16 |
+                                  s->format->palette->colors[((uint32_t *)s->pixels)[x + j + (y + i) * s->w]].g << 8 |
+                                  s->format->palette->colors[((uint32_t *)s->pixels)[x + j + (y + i) * s->w]].b;
+    NDL_DrawRect((uint32_t *)pal_color_xy, x, y, w, h);
+    free(pal_color_xy);
   }
 }
 

@@ -14,6 +14,8 @@ class ControlIO extends Bundle {
   val MemWen = Output(Bool())
   val wmask = Output(UInt(8.W))
   val MemLoad = Output(Bool())
+  val csr_wen = Output(Bool())
+  val E_JUMP = Output(Bool())
   //val wronginst = Output(Bool())
   //val OPType = Output(UInt(3.W))
   //val IsImm = Output(Bool())
@@ -24,10 +26,12 @@ class RegIO extends Bundle {
   val rs1 = Output(UInt(REG_WIDTH.W))
   val rs2 = Output(UInt(REG_WIDTH.W))
   val rd  = Output(UInt(REG_WIDTH.W))
+  val csr_index = Output(UInt(3.W))
   //val imm = Output(UInt(DATA_WIDTH.W))
 }
 
 class AluCtrlIO extends Bundle {
-  val alu_op = Input(UInt(8.W))
+  val alu_op  = Input(UInt(8.W))
+  val csr_wen = Input(Bool())
   //val op_type = Input(UInt(3.W))
 }

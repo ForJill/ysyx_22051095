@@ -24,6 +24,9 @@ class TopIO extends Bundle {
   val wmask = Output(UInt(8.W))
   val rdata = Output(UInt(64.W))
   val fmemwdata = Output(UInt(64.W))
+  val is_e = Output(Bool())
+  val is_csr = Output(Bool())
+  val reg17 = Output(UInt(64.W))
   //val wronginst = Output(Bool())
 }
 
@@ -46,6 +49,8 @@ class Top extends Module {
   PC.io.j_branch <> alu.io.j_branch
   PC.io.is_b <> alu.io.is_b
   PC.io.b_branch <> alu.io.out
+  PC.io.is_e <> decoder.io.ctrl.E_JUMP
+  PC.io.e_branch <> alu.io.e_branch
 
   //Decoder in
   decoder.io.inst <> ifu.io.inst
@@ -61,13 +66,14 @@ class Top extends Module {
                         Mux(decoder.io.ctrl.OP === ALU_LWU,mem.io.rdata(31,0),
                         Mux(decoder.io.ctrl.OP === ALU_LW,Sext(mem.io.rdata(31,0),32),alu.io.out))))))),alu.io.out)
   registers.io.wen <> decoder.io.ctrl.RegWen
-
   //Alu in
   alu.io.ctrl <> Controller.io.AluCtrlIO_Out
   alu.io.in1 <> registers.io.rdata1
   alu.io.in2 <> registers.io.rdata2
   alu.io.imm <> decoder.io.imm
   alu.io.pc  <> PC.io.pc
+  alu.io.csr_index <> decoder.io.reg.csr_index
+  alu.io.reg17 <> registers.io.reg17
 
   //controller in
   Controller.io.ControlIO_In <> decoder.io.ctrl
@@ -95,6 +101,9 @@ class Top extends Module {
                         Mux(decoder.io.ctrl.OP === ALU_LD,mem.io.rdata(63,0),
                         Mux(decoder.io.ctrl.OP === ALU_LWU,mem.io.rdata(31,0),
                         Mux(decoder.io.ctrl.OP === ALU_LW,Sext(mem.io.rdata(31,0),32),alu.io.out))))))),alu.io.out)
+  io.is_e <> decoder.io.ctrl.E_JUMP
+  io.is_csr <> decoder.io.ctrl.csr_wen
+  io.reg17 <> registers.io.reg17
   //io.wronginst <> decoder.io.ctrl.wronginst
 
   //IFU in 
@@ -141,6 +150,11 @@ class Top extends Module {
   dpi.io.rf_29 := registers.io.regs(29) 
   dpi.io.rf_30 := registers.io.regs(30) 
   dpi.io.rf_31 := registers.io.regs(31)
+  dpi.io.csr_0 := alu.io.csr_regs(0)
+  dpi.io.csr_1 := alu.io.csr_regs(1)
+  dpi.io.csr_2 := alu.io.csr_regs(2)
+  dpi.io.csr_3 := alu.io.csr_regs(3)
+  dpi.io.csr_4 := alu.io.csr_regs(4)
   dpi.io.inst  := ifu.io.inst
   dpi.io.pc    := io.pc
   

@@ -18,21 +18,29 @@ class AluIO extends Bundle {
   val out      = Output(UInt(DATA_WIDTH.W))
   val pc       = Input(UInt(DATA_WIDTH.W))
   val j_branch = Output(UInt(DATA_WIDTH.W))
+  val e_branch = Output(UInt(DATA_WIDTH.W))
   val is_b     = Output(UInt(DATA_WIDTH.W))
+  val csr_index= Input(UInt(3.W))
+  val reg17    = Input(UInt(DATA_WIDTH.W))
+  val csr_regs = Output(Vec(5, UInt(64.W)))
 }
 class Alu extends Module {
-  val io      = IO(new AluIO())
-  val src1    = WireDefault(0.U(DATA_WIDTH.W))
-  val src2    = WireDefault(0.U(DATA_WIDTH.W))
-  val imm     = WireDefault(0.U(DATA_WIDTH.W))
-  val result  = WireDefault(0.U(DATA_WIDTH.W))
-  val default = WireDefault(0.U(DATA_WIDTH.W))
-
+  val io        = IO(new AluIO())
+  val src1      = WireDefault(0.U(DATA_WIDTH.W))
+  val src2      = WireDefault(0.U(DATA_WIDTH.W))
+  val imm       = WireDefault(0.U(DATA_WIDTH.W))
+  val result    = WireDefault(0.U(DATA_WIDTH.W))
+  val default   = WireDefault(0.U(DATA_WIDTH.W))
+  val csr_addr  = WireDefault(0.U(12.W))
+  val csr_index = WireDefault(0.U(3.W))
+  val CSR       = Mem(5, UInt(64.W))
+  io.csr_regs := VecInit(Seq.fill(5)(0.U(64.W)))
   def Sext(x: UInt, n: Int): UInt = Cat(Fill(64 - n, x(n - 1)), x(n-1,0))
-  default := 0.U
-  imm     := io.imm
-  src1    := io.in1
-  src2    := io.in2
+  default   := 0.U
+  imm       := io.imm
+  src1      := io.in1
+  src2      := io.in2
+  csr_index := io.csr_index
 
   result := MuxLookup(
     io.ctrl.alu_op,
@@ -86,6 +94,9 @@ class Alu extends Module {
       ALU_ORI -> (src1 | imm),
       ALU_SRAI -> (src1.asSInt >> imm(5, 0)).asUInt,
       ALU_SRAIW -> (Sext((src1(31, 0).asSInt >> imm(4, 0)).asUInt, 32)),
+      ALU_CSRRW -> CSR(csr_index),
+      ALU_CSRRS -> CSR(csr_index),
+      ALU_CSRRC -> CSR(csr_index),
       //S_type
       ALU_SD -> (src1 + imm),
       ALU_SW -> (src1 + imm),
@@ -103,6 +114,17 @@ class Alu extends Module {
       ALU_AUIPC -> (io.pc + imm),
       //J_type
       ALU_JAL -> (io.pc + 4.U)
+      
+    )
+  )
+
+  val csr_wdata = MuxLookup(
+    io.ctrl.alu_op,
+    0.U,
+    Array(
+      ALU_CSRRW -> src1,
+      ALU_CSRRS -> (CSR(csr_index) | src1),
+      ALU_CSRRC -> (CSR(csr_index) & ~src1)
     )
   )
 
@@ -127,5 +149,20 @@ class Alu extends Module {
       ALU_BLTU -> Mux((src1 < src2),1.U,0.U)
     )
   )
+  CSR(1.U) := Mux(io.ctrl.alu_op === ALU_ECALL, io.reg17, CSR(1.U))
+  CSR(2.U) := Mux(io.ctrl.alu_op === ALU_ECALL, io.pc, CSR(2.U))
+  CSR(csr_index) := Mux(io.ctrl.csr_wen, csr_wdata, CSR(csr_index))
+
+  io.e_branch := MuxLookup(
+    io.ctrl.alu_op,
+    0.U,
+    Array(
+      ALU_ECALL -> CSR(4.U),
+      ALU_MRET  -> (CSR(2.U)+4.U),
+    )
+  )
+
+  (0 until 5).foreach(i => io.csr_regs(i) := CSR(i))
+
   io.out := result
 }
