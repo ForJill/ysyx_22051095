@@ -68,15 +68,13 @@ int _write(int fd, void *buf, size_t count) {
 extern char _end;
 static intptr_t pro_brk = (intptr_t)&_end;
 void *_sbrk(intptr_t increment) {
-  intptr_t old = pro_brk;
-  intptr_t new = pro_brk + increment;
-  intptr_t ret = _syscall_(SYS_brk, increment, 0, 0);
-  if (ret == 0) {
-    pro_brk = new;
-    return (void *)old;
-  } else {
-    return (void *)-1;
+  static char *myend = &end;
+  if (_syscall_(SYS_brk, increment, 0, 0) == 0) {
+    void *ret = myend;
+    myend += increment;
+    return (void*)ret;
   }
+  return (void*)-1;
 }
 
 int _read(int fd, void *buf, size_t count) {
@@ -95,6 +93,7 @@ int _gettimeofday(struct timeval *tv, struct timezone *tz) {
   return _syscall_(SYS_gettimeofday, (intptr_t)tv, (intptr_t)tz, 0);
   return 0;
 }
+
 
 int _execve(const char *fname, char * const argv[], char *const envp[]) {
   _exit(SYS_execve);

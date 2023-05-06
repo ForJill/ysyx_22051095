@@ -17,6 +17,7 @@ override ARGS += --readelf=$(NPC_HOME)/dummy-riscv64-nemu.elf
 CXXSRC = csrc/disasm.cc
 CXXFLAGS = $(shell llvm-config-11 --cxxflags) -fPIE
 LIBS = $(shell llvm-config-11 --libs)
+LIBS += -lSDL2
 test:
 	sbt "testOnly /home/ljw/Desktop/ysyx-workbench/npc/test/InstMemTest.scala"
 

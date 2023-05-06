@@ -84,7 +84,6 @@ void isa_reg_display()
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t npc)
 {
   bool eqreg = true;
-      printf("\033[34mref_r->pc = 0x%08lx\n", ref_r->pc);
   for (int i = 0; i < 32; i++)
   {
     if (ref_r->gpr[i] != cpu.gpr[i])
@@ -115,25 +114,23 @@ static void checkregs(CPU_state *ref, vaddr_t pc)
 
 void difftest_step(vaddr_t pc /*, vaddr_t npc*/)
 {
-  CPU_state ref_r;
+CPU_state ref_r;
+
   if (skip_dut_nr_inst > 0) {
-    //if (ref_r.pc == npc) {
-    //  skip_dut_nr_inst = 0;
-    //  checkregs(&ref_r, npc);
-    //  return;
-    //}
+    ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
     skip_dut_nr_inst --;
     return;
   }
-  ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
-  //checkregs(&ref_r, npc);
-    if (is_skip_ref) {
-      // to skip the checking of an instruction, just copy the reg state to reference design
-      ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
-      is_skip_ref = false;
-      return;
-    }
+
+  if (is_skip_ref) {
+    // to skip the checking of an instruction, just copy the reg state to reference design
+    ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
+    is_skip_ref = false;
+    return;
+  }
+
   ref_difftest_exec(1);
   ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
+
   checkregs(&ref_r, pc);
 }

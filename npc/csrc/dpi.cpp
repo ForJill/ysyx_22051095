@@ -8,6 +8,9 @@ extern long long boot_time;
 extern long long now_time;
 extern struct timeval now;
 extern VTop *dut;
+extern void *vmem;
+extern uint32_t *vgactl_port_base;
+extern uint32_t *i8042_data_port_base;
 // 导入DPI函数
 void ebreak(int flag)
 {
@@ -50,6 +53,16 @@ extern "C" void pmem_read(long long raddr, long long *rdata)
     *(uint32_t*)rdata = (uint32_t)((now_time-boot_time)>>32);
     return;
   }
+  if(raddr == KBD_ADDR)
+  {
+    i8042_data_io_handler();
+    *(uint32_t*)rdata = i8042_data_port_base[0];
+    return ;
+  }
+  if(raddr == VGACTL_ADDR){
+    *(uint32_t*)rdata = vgactl_port_base[0];
+    return ;
+  }
   if (raddr < CONFIG_MBASE || raddr > CONFIG_MBASE + CONFIG_MSIZE)
   {
     return ;
@@ -61,8 +74,18 @@ extern "C" void pmem_write(long long waddr, long long wdata, char wmask)
 {
   if (waddr == SERIAL_PORT)
   {
+    //difftest_skip_ref();
     putchar(wdata & 0xff);
     return;
+  }
+  if(waddr == VGACTL_ADDR+4){
+    vgactl_port_base[1] = wdata;
+    return ;
+  }
+  if(waddr >= FB_ADDR){
+    uint32_t *p = (uint32_t *)vmem;
+    p[(waddr-FB_ADDR)/4] = wdata;
+    return ;
   }
   if (waddr < CONFIG_MBASE || waddr > CONFIG_MBASE + CONFIG_MSIZE)
   {
@@ -80,4 +103,14 @@ extern "C" void pmem_write(long long waddr, long long wdata, char wmask)
       len++;
     }
   }
+}
+
+extern "C" void skip_ref(int ecall)
+{
+  if(ecall){
+    //printf("ecall\n");
+    difftest_skip_ref();
+    return ;
+  }
+
 }

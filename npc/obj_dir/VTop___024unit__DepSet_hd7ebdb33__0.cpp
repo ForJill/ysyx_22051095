@@ -74,3 +74,13 @@ VL_INLINE_OPT void VTop___024unit____Vdpiimwrap_get_pc_TOP____024unit(QData/*63:
     for (size_t pc__Vidx = 0; pc__Vidx < 1; ++pc__Vidx) pc__Vcvt = pc;
     get_pc(pc__Vcvt);
 }
+
+extern "C" void skip_ref(int eval);
+
+VL_INLINE_OPT void VTop___024unit____Vdpiimwrap_skip_ref_TOP____024unit(IData/*31:0*/ eval) {
+    VL_DEBUG_IF(VL_DBG_MSGF("+        VTop___024unit____Vdpiimwrap_skip_ref_TOP____024unit\n"); );
+    // Body
+    int eval__Vcvt;
+    for (size_t eval__Vidx = 0; eval__Vidx < 1; ++eval__Vidx) eval__Vcvt = eval;
+    skip_ref(eval__Vcvt);
+}

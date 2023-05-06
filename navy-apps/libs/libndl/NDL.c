@@ -5,10 +5,11 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <NDL.h>
+#include <fcntl.h>
 static int evtdev = 3;
 static int fbdev = 4;
-static int screen_w = 0;
-static int screen_h = 0;
+int screen_w = 0;
+int screen_h = 0;
 
 uint32_t NDL_GetTicks() {
   struct timeval tv;
@@ -56,13 +57,17 @@ void NDL_OpenCanvas(int *w, int *h) {
     *w = screen_w;
     *h = screen_h;
   }
-  printf("w = %d, h = %d\n", *w, *h);
-  printf("screen_w = %d, screen_h = %d", screen_w, screen_h);
+  //printf("w = %d, h = %d\n", *w, *h);
+  //printf("screen_w = %d, screen_h = %d", screen_w, screen_h);
 }
 
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
+  //printf("NDL_DrawRect");
+  int fd = open("/dev/fb", 0, 0);
+  size_t offset = y * screen_w + x;
   size_t len = ((size_t)w << 32 | (size_t)h);
-  write(fbdev, pixels, len);
+  lseek(fd, offset, SEEK_SET);
+  write(fd, pixels, len);
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {

@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
+  //printf("SDL_BlitSurface\n");
   assert(dst && src);
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
   //将一张画布中的指定矩形区域复制到另一张画布的指定位置
@@ -37,7 +38,7 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
 
   //8位像素的特殊处理
   else if(dst->format->BitsPerPixel == 8){
-    printf("8bit blit");
+    //printf("8bit blit");
     for(int i=0 ; i < sh; i++)
       for(int j=0 ; j < sw; j++)
         (dst->pixels)[(j + dx) + (i + dy) * dst->w] = 
@@ -66,6 +67,7 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
 }
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
+  //printf("SDL_UpdateRect\n");
   if(x==0 && y==0 && w==0 && h==0) {
     w = s->w;
     h = s->h;
@@ -74,15 +76,16 @@ void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
     NDL_DrawRect((uint32_t *)s->pixels, x, y, w, h);
   }
   else if(s->format->BytesPerPixel == 1){
-    printf("SDL_UpdateRect: 8-bit color is not supported yet.");
+    //printf("8bit update\n");
     uint32_t *pal_color_xy = malloc(w * h * sizeof(uint32_t));
     for(int i=0 ; i < h; i++)
-      for(int j=0 ; j < w; j++)
-        pal_color_xy[j + i * w] = s->format->palette->colors[((uint32_t *)s->pixels)[x + j + (y + i) * s->w]].r << 16 |
-                                  s->format->palette->colors[((uint32_t *)s->pixels)[x + j + (y + i) * s->w]].g << 8 |
-                                  s->format->palette->colors[((uint32_t *)s->pixels)[x + j + (y + i) * s->w]].b;
+      for(int j=0 ; j < w; j++){
+        SDL_Color c = s->format->palette->colors[(s->pixels)[x + j + (y+i) * s->w]];
+        pal_color_xy[j + i * w] = ((uint32_t)c.r << 16) | ((uint32_t)c.g << 8) | ((uint32_t)c.b << 0);
+      }
     NDL_DrawRect((uint32_t *)pal_color_xy, x, y, w, h);
     free(pal_color_xy);
+    //printf("8bit update end\n");
   }
 }
 
@@ -264,8 +267,10 @@ uint32_t SDL_MapRGBA(SDL_PixelFormat *fmt, uint8_t r, uint8_t g, uint8_t b, uint
 }
 
 int SDL_LockSurface(SDL_Surface *s) {
+  printf("SDL_LockSurface\n");
   return 0;
 }
 
 void SDL_UnlockSurface(SDL_Surface *s) {
+  printf("SDL_UnlockSurface\n");
 }

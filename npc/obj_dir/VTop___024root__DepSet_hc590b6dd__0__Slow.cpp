@@ -36,6 +36,7 @@ VL_ATTR_COLD void VTop___024root___eval_triggers__stl(VTop___024root* vlSelf) {
 }
 
 void VTop___024unit____Vdpiimwrap_pmem_read_TOP____024unit(QData/*63:0*/ raddr, QData/*63:0*/ &rdata);
+void VTop___024unit____Vdpiimwrap_skip_ref_TOP____024unit(IData/*31:0*/ eval);
 void VTop___024unit____Vdpiimwrap_ebreak_TOP____024unit(IData/*31:0*/ flag);
 void VTop___024unit____Vdpiimwrap_get_inst_TOP____024unit(QData/*63:0*/ inst);
 void VTop___024unit____Vdpiimwrap_get_pc_TOP____024unit(QData/*63:0*/ pc);
@@ -149,8 +150,8 @@ VL_ATTR_COLD void VTop___024root___stl_sequent__TOP__0(VTop___024root* vlSelf) {
     vlSelf->Top__DOT__dpi__DOT__rf[0x23U] = vlSelf->Top__DOT__alu__DOT__CSR
         [3U];
     vlSelf->io_pc = vlSelf->Top__DOT__PC__DOT__init;
-    VTop___024unit____Vdpiimwrap_pmem_read_TOP____024unit(vlSelf->io_pc, vlSelf->__Vtask_pmem_read__4__rdata);
-    vlSelf->Top__DOT__ifu__DOT__inst_mem_rdata = vlSelf->__Vtask_pmem_read__4__rdata;
+    VTop___024unit____Vdpiimwrap_pmem_read_TOP____024unit(vlSelf->io_pc, vlSelf->__Vtask_pmem_read__5__rdata);
+    vlSelf->Top__DOT__ifu__DOT__inst_mem_rdata = vlSelf->__Vtask_pmem_read__5__rdata;
     vlSelf->Top__DOT__decoder__DOT___J_T_4 = ((((1U 
                                                  & (IData)(
                                                            (vlSelf->Top__DOT__ifu__DOT__inst_mem_rdata 
@@ -1838,6 +1839,9 @@ VL_ATTR_COLD void VTop___024root___stl_sequent__TOP__0(VTop___024root* vlSelf) {
                                         ? 4U : (IData)(vlSelf->Top__DOT__decoder__DOT___crtlsignals_T_192)));
         vlSelf->Top__DOT__decoder__DOT__ImmType = vlSelf->Top__DOT__decoder__DOT___crtlsignals_T_324;
     }
+    VTop___024unit____Vdpiimwrap_skip_ref_TOP____024unit(
+                                                         (0x3fU 
+                                                          == (IData)(vlSelf->io_ctrl_OP)));
     VTop___024unit____Vdpiimwrap_ebreak_TOP____024unit(
                                                        ((0x3bU 
                                                          == (IData)(vlSelf->io_ctrl_OP))
@@ -2973,8 +2977,8 @@ VL_ATTR_COLD void VTop___024root___stl_sequent__TOP__0(VTop___024root* vlSelf) {
                                                                  ? (IData)(vlSelf->Top__DOT__alu__DOT___result_T_205)
                                                                  : 
                                                                 vlSelf->Top__DOT__alu__DOT___result_T_329[0U]))))))))));
-    VTop___024unit____Vdpiimwrap_pmem_read_TOP____024unit(vlSelf->io_resultALU, vlSelf->__Vtask_pmem_read__5__rdata);
-    vlSelf->Top__DOT__mem__DOT__data_mem_rdata = vlSelf->__Vtask_pmem_read__5__rdata;
+    VTop___024unit____Vdpiimwrap_pmem_read_TOP____024unit(vlSelf->io_resultALU, vlSelf->__Vtask_pmem_read__6__rdata);
+    vlSelf->Top__DOT__mem__DOT__data_mem_rdata = vlSelf->__Vtask_pmem_read__6__rdata;
     if (vlSelf->io_ctrl_MemWen) {
         VTop___024unit____Vdpiimwrap_pmem_write_TOP____024unit(vlSelf->io_resultALU, vlSelf->io_rs2, (IData)(vlSelf->io_ctrl_wmask));
     }

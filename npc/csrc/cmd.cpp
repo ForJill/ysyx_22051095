@@ -70,11 +70,14 @@ int cmd_c()
   {
     dut->reset = 1;
     dut->eval();
+    vga_update_screen();
   }
   else
   {
     dut->reset = 0;
     dut->eval();
+    vga_update_screen();
+    update_kbd();
     if (sim_time % 2 == 1)
     {
       if (dut->clock == 1)

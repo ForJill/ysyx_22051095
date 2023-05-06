@@ -34,7 +34,7 @@ object RV64IInstr extends HasInstrType with Configs{
   def DecodeTable = RVIInstr.table
 }
 
-class Decoder() extends Module with HasInstrType{
+class IDU() extends Module with HasInstrType{
     val io = IO(new Bundle{
         val in = Flipped(Decoupled(new BundleCtrlFlowIO))
         val out = Decoupled(new Bundledecode)

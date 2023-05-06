@@ -1,11 +1,11 @@
 #include <am.h>
 #include <npc.h>
+
 static inline uint32_t inl(uintptr_t addr) { return *(volatile uint32_t *)addr; }
 static inline void outl(uintptr_t addr, uint32_t data) { *(volatile uint32_t *)addr = data; }
 #define SYNC_ADDR (VGACTL_ADDR + 4)
 
 void __am_gpu_init() {
-
 }
 
 void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {

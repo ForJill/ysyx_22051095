@@ -17,9 +17,10 @@ class DecoderIO extends Bundle {
   val ctrl = Output(new ControlIO)
   val reg  = Output(new RegIO)
   val imm  = Output(UInt(DATA_WIDTH.W))
+  val eval = Output(Bool())
 }
 
-class Decoder extends Module {
+class IDU extends Module {
   val io       = IO(new DecoderIO)
   val opcode   = io.inst(6, 0)
   val funct3   = io.inst(14, 12)
@@ -159,7 +160,7 @@ class Decoder extends Module {
       "h305".U -> 4.U
     )
   )
-
+  io.eval := io.ctrl.OP === ALU_ECALL;
   
   io.reg.rs1 := io.inst(19, 15)
   io.reg.rs2 := io.inst(24, 20)

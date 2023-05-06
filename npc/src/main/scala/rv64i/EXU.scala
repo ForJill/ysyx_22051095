@@ -24,7 +24,7 @@ class AluIO extends Bundle {
   val reg17    = Input(UInt(DATA_WIDTH.W))
   val csr_regs = Output(Vec(5, UInt(64.W)))
 }
-class Alu extends Module {
+class EXU extends Module {
   val io        = IO(new AluIO())
   val src1      = WireDefault(0.U(DATA_WIDTH.W))
   val src2      = WireDefault(0.U(DATA_WIDTH.W))

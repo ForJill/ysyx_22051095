@@ -41,7 +41,7 @@ void do_syscall(Context *c)
     c->GPRx = fs_close(a[1]);
     break;
   case SYS_brk:
-    printf("SYS_brk\n");
+    //printf("SYS_brk\n");
     c->GPRx = 0;
     break;
   case SYS_gettimeofday:

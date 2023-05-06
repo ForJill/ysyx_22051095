@@ -33,11 +33,10 @@ class TopIO extends Bundle {
 class Top extends Module {
   val io         = IO(new TopIO)
   val PC         = Module(new PC)
-  val alu        = Module(new Alu)
-  val decoder    = Module(new Decoder)
+  val alu        = Module(new EXU)
+  val decoder    = Module(new IDU)
   //val instmem    = Module(new InstMem)
   val registers  = Module(new Registers)
-  val Controller = Module(new Controller)
   val dpi = Module(new DPI)
   val ifu = Module(new IFU)
   val mem = Module(new MEM)
@@ -67,16 +66,14 @@ class Top extends Module {
                         Mux(decoder.io.ctrl.OP === ALU_LW,Sext(mem.io.rdata(31,0),32),alu.io.out))))))),alu.io.out)
   registers.io.wen <> decoder.io.ctrl.RegWen
   //Alu in
-  alu.io.ctrl <> Controller.io.AluCtrlIO_Out
+  alu.io.ctrl.alu_op <> decoder.io.ctrl.OP
+  alu.io.ctrl.csr_wen <> decoder.io.ctrl.csr_wen
   alu.io.in1 <> registers.io.rdata1
   alu.io.in2 <> registers.io.rdata2
   alu.io.imm <> decoder.io.imm
   alu.io.pc  <> PC.io.pc
   alu.io.csr_index <> decoder.io.reg.csr_index
   alu.io.reg17 <> registers.io.reg17
-
-  //controller in
-  Controller.io.ControlIO_In <> decoder.io.ctrl
 
   //top
   io.pc <> PC.io.pc
@@ -157,6 +154,7 @@ class Top extends Module {
   dpi.io.csr_4 := alu.io.csr_regs(4)
   dpi.io.inst  := ifu.io.inst
   dpi.io.pc    := io.pc
+  dpi.io.eval  := decoder.io.eval
   
 }
 

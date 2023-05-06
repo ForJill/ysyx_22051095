@@ -19,15 +19,12 @@
 #include <cstdio>
 #include <cstring>
 #include <dlfcn.h>
-#include <readline/readline.h>
-#include <readline/history.h>
+#include <SDL2/SDL.h>
 
 #define MAX_SIM_TIME 100000
 #define CONFIG_MBASE 0x80000000
 #define CONFIG_MSIZE 0x8000000
-#define DEVICE_BASE 0xa0000000
 #define PG_ALIGN __attribute((aligned(4096)))
-#define RTC_ADDR (DEVICE_BASE + 0x0000048)
 #define SERIAL_PORT (DEVICE_BASE + 0x00003f8)
 #define CONFIG_PC_RESET_OFFSET 0x0
 #define PMEM_LEFT ((paddr_t)CONFIG_MBASE)
@@ -35,6 +32,21 @@
 #define RESET_VECTOR (PMEM_LEFT + CONFIG_PC_RESET_OFFSET)
 #define BITMASK(bits) ((1ull << (bits)) - 1)
 #define BITS(x, hi, lo) (((x) >> (lo)) & BITMASK((hi) - (lo) + 1))
+
+//DEVICE
+#define DEVICE_BASE 0xa0000000
+#define MMIO_BASE   0xa0000000
+#define SERIAL_PORT     (DEVICE_BASE + 0x00003f8)
+#define KBD_ADDR        (DEVICE_BASE + 0x0000060)
+#define RTC_ADDR        (DEVICE_BASE + 0x0000048)
+#define VGACTL_ADDR     (DEVICE_BASE + 0x0000100)
+#define AUDIO_ADDR      (DEVICE_BASE + 0x0000200)
+#define DISK_ADDR       (DEVICE_BASE + 0x0000300)
+#define FB_ADDR         (MMIO_BASE   + 0x1000000)
+#define AUDIO_SBUF_ADDR (MMIO_BASE   + 0x1200000)
+#define CONFIG_FB_ADDR 0xa1000000
+#define CONFIG_VGA_CTL_MMIO 0xa0000100
+
 typedef uint64_t paddr_t;
 typedef uint64_t vaddr_t;
 typedef struct{
@@ -92,10 +104,27 @@ extern "C" void get_pc(long long pc);
 extern "C" void pmem_read(long long raddr, long long *rdata);
 extern "C" void pmem_write(long long waddr, long long wdata, char wmask);
 
+// vga
+typedef uint64_t word_t;
+typedef uint16_t ioaddr_t;
+typedef void(*io_callback_t)(uint32_t, int, bool);
+uint8_t* new_space(int size);
+void init_screen();
+void update_screen();
+void vga_update_screen();
+void init_vga();
+#define SCREEN_W 400
+#define SCREEN_H 300
+
+//kbd
+#define KEYDOWN_MASK 0x8000
+#define KEY_QUEUE_LEN 1024
+void init_i8042();
+void i8042_data_io_handler();
+void update_kbd();
 // config
 //#define CONFIG_ITRACE 1
 //#define CONFIG_DIFFTEST 1
 //#define CONFIG_FTRACE 1
 //#define CONFIG_WAVEFORM 1
-
 #endif

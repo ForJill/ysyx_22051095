@@ -112,8 +112,8 @@ class VTop___024root final : public VerilatedModule {
         QData/*63:0*/ Top__DOT__registers__DOT__registers_MPORT_data;
         QData/*63:0*/ Top__DOT__ifu__DOT__inst_mem_rdata;
         QData/*63:0*/ Top__DOT__mem__DOT__data_mem_rdata;
-        QData/*63:0*/ __Vtask_pmem_read__4__rdata;
         QData/*63:0*/ __Vtask_pmem_read__5__rdata;
+        QData/*63:0*/ __Vtask_pmem_read__6__rdata;
         VlUnpacked<QData/*63:0*/, 5> Top__DOT__alu__DOT__CSR;
         VlUnpacked<QData/*63:0*/, 32> Top__DOT__registers__DOT__registers;
         VlUnpacked<QData/*63:0*/, 36> Top__DOT__dpi__DOT__rf;

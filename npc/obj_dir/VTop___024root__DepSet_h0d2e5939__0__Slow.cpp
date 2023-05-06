@@ -54,7 +54,7 @@ VL_ATTR_COLD void VTop___024root___eval_settle(VTop___024root* vlSelf) {
 #ifdef VL_DEBUG
                 VTop___024root___dump_triggers__stl(vlSelf);
 #endif
-                VL_FATAL_MT("vsrc/Top.v", 1501, "", "Settle region did not converge.");
+                VL_FATAL_MT("vsrc/Top.v", 1503, "", "Settle region did not converge.");
             }
             vlSelf->__VstlIterCount = ((IData)(1U) 
                                        + vlSelf->__VstlIterCount);
@@ -223,8 +223,8 @@ VL_ATTR_COLD void VTop___024root___ctor_var_reset(VTop___024root* vlSelf) {
     }
     vlSelf->Top__DOT__ifu__DOT__inst_mem_rdata = VL_RAND_RESET_Q(64);
     vlSelf->Top__DOT__mem__DOT__data_mem_rdata = VL_RAND_RESET_Q(64);
-    vlSelf->__Vtask_pmem_read__4__rdata = 0;
     vlSelf->__Vtask_pmem_read__5__rdata = 0;
+    vlSelf->__Vtask_pmem_read__6__rdata = 0;
     vlSelf->__Vtrigrprev__TOP__clock = VL_RAND_RESET_I(1);
     for (int __Vi0 = 0; __Vi0 < 2; ++__Vi0) {
         vlSelf->__Vm_traceActivity[__Vi0] = 0;

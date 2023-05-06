@@ -1,4 +1,5 @@
 #include "common.h"
+
 uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {0};
 uint8_t *guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 CPU_state cpu;
@@ -44,6 +45,8 @@ void init()
 #ifdef CONFIG_FTRACE
   init_ftrace(ftrace_file);
 #endif
+  init_vga();
+  init_i8042();
   printf("init sim success\n");
 }
 // 退出仿真
