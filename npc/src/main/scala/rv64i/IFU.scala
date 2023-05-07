@@ -9,6 +9,8 @@ class IFU extends Module {
     val inst = Output(UInt(32.W))
   })
   val inst_mem = Module(new memory)
+  //传给指令内存相应信号，对应inst_sram通道
   inst_mem.io.raddr := io.pc
+  //取出指令
   io.inst := inst_mem.io.rdata(31,0)
 }

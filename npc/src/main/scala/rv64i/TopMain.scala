@@ -39,7 +39,7 @@ class Top extends Module {
   val registers  = Module(new Registers)
   val dpi = Module(new DPI)
   val ifu = Module(new IFU)
-  val mem = Module(new MEM)
+  val lsu = Module(new LSU)
   
 
   def Sext(x: UInt, n: Int): UInt = Cat(Fill(64 - n, x(n - 1)), x)
@@ -57,13 +57,13 @@ class Top extends Module {
   //Register in
   registers.io.reg <> decoder.io.reg
   registers.io.wdata <> Mux(decoder.io.ctrl.MemLoad,
-                        Mux(decoder.io.ctrl.OP === ALU_LB,Sext(mem.io.rdata(7,0),8),
-                        Mux(decoder.io.ctrl.OP === ALU_LBU,mem.io.rdata(7,0),
-                        Mux(decoder.io.ctrl.OP === ALU_LH,Sext(mem.io.rdata(15,0),16),
-                        Mux(decoder.io.ctrl.OP === ALU_LHU,mem.io.rdata(15,0),
-                        Mux(decoder.io.ctrl.OP === ALU_LD,mem.io.rdata(63,0),
-                        Mux(decoder.io.ctrl.OP === ALU_LWU,mem.io.rdata(31,0),
-                        Mux(decoder.io.ctrl.OP === ALU_LW,Sext(mem.io.rdata(31,0),32),alu.io.out))))))),alu.io.out)
+                        Mux(decoder.io.ctrl.OP === ALU_LB,Sext(lsu.io.rdata(7,0),8),
+                        Mux(decoder.io.ctrl.OP === ALU_LBU,lsu.io.rdata(7,0),
+                        Mux(decoder.io.ctrl.OP === ALU_LH,Sext(lsu.io.rdata(15,0),16),
+                        Mux(decoder.io.ctrl.OP === ALU_LHU,lsu.io.rdata(15,0),
+                        Mux(decoder.io.ctrl.OP === ALU_LD,lsu.io.rdata(63,0),
+                        Mux(decoder.io.ctrl.OP === ALU_LWU,lsu.io.rdata(31,0),
+                        Mux(decoder.io.ctrl.OP === ALU_LW,Sext(lsu.io.rdata(31,0),32),alu.io.out))))))),alu.io.out)
   registers.io.wen <> decoder.io.ctrl.RegWen
   //Alu in
   alu.io.ctrl.alu_op <> decoder.io.ctrl.OP
@@ -89,15 +89,15 @@ class Top extends Module {
   io.MemLoad <> decoder.io.ctrl.MemLoad
   io.is_b <> alu.io.is_b
   io.wmask <> decoder.io.ctrl.wmask
-  io.rdata <> mem.io.rdata
+  io.rdata <> lsu.io.rdata
   io.fmemwdata <> Mux(decoder.io.ctrl.MemLoad,
-                        Mux(decoder.io.ctrl.OP === ALU_LB,Sext(mem.io.rdata(7,0),8),
-                        Mux(decoder.io.ctrl.OP === ALU_LBU,mem.io.rdata(7,0),
-                        Mux(decoder.io.ctrl.OP === ALU_LH,Sext(mem.io.rdata(15,0),16),
-                        Mux(decoder.io.ctrl.OP === ALU_LHU,mem.io.rdata(15,0),
-                        Mux(decoder.io.ctrl.OP === ALU_LD,mem.io.rdata(63,0),
-                        Mux(decoder.io.ctrl.OP === ALU_LWU,mem.io.rdata(31,0),
-                        Mux(decoder.io.ctrl.OP === ALU_LW,Sext(mem.io.rdata(31,0),32),alu.io.out))))))),alu.io.out)
+                        Mux(decoder.io.ctrl.OP === ALU_LB,Sext(lsu.io.rdata(7,0),8),
+                        Mux(decoder.io.ctrl.OP === ALU_LBU,lsu.io.rdata(7,0),
+                        Mux(decoder.io.ctrl.OP === ALU_LH,Sext(lsu.io.rdata(15,0),16),
+                        Mux(decoder.io.ctrl.OP === ALU_LHU,lsu.io.rdata(15,0),
+                        Mux(decoder.io.ctrl.OP === ALU_LD,lsu.io.rdata(63,0),
+                        Mux(decoder.io.ctrl.OP === ALU_LWU,lsu.io.rdata(31,0),
+                        Mux(decoder.io.ctrl.OP === ALU_LW,Sext(lsu.io.rdata(31,0),32),alu.io.out))))))),alu.io.out)
   io.is_e <> decoder.io.ctrl.E_JUMP
   io.is_csr <> decoder.io.ctrl.csr_wen
   io.reg17 <> registers.io.reg17
@@ -107,11 +107,11 @@ class Top extends Module {
   ifu.io.pc <> PC.io.pc
 
   //MEM in
-  mem.io.raddr <> alu.io.out
-  mem.io.waddr <> alu.io.out
-  mem.io.wdata <> registers.io.rdata2
-  mem.io.wen <> decoder.io.ctrl.MemWen
-  mem.io.wmask <> decoder.io.ctrl.wmask
+  lsu.io.raddr <> alu.io.out
+  lsu.io.waddr <> alu.io.out
+  lsu.io.wdata <> registers.io.rdata2
+  lsu.io.wen <> decoder.io.ctrl.MemWen
+  lsu.io.wmask <> decoder.io.ctrl.wmask
 
   //DPI in
   dpi.io.flag := Mux(decoder.io.ctrl.OP === ALU_EBREAK, 1.U(32.W), 0.U(32.W))
