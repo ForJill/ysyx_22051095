@@ -6,24 +6,22 @@ import config.Configs._
 
 class AXI extends Module {
   val io = IO(new Bundle {
-    val aresetn = Input(Bool())
-
     //读请求通道
-    val arid    = Output(UInt(4.W))
+    //val arid    = Output(UInt(4.W))
     val araddr  = Output(UInt(64.W))
-    val arsize  = Output(UInt(3.W))
+    //val arsize  = Output(UInt(3.W))
     val arvalid = Output(Bool())
     val arready = Input(Bool())
 
     //读响应通道
-    val rid    = Input(UInt(4.W))
+    //val rid    = Input(UInt(4.W))
     val rdata  = Input(UInt(64.W))
     val rresp  = Input(UInt(2.W))
     val rvalid = Input(Bool())
     val rready = Output(Bool())
 
     //写请求通道
-    val awid    = Output(UInt(4.W))
+    //val awid    = Output(UInt(4.W))
     val awaddr  = Output(UInt(64.W))
     val awlen   = Output(UInt(8.W))
     val awsize  = Output(UInt(3.W))
@@ -35,15 +33,15 @@ class AXI extends Module {
     val awready = Input(Bool())
 
     //写数据通道
-    val wid    = Output(UInt(4.W))
+    //val wid    = Output(UInt(4.W))
     val wdata  = Output(UInt(64.W))
     val wstrb  = Output(UInt(8.W))
-    val wlast  = Output(Bool())
+    //val wlast  = Output(Bool())
     val wvalid = Output(Bool())
     val wready = Input(Bool())
 
     //写响应通道
-    val bid    = Input(UInt(4.W))
+    //val bid    = Input(UInt(4.W))
     val bresp  = Input(UInt(2.W))
     val bvalid = Input(Bool())
     val bready = Output(Bool())
@@ -93,7 +91,6 @@ class AXI extends Module {
   val writing_data_sram = RegInit(0.U)
 
   /*-----------------读请求通道状态机-----------------*/
-  rstate := Mux(io.aresetn, sIdle, rstate)
   switch(rstate) {
     is(sIdle) {
       when((io.data_sram_req && !io.data_sram_wr) || (io.inst_sram_req && !io.inst_sram_wr) && write_init) {
@@ -116,9 +113,7 @@ class AXI extends Module {
     }
   }
   //表示正在处理读指令事务，不允许其他操作,取数据优先级比取指令高
-  when(!io.aresetn) {
-    reading_inst_sram := false.B
-  }.elsewhen(!io.data_sram_req && io.inst_sram_req && !io.inst_sram_wr && write_init && read_ainit) {
+  when(!io.data_sram_req && io.inst_sram_req && !io.inst_sram_wr && write_init && read_ainit) {
     reading_data_sram := true.B
   }.elsewhen(read_rdata && io.rvalid && io.rready) {
     reading_inst_sram := false.B
@@ -127,9 +122,7 @@ class AXI extends Module {
   }
 
   //表示正在处理读数据事务，不允许其他操作
-  when(!io.aresetn) {
-    reading_data_sram := false.B
-  }.elsewhen(io.data_sram_req && !io.data_sram_wr && write_init && read_ainit) {
+  when(io.data_sram_req && !io.data_sram_wr && write_init && read_ainit) {
     reading_data_sram := true.B
   }.elsewhen(read_rdata && io.rvalid && io.rready) {
     reading_data_sram := false.B
@@ -137,18 +130,7 @@ class AXI extends Module {
     reading_data_sram := reading_data_sram
   }
 
-  //读事务输出信号赋值
-  io.arid    := Mux(read_araddr && reading_data_sram, 1.U, Mux(read_araddr && reading_inst_sram, 0.U, 2.U))
-  io.arvalid := read_araddr
-  io.araddr := Mux(
-    read_araddr && reading_data_sram,
-    io.data_sram_addr,
-    Mux(read_araddr && reading_inst_sram, io.inst_sram_addr, 0.U)
-  )
-  io.rready := read_rdata
-
   /*-----------------写请求通道状态机-----------------*/
-  wstate := Mux(io.aresetn, sWriteIdle, wstate)
   switch(wstate) {
     is(sWriteIdle) {
       when((io.data_sram_req && io.data_sram_wr)) {
@@ -179,9 +161,7 @@ class AXI extends Module {
   }
 
   //表示正在处理写数据事务，不允许其他操作
-  when(!io.aresetn) {
-    writing_data_sram := 0.U
-  }.elsewhen((writing_data_sram == 2.U).asBool) {
+  when((writing_data_sram == 2.U).asBool) {
     writing_data_sram := 0.U
   }.elsewhen(io.awready || io.wready) {
     writing_data_sram := writing_data_sram + 1.U
@@ -189,11 +169,20 @@ class AXI extends Module {
     writing_data_sram := writing_data_sram
   }
 
+  //读事务输出信号赋值
+  //io.arid    := Mux(read_araddr && reading_data_sram, 1.U, Mux(read_araddr && reading_inst_sram, 0.U, 2.U))
+  io.arvalid := read_araddr
+  io.araddr := Mux(
+    read_araddr && reading_data_sram,
+    io.data_sram_addr,
+    Mux(read_araddr && reading_inst_sram, io.inst_sram_addr, 0.U)
+  )
+  io.rready := read_rdata
+  
   //写事务输出信号赋值
-  io.awid    := 1.U
+  //io.awid    := 1.U
   io.awvalid := write_addr
   io.awaddr  := Mux(write_addr, io.data_sram_addr, 0.U)
-
   io.wvalid := write_data
   io.wdata  := Mux(write_data, io.data_sram_wdata, 0.U)
   io.wstrb  := Mux(write_data, io.data_sram_wstrb, 0.U)
@@ -206,4 +195,5 @@ class AXI extends Module {
   io.data_sram_data_ok := reading_data_sram && io.rvalid || io.bvalid
   io.inst_sram_rdata   := io.rdata
   io.data_sram_rdata   := io.rdata
+
 }

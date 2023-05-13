@@ -36,6 +36,8 @@ extern "C" void get_pc(long long pc)
 // 导入memory函数
 extern "C" void pmem_read(long long raddr, long long *rdata)
 {
+  //延迟一拍
+  
   if (boot_time == 0)
   {
     gettimeofday(&now, NULL);

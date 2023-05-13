@@ -54,7 +54,7 @@ VL_ATTR_COLD void VTop___024root___eval_settle(VTop___024root* vlSelf) {
 #ifdef VL_DEBUG
                 VTop___024root___dump_triggers__stl(vlSelf);
 #endif
-                VL_FATAL_MT("vsrc/Top.v", 1503, "", "Settle region did not converge.");
+                VL_FATAL_MT("vsrc/Top.v", 1494, "", "Settle region did not converge.");
             }
             vlSelf->__VstlIterCount = ((IData)(1U) 
                                        + vlSelf->__VstlIterCount);
