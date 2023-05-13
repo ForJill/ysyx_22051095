@@ -10,15 +10,16 @@ class LSU extends Module {
     val waddr = Input(UInt(64.W))
     val wdata = Input(UInt(64.W))
     val wmask = Input(UInt(8.W))
-    val wen   = Input(Bool())
+    val ren  = Input(Bool())
+    val wen  = Input(Bool())
   })
-val data_mem = Module(new memory)
-//传给数据内存相应信号，对应data_sram通道
-  data_mem.io.raddr := io.raddr
-  data_mem.io.waddr := io.waddr
-  data_mem.io.wdata := io.wdata
-  data_mem.io.wmask := io.wmask
-  data_mem.io.wen   := io.wen
-//取出数据
-  io.rdata := data_mem.io.rdata
+  val axi = Module(new AXI)
+  //传给axi相应信号
+  axi.io.data_sram_req := io.ren || io.wen
+  axi.io.data_sram_wr  := io.wen
+  axi.io.data_sram_addr:= Mux(io.wen,io.waddr,io.raddr)
+  axi.io.data_sram_wstrb:= io.wmask
+  axi.io.data_sram_wdata:= io.wdata
+  //从axi接收的信号
+  io.rdata := axi.io.data_sram_rdata
 }

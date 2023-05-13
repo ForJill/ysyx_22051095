@@ -150,10 +150,6 @@ VL_ATTR_COLD void VTop___024root__trace_init_sub__TOP__0(VTop___024root* vlSelf,
     tracep->declQuad(c+74,"registers_io_regs_30", false,-1, 63,0);
     tracep->declQuad(c+76,"registers_io_regs_31", false,-1, 63,0);
     tracep->declQuad(c+209,"registers_io_reg17", false,-1, 63,0);
-    tracep->declBus(c+181,"Controller_io_ControlIO_In_OP", false,-1, 7,0);
-    tracep->declBit(c+186,"Controller_io_ControlIO_In_csr_wen", false,-1);
-    tracep->declBus(c+181,"Controller_io_AluCtrlIO_Out_alu_op", false,-1, 7,0);
-    tracep->declBit(c+186,"Controller_io_AluCtrlIO_Out_csr_wen", false,-1);
     tracep->declBus(c+218,"dpi_flag", false,-1, 31,0);
     tracep->declQuad(c+16,"dpi_rf_0", false,-1, 63,0);
     tracep->declQuad(c+18,"dpi_rf_1", false,-1, 63,0);
@@ -203,12 +199,6 @@ VL_ATTR_COLD void VTop___024root__trace_init_sub__TOP__0(VTop___024root* vlSelf,
     tracep->declQuad(c+192,"mem_io_wdata", false,-1, 63,0);
     tracep->declBus(c+184,"mem_io_wmask", false,-1, 7,0);
     tracep->declBit(c+183,"mem_io_wen", false,-1);
-    tracep->pushNamePrefix("Controller ");
-    tracep->declBus(c+181,"io_ControlIO_In_OP", false,-1, 7,0);
-    tracep->declBit(c+186,"io_ControlIO_In_csr_wen", false,-1);
-    tracep->declBus(c+181,"io_AluCtrlIO_Out_alu_op", false,-1, 7,0);
-    tracep->declBit(c+186,"io_AluCtrlIO_Out_csr_wen", false,-1);
-    tracep->popNamePrefix(1);
     tracep->pushNamePrefix("PC ");
     tracep->declBit(c+176,"clock", false,-1);
     tracep->declBit(c+177,"reset", false,-1);

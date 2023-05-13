@@ -4,7 +4,7 @@ uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {0};
 uint8_t *guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 CPU_state cpu;
 // 解析参数读取bin文件
-static char *img_file = "/home/ljw/Desktop/ysyx-workbench/nanos-lite/build/nanos-lite-riscv64-npc.bin";
+static char *img_file = "bin/image.bin";
 long img_size = 0;
 // ftrace
 int inst_num = 0;
