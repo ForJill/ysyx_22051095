@@ -217,7 +217,7 @@ void VTop___024root__trace_chg_sub_0(VTop___024root* vlSelf, VerilatedVcd::Buffe
                                     >> 0x14U);
         bufp->chgWData(oldp+100,(__Vtemp_h9ebd919b__0),76);
         bufp->chgQData(oldp+103,(vlSelf->Top__DOT__ifu__DOT__inst_mem_rdata),64);
-        bufp->chgQData(oldp+105,(vlSelf->Top__DOT__mem__DOT__data_mem_rdata),64);
+        bufp->chgQData(oldp+105,(vlSelf->Top__DOT__lsu__DOT__data_mem_rdata),64);
         bufp->chgQData(oldp+107,(vlSelf->Top__DOT__registers__DOT__registers[0]),64);
         bufp->chgQData(oldp+109,(vlSelf->Top__DOT__registers__DOT__registers[1]),64);
         bufp->chgQData(oldp+111,(vlSelf->Top__DOT__registers__DOT__registers[2]),64);

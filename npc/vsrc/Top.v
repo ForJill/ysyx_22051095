@@ -1455,14 +1455,14 @@ module IFU(
     .rdata(inst_mem_rdata),
     .wen(inst_mem_wen)
   );
-  assign io_inst = inst_mem_rdata[31:0]; // @[IFU.scala 13:31]
-  assign inst_mem_raddr = io_pc; // @[IFU.scala 12:21]
+  assign io_inst = inst_mem_rdata[31:0]; // @[IFU.scala 15:31]
+  assign inst_mem_raddr = io_pc; // @[IFU.scala 13:21]
   assign inst_mem_waddr = 64'h0;
   assign inst_mem_wdata = 64'h0;
   assign inst_mem_wmask = 8'h0;
   assign inst_mem_wen = 1'h0;
 endmodule
-module MEM(
+module LSU(
   input  [63:0] io_raddr,
   output [63:0] io_rdata,
   input  [63:0] io_waddr,
@@ -1470,13 +1470,13 @@ module MEM(
   input  [7:0]  io_wmask,
   input         io_wen
 );
-  wire [63:0] data_mem_raddr; // @[MEM.scala 15:22]
-  wire [63:0] data_mem_waddr; // @[MEM.scala 15:22]
-  wire [63:0] data_mem_wdata; // @[MEM.scala 15:22]
-  wire [7:0] data_mem_wmask; // @[MEM.scala 15:22]
-  wire [63:0] data_mem_rdata; // @[MEM.scala 15:22]
-  wire  data_mem_wen; // @[MEM.scala 15:22]
-  memory data_mem ( // @[MEM.scala 15:22]
+  wire [63:0] data_mem_raddr; // @[LSU.scala 15:22]
+  wire [63:0] data_mem_waddr; // @[LSU.scala 15:22]
+  wire [63:0] data_mem_wdata; // @[LSU.scala 15:22]
+  wire [7:0] data_mem_wmask; // @[LSU.scala 15:22]
+  wire [63:0] data_mem_rdata; // @[LSU.scala 15:22]
+  wire  data_mem_wen; // @[LSU.scala 15:22]
+  memory data_mem ( // @[LSU.scala 15:22]
     .raddr(data_mem_raddr),
     .waddr(data_mem_waddr),
     .wdata(data_mem_wdata),
@@ -1484,12 +1484,12 @@ module MEM(
     .rdata(data_mem_rdata),
     .wen(data_mem_wen)
   );
-  assign io_rdata = data_mem_rdata; // @[MEM.scala 17:12]
-  assign data_mem_raddr = io_raddr; // @[MEM.scala 16:21]
-  assign data_mem_waddr = io_waddr; // @[MEM.scala 18:21]
-  assign data_mem_wdata = io_wdata; // @[MEM.scala 19:21]
-  assign data_mem_wmask = io_wmask; // @[MEM.scala 20:21]
-  assign data_mem_wen = io_wen; // @[MEM.scala 21:21]
+  assign io_rdata = data_mem_rdata; // @[LSU.scala 23:12]
+  assign data_mem_raddr = io_raddr; // @[LSU.scala 17:21]
+  assign data_mem_waddr = io_waddr; // @[LSU.scala 18:21]
+  assign data_mem_wdata = io_wdata; // @[LSU.scala 19:21]
+  assign data_mem_wmask = io_wmask; // @[LSU.scala 20:21]
+  assign data_mem_wen = io_wen; // @[LSU.scala 21:21]
 endmodule
 module Top(
   input         clock,
@@ -1647,29 +1647,29 @@ module Top(
   wire [31:0] dpi_eval; // @[TopMain.scala 40:19]
   wire [63:0] ifu_io_pc; // @[TopMain.scala 41:19]
   wire [31:0] ifu_io_inst; // @[TopMain.scala 41:19]
-  wire [63:0] mem_io_raddr; // @[TopMain.scala 42:19]
-  wire [63:0] mem_io_rdata; // @[TopMain.scala 42:19]
-  wire [63:0] mem_io_waddr; // @[TopMain.scala 42:19]
-  wire [63:0] mem_io_wdata; // @[TopMain.scala 42:19]
-  wire [7:0] mem_io_wmask; // @[TopMain.scala 42:19]
-  wire  mem_io_wen; // @[TopMain.scala 42:19]
-  wire [55:0] _registers_io_wdata_T_4 = mem_io_rdata[7] ? 56'hffffffffffffff : 56'h0; // @[Bitwise.scala 74:12]
-  wire [63:0] _registers_io_wdata_T_5 = {_registers_io_wdata_T_4,mem_io_rdata[7:0]}; // @[Cat.scala 31:58]
-  wire [47:0] _registers_io_wdata_T_12 = mem_io_rdata[15] ? 48'hffffffffffff : 48'h0; // @[Bitwise.scala 74:12]
-  wire [63:0] _registers_io_wdata_T_13 = {_registers_io_wdata_T_12,mem_io_rdata[15:0]}; // @[Cat.scala 31:58]
-  wire [63:0] _registers_io_wdata_T_17 = mem_io_rdata; // @[TopMain.scala 64:71]
-  wire [31:0] _registers_io_wdata_T_24 = mem_io_rdata[31] ? 32'hffffffff : 32'h0; // @[Bitwise.scala 74:12]
-  wire [63:0] _registers_io_wdata_T_25 = {_registers_io_wdata_T_24,mem_io_rdata[31:0]}; // @[Cat.scala 31:58]
+  wire [63:0] lsu_io_raddr; // @[TopMain.scala 42:19]
+  wire [63:0] lsu_io_rdata; // @[TopMain.scala 42:19]
+  wire [63:0] lsu_io_waddr; // @[TopMain.scala 42:19]
+  wire [63:0] lsu_io_wdata; // @[TopMain.scala 42:19]
+  wire [7:0] lsu_io_wmask; // @[TopMain.scala 42:19]
+  wire  lsu_io_wen; // @[TopMain.scala 42:19]
+  wire [55:0] _registers_io_wdata_T_4 = lsu_io_rdata[7] ? 56'hffffffffffffff : 56'h0; // @[Bitwise.scala 74:12]
+  wire [63:0] _registers_io_wdata_T_5 = {_registers_io_wdata_T_4,lsu_io_rdata[7:0]}; // @[Cat.scala 31:58]
+  wire [47:0] _registers_io_wdata_T_12 = lsu_io_rdata[15] ? 48'hffffffffffff : 48'h0; // @[Bitwise.scala 74:12]
+  wire [63:0] _registers_io_wdata_T_13 = {_registers_io_wdata_T_12,lsu_io_rdata[15:0]}; // @[Cat.scala 31:58]
+  wire [63:0] _registers_io_wdata_T_17 = lsu_io_rdata; // @[TopMain.scala 64:71]
+  wire [31:0] _registers_io_wdata_T_24 = lsu_io_rdata[31] ? 32'hffffffff : 32'h0; // @[Bitwise.scala 74:12]
+  wire [63:0] _registers_io_wdata_T_25 = {_registers_io_wdata_T_24,lsu_io_rdata[31:0]}; // @[Cat.scala 31:58]
   wire [63:0] _registers_io_wdata_T_26 = decoder_io_ctrl_OP == 8'h21 ? _registers_io_wdata_T_25 : alu_io_out; // @[TopMain.scala 66:28]
-  wire [63:0] _registers_io_wdata_T_27 = decoder_io_ctrl_OP == 8'h22 ? {{32'd0}, mem_io_rdata[31:0]} :
+  wire [63:0] _registers_io_wdata_T_27 = decoder_io_ctrl_OP == 8'h22 ? {{32'd0}, lsu_io_rdata[31:0]} :
     _registers_io_wdata_T_26; // @[TopMain.scala 65:28]
   wire [63:0] _registers_io_wdata_T_28 = decoder_io_ctrl_OP == 8'h20 ? _registers_io_wdata_T_17 :
     _registers_io_wdata_T_27; // @[TopMain.scala 64:28]
-  wire [63:0] _registers_io_wdata_T_29 = decoder_io_ctrl_OP == 8'h1f ? {{48'd0}, mem_io_rdata[15:0]} :
+  wire [63:0] _registers_io_wdata_T_29 = decoder_io_ctrl_OP == 8'h1f ? {{48'd0}, lsu_io_rdata[15:0]} :
     _registers_io_wdata_T_28; // @[TopMain.scala 63:28]
   wire [63:0] _registers_io_wdata_T_30 = decoder_io_ctrl_OP == 8'h1e ? _registers_io_wdata_T_13 :
     _registers_io_wdata_T_29; // @[TopMain.scala 62:28]
-  wire [63:0] _registers_io_wdata_T_31 = decoder_io_ctrl_OP == 8'h1d ? {{56'd0}, mem_io_rdata[7:0]} :
+  wire [63:0] _registers_io_wdata_T_31 = decoder_io_ctrl_OP == 8'h1d ? {{56'd0}, lsu_io_rdata[7:0]} :
     _registers_io_wdata_T_30; // @[TopMain.scala 61:28]
   wire [63:0] _registers_io_wdata_T_32 = decoder_io_ctrl_OP == 8'h1c ? _registers_io_wdata_T_5 :
     _registers_io_wdata_T_31; // @[TopMain.scala 60:28]
@@ -1812,13 +1812,13 @@ module Top(
     .io_pc(ifu_io_pc),
     .io_inst(ifu_io_inst)
   );
-  MEM mem ( // @[TopMain.scala 42:19]
-    .io_raddr(mem_io_raddr),
-    .io_rdata(mem_io_rdata),
-    .io_waddr(mem_io_waddr),
-    .io_wdata(mem_io_wdata),
-    .io_wmask(mem_io_wmask),
-    .io_wen(mem_io_wen)
+  LSU lsu ( // @[TopMain.scala 42:19]
+    .io_raddr(lsu_io_raddr),
+    .io_rdata(lsu_io_rdata),
+    .io_waddr(lsu_io_waddr),
+    .io_wdata(lsu_io_wdata),
+    .io_wmask(lsu_io_wmask),
+    .io_wen(lsu_io_wen)
   );
   assign io_pc = PC_io_pc; // @[TopMain.scala 79:9]
   assign io_ctrl_RegWen = decoder_io_ctrl_RegWen; // @[TopMain.scala 80:11]
@@ -1840,7 +1840,7 @@ module Top(
   assign io_inst = ifu_io_inst; // @[TopMain.scala 88:11]
   assign io_is_b = alu_io_is_b[0]; // @[TopMain.scala 90:11]
   assign io_wmask = decoder_io_ctrl_wmask; // @[TopMain.scala 91:12]
-  assign io_rdata = mem_io_rdata; // @[TopMain.scala 92:12]
+  assign io_rdata = lsu_io_rdata; // @[TopMain.scala 92:12]
   assign io_fmemwdata = decoder_io_ctrl_MemLoad ? _registers_io_wdata_T_32 : alu_io_out; // @[TopMain.scala 93:22]
   assign io_is_e = decoder_io_ctrl_E_JUMP; // @[TopMain.scala 101:11]
   assign io_is_csr = decoder_io_ctrl_csr_wen; // @[TopMain.scala 102:13]
@@ -1911,9 +1911,9 @@ module Top(
   assign dpi_pc = io_pc; // @[TopMain.scala 156:16]
   assign dpi_eval = {{31'd0}, decoder_io_eval}; // @[TopMain.scala 157:16]
   assign ifu_io_pc = PC_io_pc; // @[TopMain.scala 107:13]
-  assign mem_io_raddr = alu_io_out; // @[TopMain.scala 110:16]
-  assign mem_io_waddr = alu_io_out; // @[TopMain.scala 111:16]
-  assign mem_io_wdata = registers_io_rdata2; // @[TopMain.scala 112:16]
-  assign mem_io_wmask = decoder_io_ctrl_wmask; // @[TopMain.scala 114:16]
-  assign mem_io_wen = decoder_io_ctrl_MemWen; // @[TopMain.scala 113:14]
+  assign lsu_io_raddr = alu_io_out; // @[TopMain.scala 110:16]
+  assign lsu_io_waddr = alu_io_out; // @[TopMain.scala 111:16]
+  assign lsu_io_wdata = registers_io_rdata2; // @[TopMain.scala 112:16]
+  assign lsu_io_wmask = decoder_io_ctrl_wmask; // @[TopMain.scala 114:16]
+  assign lsu_io_wen = decoder_io_ctrl_MemWen; // @[TopMain.scala 113:14]
 endmodule
