@@ -3,18 +3,18 @@ package utils
 import chisel3._
 import chisel3.util._
 
-class MUL extends Module {
+class MUL(len: Int) extends Module {
   val io = IO(new Bundle() {
     val mul_valid    = Input(Bool())
     val flush        = Input(Bool()) //1：cancel mul 0：not cancel
     val mulw         = Input(Bool()) //1:32bit, 0:64bit
     val mul_signed   = Input(UInt(2.W)) //11：signed signed 10:signed unsigned 01:unsigned signed 00:unsigned unsigned
-    val multiplicand = Input(UInt(64.W))
-    val multiplier   = Input(UInt(64.W))
+    val multiplicand = Input(UInt(len.W))
+    val multiplier   = Input(UInt(len.W))
     val mul_ready    = Output(Bool()) //1：ready to accept new input 0：not ready
     val out_valid    = Output(Bool()) //1：output is valid 0：output is not valid
-    val result_hi    = Output(UInt(64.W))
-    val result_lo    = Output(UInt(64.W))
+    val result_hi    = Output(UInt(len.W))
+    val result_lo    = Output(UInt(len.W))
   })
   /*
   //一位移位乘法器（移位加）
@@ -62,35 +62,35 @@ class MUL extends Module {
   io.out_valid := false.B
   io.mul_ready := false.B
   //在乘数和被乘数最右侧补零
-  val m1   = Wire(UInt(64.W))
-  val m2 = Wire(UInt(64.W))
-  val multiplier = Wire(UInt(66.W))
-  val multiplicand   = Wire(UInt(66.W))
-  m1   := io.multiplier
-  m2 := io.multiplicand
-  multiplier   := Cat(io.mul_signed(1) & m1(63), m1, 0.U(1.W))
-  multiplicand := Cat(io.mul_signed(0) & m2(63), m2, 0.U(1.W))
+  val m1           = Wire(UInt(len.W))
+  val m2           = Wire(UInt(len.W))
+  val multiplier   = Wire(UInt((len+2).W))
+  val multiplicand = Wire(UInt((len+2).W))
+  m1           := io.multiplier
+  m2           := io.multiplicand
+  multiplier   := Cat(io.mul_signed(1) & m1((len-1)), m1, 0.U(1.W))
+  multiplicand := Cat(io.mul_signed(0) & m2((len-1)), m2, 0.U(1.W))
   //被乘数放在132bits的寄存器中,乘数放在66bits的寄存器中
-  val multiplicand_reg = RegInit(0.U(132.W))
-  val multiplier_reg = RegInit(0.U(66.W))
-  val result = RegInit(0.U(132.W))
-  val start = RegInit(false.B)
-  val end = RegInit(false.B)
-  val time = RegInit(0.U(6.W))
+  val len_2 = len + len
+  val multiplicand_reg = RegInit(0.U((len_2+4).W))
+  val multiplier_reg   = RegInit(0.U((len+2).W))
+  val result           = RegInit(0.U((len_2+4).W))
+  val start            = RegInit(false.B)
+  val end              = RegInit(false.B)
   //乘数为0时，输出结果
-  when(io.mul_valid){
-    result := 0.U
-    start  := true.B
+  when(io.mul_valid) {
+    result       := 0.U
+    start        := true.B
     io.out_valid := false.B
     io.mul_ready := false.B
   }
-  when(multiplier_reg === 0.U && start === true.B){
+  when(multiplier_reg === 0.U && start === true.B) {
     io.out_valid := true.B
     io.mul_ready := true.B
-    start := false.B
-    end := true.B
+    start        := false.B
+    end          := true.B
   }
-  multiplier_reg := Mux(start === false.B && !end && io.mul_valid, multiplier, multiplier_reg >> 2)
+  multiplier_reg   := Mux(start === false.B && !end && io.mul_valid, multiplier, multiplier_reg >> 2)
   multiplicand_reg := Mux(start === false.B && !end && io.mul_valid, multiplicand, multiplicand_reg << 2)
   //把乘数的最低 3bits 和被乘数的 132bits 输入到部分积生成模块
   val bg = Module(new BOOTH_gen).io
@@ -99,8 +99,8 @@ class MUL extends Module {
   //把部分积输出到部分积加法器
   result := Mux(start === true.B, result + bg.out + bg.cout, result)
   //把部分积加法器的结果输出到结果寄存器
-  io.result_hi := result(127, 64) 
-  io.result_lo := result(63, 0) >> 1
+  io.result_hi := result((len_2-1), len)
+  io.result_lo := result((len-1), 0) >> 1
   /*
   //华莱士树
   val sw = Module(new switch(33,132)).io
@@ -109,9 +109,9 @@ class MUL extends Module {
   for(i <- 0 until 132){
     ws(i).src_in := sw.out(i)
   }
-*/
+   */
 
 }
 object MUL extends App {
-  emitVerilog(new MUL(), Array("--target-dir", "vsrc"))
+  emitVerilog(new MUL(64), Array("--target-dir", "vsrc"))
 }

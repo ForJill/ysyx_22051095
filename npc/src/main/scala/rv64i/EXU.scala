@@ -42,6 +42,48 @@ class EXU extends Module {
   src2      := io.in2
   csr_index := io.csr_index
 
+  val mul_64 = (Module(new MUL(64)).io)
+  val mul_32 = (Module(new MUL(32)).io)
+  val is_mul_64 = io.ctrl.alu_op === ALU_MUL
+  val is_mul_32 = io.ctrl.alu_op === ALU_MULW
+
+  mul_64.mul_valid := is_mul_64
+  mul_64.flush := false.B
+  mul_64.mulw := false.B
+  mul_64.mul_signed := false.B
+  mul_64.multiplicand := src1
+  mul_64.multiplier := src2
+  
+  mul_32.mul_valid := is_mul_32
+  mul_32.flush := false.B
+  mul_32.mulw := true.B
+  mul_32.mul_signed := false.B
+  mul_32.multiplicand := src1(31, 0)
+  mul_32.multiplier := src2(31, 0)
+
+
+
+  val div_64 = (Module(new div(64)).io)
+  val div_32 = (Module(new div(32)).io)
+  val is_div_64 = io.ctrl.alu_op === ALU_DIV || io.ctrl.alu_op === ALU_DIVU
+  val is_div_32 = io.ctrl.alu_op === ALU_DIVW || io.ctrl.alu_op === ALU_DIVUW
+  val is_rem_64 = io.ctrl.alu_op === ALU_REM || io.ctrl.alu_op === ALU_REMU
+  val is_rem_32 = io.ctrl.alu_op === ALU_REMW || io.ctrl.alu_op === ALU_REMUW
+
+  div_64.div_valid := is_div_64 || is_rem_64
+  div_64.flush := false.B
+  div_64.divw := false.B
+  div_64.div_signed := io.ctrl.alu_op === ALU_DIV || io.ctrl.alu_op === ALU_REM
+  div_64.dividend := src1
+  div_64.divisor := src2
+
+  div_32.div_valid := is_div_32 || is_rem_32
+  div_32.flush := false.B
+  div_32.divw := true.B
+  div_32.div_signed := io.ctrl.alu_op === ALU_DIVW || io.ctrl.alu_op === ALU_REMW
+  div_32.dividend := src1(31, 0)
+  div_32.divisor := src2(31, 0)
+
   result := MuxLookup(
     io.ctrl.alu_op,
     0.U,
@@ -55,8 +97,8 @@ class EXU extends Module {
       ALU_MULW -> Sext((src1(31, 0) * src2(31, 0)), 32),
       ALU_DIV -> Mux(src2 === 0.U, 0.U, (src1.asSInt / src2.asSInt).asUInt),//有符号数
       ALU_DIVU -> Mux(src2 === 0.U, 0.U, src1 / src2),
-      ALU_DIVW -> Sext((src1(31,0).asSInt/src2(31,0).asSInt).asUInt, 32),
-      ALU_DIVUW -> Sext((src1(31,0)/src2(31,0)), 32),
+      ALU_DIVW -> Sext(div_32.quotient,32),//Sext((src1(31,0).asSInt/src2(31,0).asSInt).asUInt, 32),
+      ALU_DIVUW -> Sext(div_32.quotient,32),//Sext((src1(31,0)/src2(31,0)), 32),
       ALU_SLL -> (src1 << src2(5,0)),
       ALU_SLT -> Mux((src1.asSInt < src2.asSInt),1.U,0.U),
       ALU_SLTU -> Mux((src1 < src2),1.U,0.U),
@@ -68,10 +110,10 @@ class EXU extends Module {
       ALU_XOR -> (src1 ^ src2),
       ALU_AND -> (src1 & src2),
       ALU_OR -> (src1 | src2),
-      ALU_REM -> (src1.asSInt % src2.asSInt).asUInt,
-      ALU_REMU -> (src1 % src2),
-      ALU_REMW -> Sext((src1(31, 0).asSInt % src2(31, 0).asSInt).asUInt, 32),
-      ALU_REMUW -> Sext(src1(31, 0) % src2(31, 0), 32),
+      ALU_REM -> div_64.remainder,//(src1.asSInt % src2.asSInt).asUInt,
+      ALU_REMU -> div_64.remainder,//(src1 % src2),
+      ALU_REMW -> div_32.remainder,//Sext((src1(31, 0).asSInt % src2(31, 0).asSInt).asUInt, 32),
+      ALU_REMUW -> div_32.remainder,//Sext(src1(31, 0) % src2(31, 0), 32),
       //I_type
       ALU_ADDI -> (src1 + imm),
       ALU_ADDIW -> Sext((src1(31, 0) + imm), 32),

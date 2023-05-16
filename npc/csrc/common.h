@@ -124,7 +124,7 @@ void i8042_data_io_handler();
 void update_kbd();
 // config
 //#define CONFIG_ITRACE 1
-//#define CONFIG_DIFFTEST 1
+#define CONFIG_DIFFTEST 1
 //#define CONFIG_FTRACE 1
 //#define CONFIG_WAVEFORM 1
 #endif
