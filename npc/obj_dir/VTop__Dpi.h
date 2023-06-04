@@ -16,19 +16,19 @@ extern "C" {
 
 
     // DPI IMPORTS
-    // DPI import at vsrc/DPI.v:2:30
+    // DPI import at vsrc/DPI_EBREAK.v:2:30
     extern void ebreak(int flag);
-    // DPI import at vsrc/DPI.v:4:30
+    // DPI import at vsrc/DPI.v:3:30
     extern void get_inst(long long inst);
-    // DPI import at vsrc/DPI.v:5:30
+    // DPI import at vsrc/DPI.v:4:30
     extern void get_pc(long long pc);
     // DPI import at vsrc/memory.v:2:30
     extern void pmem_read(long long raddr, long long* rdata);
     // DPI import at vsrc/memory.v:3:30
     extern void pmem_write(long long waddr, long long wdata, char wmask);
-    // DPI import at vsrc/DPI.v:3:30
+    // DPI import at vsrc/DPI.v:2:30
     extern void set_gpr_ptr(const svOpenArrayHandle a);
-    // DPI import at vsrc/DPI.v:6:30
+    // DPI import at vsrc/DPI.v:5:30
     extern void skip_ref(int eval);
 
 #ifdef __cplusplus

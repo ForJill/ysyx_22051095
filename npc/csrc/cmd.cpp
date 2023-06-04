@@ -49,6 +49,12 @@ void executeCommand(char input)
   case 's':
     cmd_c();
     break;
+  case 't':
+    //执行十次cmd
+    for (int i = 0; i < 10; i++)
+    {
+      cmd_c();
+    }
   default:
     std::cout << "Invalid command" << std::endl;
     break;
@@ -70,33 +76,41 @@ int cmd_c()
   {
     dut->reset = 1;
     dut->eval();
+#ifdef CONFIG_DEVICE
     vga_update_screen();
+#endif
   }
   else
   {
     dut->reset = 0;
     dut->eval();
+#ifdef CONFIG_DEVICE
     vga_update_screen();
     update_kbd();
+#endif
     if (sim_time % 2 == 1)
     {
       if (dut->clock == 1)
       {
         if (sim_time >= 2)
         {
+          //printf("wb_pc = %lx wb_inst= %lx\n", now_pc, now_inst);
+          //printf("ds_pc = %x ds_inst= %lx\n", now_pc,now_inst);
           cpu.gpr[0] = 0;
           for (int i = 1; i < 32; i++)
             cpu.gpr[i] = cpu_gpr[i];
+          //isa_reg_display();
           cpu.csr.mcause = cpu_gpr[33];
           cpu.csr.mepc = cpu_gpr[34];
           cpu.csr.mstatus = cpu_gpr[35];
           cpu.csr.mtvec = cpu_gpr[36];
 
-#ifdef CONFIG_DIFFTEST
-          difftest_step(cpu.pc);
-#endif
 #ifdef CONFIG_ITRACE
           itrace(&s, now_pc, now_inst);
+#endif
+#ifdef CONFIG_DIFFTEST
+        if(dut->io_in_WB)
+          difftest_step(cpu.pc);
 #endif
 #ifdef CONFIG_FTRACE
           if ((BITS(now_inst, 6, 0) == 0x67 && BITS(now_inst, 14, 12) == 0x0 && now_inst != 0x8067) || BITS(now_inst, 6, 0) == 0x6f)
@@ -113,7 +127,7 @@ int cmd_c()
           }
 #endif
         }
-        cpu.pc = dut->io_pc;
+        cpu.pc = now_pc;
         //if(dut->io_is_e){
         //  printf("eeee!\npc = %lx inst= %lx\n", now_pc, now_inst);
         //  isa_reg_display();
@@ -134,7 +148,7 @@ int cmd_c()
   }
   if (stop || is_exit)
   {
-    printf("stop at %lx\n", dut->io_pc);
+    //printf("stop at %lx\n", dut->io_wb_pc);
     return 1;
   }
   if (sim_time % 2 == 0)

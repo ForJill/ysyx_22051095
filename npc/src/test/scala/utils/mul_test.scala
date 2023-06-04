@@ -7,6 +7,7 @@ import chisel3.experimental.BundleLiterals._
 import chiseltest.formal._
 import chiseltest.formal.BoundedCheck
 import utest._
+import utils.MUL
 
 class mul_test extends Module {
     val io = IO(new Bundle{

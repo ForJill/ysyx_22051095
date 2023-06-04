@@ -14,32 +14,18 @@ VTop::VTop(VerilatedContext* _vcontextp__, const char* _vcname__)
     , vlSymsp{new VTop__Syms(contextp(), _vcname__, this)}
     , clock{vlSymsp->TOP.clock}
     , reset{vlSymsp->TOP.reset}
-    , io_ctrl_RegWen{vlSymsp->TOP.io_ctrl_RegWen}
-    , io_ctrl_OP{vlSymsp->TOP.io_ctrl_OP}
-    , io_ctrl_J_JUMP{vlSymsp->TOP.io_ctrl_J_JUMP}
-    , io_ctrl_MemWen{vlSymsp->TOP.io_ctrl_MemWen}
-    , io_ctrl_wmask{vlSymsp->TOP.io_ctrl_wmask}
-    , io_ctrl_MemLoad{vlSymsp->TOP.io_ctrl_MemLoad}
-    , io_ctrl_csr_wen{vlSymsp->TOP.io_ctrl_csr_wen}
-    , io_ctrl_E_JUMP{vlSymsp->TOP.io_ctrl_E_JUMP}
-    , io_rd{vlSymsp->TOP.io_rd}
     , io_op{vlSymsp->TOP.io_op}
-    , io_MemWen{vlSymsp->TOP.io_MemWen}
-    , io_MemLoad{vlSymsp->TOP.io_MemLoad}
-    , io_is_b{vlSymsp->TOP.io_is_b}
-    , io_wmask{vlSymsp->TOP.io_wmask}
-    , io_is_e{vlSymsp->TOP.io_is_e}
-    , io_is_csr{vlSymsp->TOP.io_is_csr}
-    , io_inst{vlSymsp->TOP.io_inst}
-    , io_pc{vlSymsp->TOP.io_pc}
-    , io_resultALU{vlSymsp->TOP.io_resultALU}
-    , io_rs1{vlSymsp->TOP.io_rs1}
-    , io_rs2{vlSymsp->TOP.io_rs2}
-    , io_imm{vlSymsp->TOP.io_imm}
-    , io_rdata{vlSymsp->TOP.io_rdata}
-    , io_fmemwdata{vlSymsp->TOP.io_fmemwdata}
-    , io_reg17{vlSymsp->TOP.io_reg17}
+    , io_in_WB{vlSymsp->TOP.io_in_WB}
+    , io_clock{vlSymsp->TOP.io_clock}
+    , io_ld_type{vlSymsp->TOP.io_ld_type}
+    , io_fs_pc{vlSymsp->TOP.io_fs_pc}
+    , io_wb_pc{vlSymsp->TOP.io_wb_pc}
+    , io_wb_inst{vlSymsp->TOP.io_wb_inst}
+    , io_ds_pc{vlSymsp->TOP.io_ds_pc}
+    , io_mem_result{vlSymsp->TOP.io_mem_result}
     , __PVT____024unit{vlSymsp->TOP.__PVT____024unit}
+    , __PVT__Top__DOT__exu__DOT__mul__DOT__BOOTH_gen{vlSymsp->TOP.__PVT__Top__DOT__exu__DOT__mul__DOT__BOOTH_gen}
+    , __PVT__Top__DOT__exu__DOT__mul_1__DOT__BOOTH_gen{vlSymsp->TOP.__PVT__Top__DOT__exu__DOT__mul_1__DOT__BOOTH_gen}
     , rootp{&(vlSymsp->TOP)}
 {
     // Register model with the context

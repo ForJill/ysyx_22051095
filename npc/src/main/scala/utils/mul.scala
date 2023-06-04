@@ -3,7 +3,7 @@ package utils
 import chisel3._
 import chisel3.util._
 
-class MUL(len: Int) extends Module {
+class mul(len: Int) extends Module {
   val io = IO(new Bundle() {
     val mul_valid    = Input(Bool())
     val flush        = Input(Bool()) //1：cancel mul 0：not cancel
@@ -88,19 +88,31 @@ class MUL(len: Int) extends Module {
     io.out_valid := true.B
     io.mul_ready := true.B
     start        := false.B
-    end          := true.B
+    //end          := true.B
   }
-  multiplier_reg   := Mux(start === false.B && !end && io.mul_valid, multiplier, multiplier_reg >> 2)
-  multiplicand_reg := Mux(start === false.B && !end && io.mul_valid, multiplicand, multiplicand_reg << 2)
+
+  //when(end === true.B)
+  //{
+    //end := false.B
+  //}
+  multiplier_reg   := Mux(start === false.B && io.mul_valid, multiplier, multiplier_reg >> 2)
+  multiplicand_reg := Mux(start === false.B && io.mul_valid, multiplicand, multiplicand_reg << 2)
   //把乘数的最低 3bits 和被乘数的 132bits 输入到部分积生成模块
   val bg = Module(new BOOTH_gen).io
   bg.y := multiplier_reg(2, 0)
   bg.x := multiplicand_reg
   //把部分积输出到部分积加法器
   result := Mux(start === true.B, result + bg.out + bg.cout, result)
+  //根据乘数和被乘数的符号位，判断结果的符号位
+  val result_sign = Wire(UInt(1.W))
+  result_sign := m1((len-1)) ^ m2((len-1))
   //把部分积加法器的结果输出到结果寄存器
   io.result_hi := result((len_2-1), len)
-  io.result_lo := result((len-1), 0) >> 1
+  io.result_lo := Cat(result_sign,(result((len-1), 0) >> 1)(len-2, 0))
+  //清零
+  when(io.out_valid){
+    result := 0.U
+  }
   /*
   //华莱士树
   val sw = Module(new switch(33,132)).io
@@ -112,6 +124,6 @@ class MUL(len: Int) extends Module {
    */
 
 }
-object MUL extends App {
-  emitVerilog(new MUL(64), Array("--target-dir", "vsrc"))
+object mul extends App {
+  emitVerilog(new mul(64), Array("--target-dir", "vsrc"))
 }

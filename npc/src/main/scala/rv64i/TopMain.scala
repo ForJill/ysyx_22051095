@@ -8,154 +8,81 @@ import chisel3.util.experimental.BoringUtils
 import config.Configs._
 import config.OP._
 
-class TopIO extends Bundle {
-  val pc      = Output(UInt(ADDR_WIDTH.W))
-  val ctrl      = new ControlIO()
-  val resultALU = Output(UInt(DATA_WIDTH.W))
-  val rs1       = Output(UInt(DATA_WIDTH.W))
-  val rs2       = Output(UInt(DATA_WIDTH.W))
-  val rd        = Output(UInt(5.W))
-  val imm      = Output(UInt(DATA_WIDTH.W))
-  val op    = Output(UInt(8.W))
-  val MemWen = Output(Bool())
-  val MemLoad = Output(Bool())
-  val inst = Output(UInt(32.W))
-  val is_b = Output(Bool())
-  val wmask = Output(UInt(8.W))
-  val rdata = Output(UInt(64.W))
-  val fmemwdata = Output(UInt(64.W))
-  val is_e = Output(Bool())
-  val is_csr = Output(Bool())
-  val reg17 = Output(UInt(64.W))
-  //val wronginst = Output(Bool())
-}
-
 class Top extends Module {
-  val io         = IO(new TopIO)
-  val PC         = Module(new PC)
-  val alu        = Module(new EXU)
-  val decoder    = Module(new IDU)
-  //val instmem    = Module(new InstMem)
-  val registers  = Module(new Registers)
-  val dpi = Module(new DPI)
+  val io = IO(new Bundle {
+    val fs_pc      = Output(UInt(32.W))
+    val op      = Output(UInt(7.W))
+    val in_WB   = Output(Bool())
+    val wb_pc   = Output(UInt(32.W))
+    val wb_inst = Output(UInt(32.W))
+    val ds_pc   = Output(UInt(32.W))
+    val clock   = Input(UInt(1.W))
+    val mem_result = Output(UInt(64.W))
+    val ld_type = Output(UInt(3.W))
+  })
+
   val ifu = Module(new IFU)
-  val lsu = Module(new LSU)
-  
+  val idu = Module(new IDU)
+  val exu = Module(new EXU)
+  val mem = Module(new MEM)
+  val wbu = Module(new WBU)
+  val dpi = Module(new DPI)
 
-  def Sext(x: UInt, n: Int): UInt = Cat(Fill(64 - n, x(n - 1)), x)
-  //PC in 
-  PC.io.is_j <> decoder.io.ctrl.J_JUMP
-  PC.io.j_branch <> alu.io.j_branch
-  PC.io.is_b <> alu.io.is_b
-  PC.io.b_branch <> alu.io.out
-  PC.io.is_e <> decoder.io.ctrl.E_JUMP
-  PC.io.e_branch <> alu.io.e_branch
+  // IFU
+  val inst_mem = Module(new memory)
+  ifu.io.ds_allowin <> idu.io.ds_allowin
+  ifu.io.br_bus <> idu.io.br_bus
+  ifu.io.inst_sram_rdata <> inst_mem.io.rdata
 
-  //Decoder in
-  decoder.io.inst <> ifu.io.inst
-  
-  //Register in
-  registers.io.reg <> decoder.io.reg
-  registers.io.wdata <> Mux(decoder.io.ctrl.MemLoad,
-                        Mux(decoder.io.ctrl.OP === ALU_LB,Sext(lsu.io.rdata(7,0),8),
-                        Mux(decoder.io.ctrl.OP === ALU_LBU,lsu.io.rdata(7,0),
-                        Mux(decoder.io.ctrl.OP === ALU_LH,Sext(lsu.io.rdata(15,0),16),
-                        Mux(decoder.io.ctrl.OP === ALU_LHU,lsu.io.rdata(15,0),
-                        Mux(decoder.io.ctrl.OP === ALU_LD,lsu.io.rdata(63,0),
-                        Mux(decoder.io.ctrl.OP === ALU_LWU,lsu.io.rdata(31,0),
-                        Mux(decoder.io.ctrl.OP === ALU_LW,Sext(lsu.io.rdata(31,0),32),alu.io.out))))))),alu.io.out)
-  registers.io.wen <> decoder.io.ctrl.RegWen
-  //Alu in
-  alu.io.ctrl.alu_op <> decoder.io.ctrl.OP
-  alu.io.ctrl.csr_wen <> decoder.io.ctrl.csr_wen
-  alu.io.in1 <> registers.io.rdata1
-  alu.io.in2 <> registers.io.rdata2
-  alu.io.imm <> decoder.io.imm
-  alu.io.pc  <> PC.io.pc
-  alu.io.csr_index <> decoder.io.reg.csr_index
-  alu.io.reg17 <> registers.io.reg17
+  ifu.io.wf_bus <> wbu.io.wf_bus
 
-  //top
-  io.pc <> PC.io.pc
-  io.ctrl <> decoder.io.ctrl
-  io.rs1       <> registers.io.rdata1
-  io.rs2       <> registers.io.rdata2
-  io.rd        <> decoder.io.reg.rd
-  io.imm       <> decoder.io.imm
-  io.op     <> decoder.io.ctrl.OP
-  io.resultALU <> alu.io.out
-  io.MemWen <> decoder.io.ctrl.MemWen
-  io.inst <> ifu.io.inst
-  io.MemLoad <> decoder.io.ctrl.MemLoad
-  io.is_b <> alu.io.is_b
-  io.wmask <> decoder.io.ctrl.wmask
-  io.rdata <> lsu.io.rdata
-  io.fmemwdata <> Mux(decoder.io.ctrl.MemLoad,
-                        Mux(decoder.io.ctrl.OP === ALU_LB,Sext(lsu.io.rdata(7,0),8),
-                        Mux(decoder.io.ctrl.OP === ALU_LBU,lsu.io.rdata(7,0),
-                        Mux(decoder.io.ctrl.OP === ALU_LH,Sext(lsu.io.rdata(15,0),16),
-                        Mux(decoder.io.ctrl.OP === ALU_LHU,lsu.io.rdata(15,0),
-                        Mux(decoder.io.ctrl.OP === ALU_LD,lsu.io.rdata(63,0),
-                        Mux(decoder.io.ctrl.OP === ALU_LWU,lsu.io.rdata(31,0),
-                        Mux(decoder.io.ctrl.OP === ALU_LW,Sext(lsu.io.rdata(31,0),32),alu.io.out))))))),alu.io.out)
-  io.is_e <> decoder.io.ctrl.E_JUMP
-  io.is_csr <> decoder.io.ctrl.csr_wen
-  io.reg17 <> registers.io.reg17
-  //io.wronginst <> decoder.io.ctrl.wronginst
+  //inst_mem.io.clock <> io.clock
+  inst_mem.io.raddr <> ifu.io.inst_sram_addr
+  inst_mem.io.wdata <> ifu.io.inst_sram_wdata
+  inst_mem.io.ren <> ifu.io.inst_sram_en
 
-  //IFU in 
-  ifu.io.pc <> PC.io.pc
+  // IDU
+  idu.io.es_allowin <> exu.io.es_allowin
+  idu.io.fs_to_ds_valid <> ifu.io.fs_to_ds_valid
+  idu.io.fd_bus <> ifu.io.fd_bus
+  idu.io.rf_bus <> wbu.io.rf_bus
+  idu.io.es_dest_valid <> exu.io.es_dest_valid
+  idu.io.ms_dest_valid <> mem.io.ms_dest_valid
+  idu.io.ws_dest_valid <> wbu.io.ws_dest_valid
 
-  //MEM in
-  lsu.io.raddr <> alu.io.out
-  lsu.io.waddr <> alu.io.out
-  lsu.io.wdata <> registers.io.rdata2
-  lsu.io.wen <> decoder.io.ctrl.MemWen
-  lsu.io.wmask <> decoder.io.ctrl.wmask
+  // EXU
+  val data_sram = Module(new memory)
+  exu.io.ms_allowin <> mem.io.ms_allowin
+  exu.io.ds_to_es_valid <> idu.io.ds_to_es_valid
+  exu.io.de_bus <> idu.io.de_bus
 
-  //DPI in
-  dpi.io.flag := Mux(decoder.io.ctrl.OP === ALU_EBREAK, 1.U(32.W), 0.U(32.W))
-  dpi.io.rf_0 := registers.io.regs(0)
-  dpi.io.rf_1 := registers.io.regs(1)
-  dpi.io.rf_2 := registers.io.regs(2)
-  dpi.io.rf_3 := registers.io.regs(3)
-  dpi.io.rf_4 := registers.io.regs(4) 
-  dpi.io.rf_5 := registers.io.regs(5) 
-  dpi.io.rf_6 := registers.io.regs(6) 
-  dpi.io.rf_7 := registers.io.regs(7) 
-  dpi.io.rf_8 := registers.io.regs(8) 
-  dpi.io.rf_9 := registers.io.regs(9) 
-  dpi.io.rf_10 := registers.io.regs(10) 
-  dpi.io.rf_11 := registers.io.regs(11) 
-  dpi.io.rf_12 := registers.io.regs(12) 
-  dpi.io.rf_13 := registers.io.regs(13) 
-  dpi.io.rf_14 := registers.io.regs(14) 
-  dpi.io.rf_15 := registers.io.regs(15) 
-  dpi.io.rf_16 := registers.io.regs(16) 
-  dpi.io.rf_17 := registers.io.regs(17) 
-  dpi.io.rf_18 := registers.io.regs(18) 
-  dpi.io.rf_19 := registers.io.regs(19) 
-  dpi.io.rf_20 := registers.io.regs(20) 
-  dpi.io.rf_21 := registers.io.regs(21) 
-  dpi.io.rf_22 := registers.io.regs(22) 
-  dpi.io.rf_23 := registers.io.regs(23) 
-  dpi.io.rf_24 := registers.io.regs(24) 
-  dpi.io.rf_25 := registers.io.regs(25) 
-  dpi.io.rf_26 := registers.io.regs(26) 
-  dpi.io.rf_27 := registers.io.regs(27) 
-  dpi.io.rf_28 := registers.io.regs(28) 
-  dpi.io.rf_29 := registers.io.regs(29) 
-  dpi.io.rf_30 := registers.io.regs(30) 
-  dpi.io.rf_31 := registers.io.regs(31)
-  dpi.io.csr_0 := alu.io.csr_regs(0)
-  dpi.io.csr_1 := alu.io.csr_regs(1)
-  dpi.io.csr_2 := alu.io.csr_regs(2)
-  dpi.io.csr_3 := alu.io.csr_regs(3)
-  dpi.io.csr_4 := alu.io.csr_regs(4)
-  dpi.io.inst  := ifu.io.inst
-  dpi.io.pc    := io.pc
-  dpi.io.eval  := decoder.io.eval
-  
+  // MEM
+  mem.io.ws_allowin <> wbu.io.ws_allowin
+  mem.io.es_to_ms_valid <> exu.io.es_to_ms_valid
+  mem.io.em_bus <> exu.io.em_bus
+  mem.io.data_sram_rdata <> data_sram.io.rdata
+
+    //data_sram.io.clock <> io.clock
+  data_sram.io.waddr <> mem.io.data_sram_addr
+  data_sram.io.wdata <> mem.io.data_sram_wdata
+  data_sram.io.ren <> mem.io.data_sram_en
+  data_sram.io.wen <> mem.io.data_sram_we
+  data_sram.io.raddr <> mem.io.data_sram_addr
+  data_sram.io.wmask <> mem.io.data_sram_wmask
+
+  // WBU
+  wbu.io.ms_to_ws_valid <> mem.io.ms_to_ws_valid
+  wbu.io.mw_bus <> mem.io.mw_bus
+
+  // Top
+  io.fs_pc   := ifu.io.fd_bus.pc
+  io.op      := idu.io.de_bus.OP
+  io.in_WB   := wbu.io.in_WB
+  io.wb_pc   := wbu.io.wb_pc
+  io.wb_inst := wbu.io.wb_inst
+  io.ds_pc   := idu.io.de_bus.ds_pc
+  io.mem_result := mem.io.mem_result
+  io.ld_type := mem.io.ld_type
 }
 
 object TopMain extends App {

@@ -66,8 +66,11 @@ int main(int argc, char **argv, char **env)
   init_difftest(img_size);
 #endif
   init();
-  //char input = readChar();
-  //executeCommand(input);
+  //while(!stop && !is_exit)
+  //{
+    //char input = readChar();
+    //executeCommand(input);
+  //}
   while (!cmd_c());
   if (stop)
   {

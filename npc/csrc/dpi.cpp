@@ -72,6 +72,8 @@ extern "C" void pmem_read(long long raddr, long long *rdata)
 }
 extern "C" void pmem_write(long long waddr, long long wdata, char wmask)
 {
+  
+  //printf("pmem_write: 0x%llx -> 0x%llx\n", waddr, wdata);
   if (waddr == SERIAL_PORT)
   {
     //difftest_skip_ref();

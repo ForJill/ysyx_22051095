@@ -15,6 +15,7 @@ class VTop__Syms;
 class VTop___024root;
 class VerilatedVcdC;
 class VTop___024unit;
+class VTop_BOOTH_gen;
 
 
 // This class is the main interface to the Verilated model
@@ -30,36 +31,22 @@ class VTop VL_NOT_FINAL : public VerilatedModel {
     // propagate new values into/out from the Verilated model.
     VL_IN8(&clock,0,0);
     VL_IN8(&reset,0,0);
-    VL_OUT8(&io_ctrl_RegWen,0,0);
-    VL_OUT8(&io_ctrl_OP,7,0);
-    VL_OUT8(&io_ctrl_J_JUMP,0,0);
-    VL_OUT8(&io_ctrl_MemWen,0,0);
-    VL_OUT8(&io_ctrl_wmask,7,0);
-    VL_OUT8(&io_ctrl_MemLoad,0,0);
-    VL_OUT8(&io_ctrl_csr_wen,0,0);
-    VL_OUT8(&io_ctrl_E_JUMP,0,0);
-    VL_OUT8(&io_rd,4,0);
-    VL_OUT8(&io_op,7,0);
-    VL_OUT8(&io_MemWen,0,0);
-    VL_OUT8(&io_MemLoad,0,0);
-    VL_OUT8(&io_is_b,0,0);
-    VL_OUT8(&io_wmask,7,0);
-    VL_OUT8(&io_is_e,0,0);
-    VL_OUT8(&io_is_csr,0,0);
-    VL_OUT(&io_inst,31,0);
-    VL_OUT64(&io_pc,63,0);
-    VL_OUT64(&io_resultALU,63,0);
-    VL_OUT64(&io_rs1,63,0);
-    VL_OUT64(&io_rs2,63,0);
-    VL_OUT64(&io_imm,63,0);
-    VL_OUT64(&io_rdata,63,0);
-    VL_OUT64(&io_fmemwdata,63,0);
-    VL_OUT64(&io_reg17,63,0);
+    VL_OUT8(&io_op,6,0);
+    VL_OUT8(&io_in_WB,0,0);
+    VL_IN8(&io_clock,0,0);
+    VL_OUT8(&io_ld_type,2,0);
+    VL_OUT(&io_fs_pc,31,0);
+    VL_OUT(&io_wb_pc,31,0);
+    VL_OUT(&io_wb_inst,31,0);
+    VL_OUT(&io_ds_pc,31,0);
+    VL_OUT64(&io_mem_result,63,0);
 
     // CELLS
     // Public to allow access to /* verilator public */ items.
     // Otherwise the application code can consider these internals.
     VTop___024unit* const __PVT____024unit;
+    VTop_BOOTH_gen* const __PVT__Top__DOT__exu__DOT__mul__DOT__BOOTH_gen;
+    VTop_BOOTH_gen* const __PVT__Top__DOT__exu__DOT__mul_1__DOT__BOOTH_gen;
 
     // Root instance pointer to allow access to model internals,
     // including inlined /* verilator public_flat_* */ items.
