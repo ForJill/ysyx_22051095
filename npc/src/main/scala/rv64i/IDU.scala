@@ -275,6 +275,7 @@ class IDU extends Module {
   val ms_rawblock = (rs1 === io.ms_dest_valid.dest || rs2 === io.ms_dest_valid.dest) && io.ms_dest_valid.dest =/= 0.U && (io.ms_dest_valid.ms_is_ld) && ds_valid
   val rawblock = io.es_dest_valid.es_valid && es_rawblock || io.ms_dest_valid.ms_valid && ms_rawblock
   ds_ready_go := !rawblock
+  io.br_bus.rawblock        := rawblock
   //io.de_bus.csr_rdata := csr(csr_index)
 
   //寄存器堆操作

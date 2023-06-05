@@ -16,13 +16,6 @@ class MEM extends Module {
     val data_sram_rdata   = Input(UInt(64.W))
     val mem_result        = Output(UInt(64.W))
     val ld_type           = Output(UInt(3.W))
-    val data_sram_req     = Output(Bool())
-    val data_sram_en      = Output(Bool())
-    val data_sram_we      = Output(Bool())
-    val data_sram_addr    = Output(UInt(32.W))
-    val data_sram_wdata   = Output(UInt(64.W))
-    val data_sram_wmask   = Output(UInt(8.W))
-    val data_sram_addr_ok = Input(Bool())
     val data_sram_data_ok = Input(Bool())
   })
 
@@ -32,7 +25,7 @@ class MEM extends Module {
   val ms_ready_go = Wire(Bool())
   val em_bus_r    = RegInit(0.U.asTypeOf(new em_bus))
 
-  ms_ready_go       := true.B
+  ms_ready_go       := Mux(em_bus_r.res_from_mem || em_bus_r.MemWen, (io.data_sram_data_ok),true.B)
   io.ms_allowin     := !ms_valid || ms_ready_go && io.ws_allowin
   io.ms_to_ws_valid := ms_valid && ms_ready_go
 
@@ -50,21 +43,21 @@ class MEM extends Module {
   val alu_result            = em_bus_r.alu_result
   val mem_pc                = em_bus_r.ex_pc
   val final_result          = WireDefault(0.U(DATA_WIDTH.W))
-  val data_sram_rdata_valid = WireDefault(0.U(1.W))
+  val data_sram_rdata_valid = WireDefault(false.B)
   val data_sram_rdata_R     = RegInit(0.U(64.W))
   val final_data_sram_rdata = WireDefault(0.U(64.W))
 
-  //when(!io.ws_allowin) {
-  //data_sram_rdata_R := io.data_sram_rdata
-  //}
+  when(!io.ws_allowin && io.data_sram_data_ok) {
+    data_sram_rdata_R := io.data_sram_rdata
+  }
 
-  //when(io.ws_allowin) {
-  //data_sram_rdata_valid := 1.U
-  //}.elsewhen(ms_ready_go && io.ms_allowin) {
-  //data_sram_rdata_valid := 0.U
-  //}
+  when(!io.ws_allowin && io.data_sram_data_ok) {
+    data_sram_rdata_valid := true.B
+  }.elsewhen(ms_ready_go && io.ms_allowin) {
+    data_sram_rdata_valid := false.B
+  }
 
-  final_data_sram_rdata := io.data_sram_rdata //Mux(data_sram_rdata_valid === 1.U, data_sram_rdata_R, io.data_sram_rdata)
+  final_data_sram_rdata := io.data_sram_rdata//Mux(data_sram_rdata_valid, data_sram_rdata_R,io.data_sram_rdata) //Mux(data_sram_rdata_valid === 1.U, data_sram_rdata_R, io.data_sram_rdata)
 
   io.mem_result := MuxLookup(
     io.ld_type,
@@ -106,10 +99,4 @@ class MEM extends Module {
   io.mw_bus.csrs         := em_bus_r.csrs
   io.mw_bus.csr_rdata    := em_bus_r.csr_rdata
   io.ld_type             := em_bus_r.ld_type
-
-  io.data_sram_en    := em_bus_r.data_sram_en
-  io.data_sram_we    := em_bus_r.data_sram_we
-  io.data_sram_addr  := em_bus_r.data_sram_addr
-  io.data_sram_wdata := em_bus_r.data_sram_wdata
-  io.data_sram_wmask := em_bus_r.data_sram_wmask
 }

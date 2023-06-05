@@ -9,6 +9,7 @@ class br_bus extends Bundle {
   val br_taken = Output(Bool())
   val br_target = Output(UInt(32.W))
   val br_taken_cancel = Output(Bool())
+  val rawblock = Output(Bool())
   val csr_rdata = Output(UInt(DATA_WIDTH.W))
   val eval = Output(Bool())
   val mret = Output(Bool())
@@ -95,12 +96,8 @@ class em_bus extends Bundle{
   val mret = Output(Bool())
   val csrs = Output(Vec(5, UInt(DATA_WIDTH.W)))
   val is_ld = Output(Bool())
+  val MemWen = Output(Bool())
   //val is_csr = Output(Bool())
-  val data_sram_en = Output(Bool())
-  val data_sram_we = Output(Bool())
-  val data_sram_addr = Output(UInt(32.W))
-  val data_sram_wdata = Output(UInt(64.W))
-  val data_sram_wmask = Output(UInt(8.W))
 }
 
 //mw_bus

@@ -95,7 +95,7 @@ int cmd_c()
         if (sim_time >= 2)
         {
           //printf("wb_pc = %lx wb_inst= %lx\n", now_pc, now_inst);
-          //printf("ds_pc = %x ds_inst= %lx\n", now_pc,now_inst);
+          printf("ds_pc = %x ds_inst= %lx\n", now_pc,now_inst);
           cpu.gpr[0] = 0;
           for (int i = 1; i < 32; i++)
             cpu.gpr[i] = cpu_gpr[i];

@@ -15,7 +15,6 @@ class VTop__Syms;
 class VTop___024root;
 class VerilatedVcdC;
 class VTop___024unit;
-class VTop_BOOTH_gen;
 
 
 // This class is the main interface to the Verilated model
@@ -30,10 +29,10 @@ class VTop VL_NOT_FINAL : public VerilatedModel {
     // The application code writes and reads these signals to
     // propagate new values into/out from the Verilated model.
     VL_IN8(&clock,0,0);
+    VL_IN8(&io_clock,0,0);
     VL_IN8(&reset,0,0);
     VL_OUT8(&io_op,6,0);
     VL_OUT8(&io_in_WB,0,0);
-    VL_IN8(&io_clock,0,0);
     VL_OUT8(&io_ld_type,2,0);
     VL_OUT(&io_fs_pc,31,0);
     VL_OUT(&io_wb_pc,31,0);
@@ -45,8 +44,6 @@ class VTop VL_NOT_FINAL : public VerilatedModel {
     // Public to allow access to /* verilator public */ items.
     // Otherwise the application code can consider these internals.
     VTop___024unit* const __PVT____024unit;
-    VTop_BOOTH_gen* const __PVT__Top__DOT__exu__DOT__mul__DOT__BOOTH_gen;
-    VTop_BOOTH_gen* const __PVT__Top__DOT__exu__DOT__mul_1__DOT__BOOTH_gen;
 
     // Root instance pointer to allow access to model internals,
     // including inlined /* verilator public_flat_* */ items.
