@@ -2,6 +2,7 @@
 import "DPI-C" function void pmem_read(input longint raddr, output longint rdata);
 import "DPI-C" function void pmem_write(input longint waddr, input longint wdata, input byte wmask);
 module AXI_mem(
+    input reset,
     input clock,
     input [3:0] arid,
     input [63:0] araddr,
@@ -43,7 +44,12 @@ wire read_ainit = (read_state == READ_AINIT);
 wire read_araddr = (read_state == READ_ARADDR);
 wire read_rdata = (read_state == READ_RDATA);
 always@(posedge clock) begin
-    read_state <= read_next_state;
+   if(reset) begin
+       read_state <= READ_AINIT;
+   end
+   else begin
+       read_state <= read_next_state;
+   end
 end
 always@(*) begin
    case(read_state)
@@ -56,12 +62,7 @@ always@(*) begin
            end
        end
        READ_ARADDR: begin
-           if(read_araddr) begin
-               read_next_state = READ_RDATA;
-           end
-           else begin
-               read_next_state = READ_ARADDR;
-           end
+          read_next_state = READ_RDATA;
        end
        READ_RDATA: begin
            if(rready) begin
@@ -79,7 +80,7 @@ end
 assign arready = read_araddr;
 assign rvalid = read_rdata;
 always@(posedge clock) begin
-   if(arready)begin
+   if(arvalid)begin
        pmem_read(araddr, rdata);
    end
 end
@@ -110,7 +111,7 @@ always@(*) begin
            end
         end
     WRITE_AWADDR: begin
-        if(write_awaddr) begin
+        if(wvalid) begin
             write_next_state = WRITE_WDATA;
         end
         else begin
@@ -118,12 +119,7 @@ always@(*) begin
         end
     end
     WRITE_WDATA: begin
-        if(wvalid) begin
-            write_next_state = WRITE_BRESP;
-        end
-        else begin
-            write_next_state = WRITE_WDATA;
-        end
+        write_next_state = WRITE_BRESP;
     end
     WRITE_BRESP: begin
         if(bready) begin
@@ -142,7 +138,7 @@ assign awready = write_awaddr;
 assign wready = write_bresp;
 assign bvalid = write_bresp;
 always@(posedge clock) begin
-   if(wready)begin
+   if(write_wdata)begin
        pmem_write(awaddr, wdata, wstrb);
    end
 end

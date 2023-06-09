@@ -57,7 +57,7 @@ class MEM extends Module {
     data_sram_rdata_valid := false.B
   }
 
-  final_data_sram_rdata := io.data_sram_rdata//Mux(data_sram_rdata_valid, data_sram_rdata_R,io.data_sram_rdata) //Mux(data_sram_rdata_valid === 1.U, data_sram_rdata_R, io.data_sram_rdata)
+  final_data_sram_rdata := Mux(data_sram_rdata_valid, data_sram_rdata_R,io.data_sram_rdata) //Mux(data_sram_rdata_valid === 1.U, data_sram_rdata_R, io.data_sram_rdata)
 
   io.mem_result := MuxLookup(
     io.ld_type,

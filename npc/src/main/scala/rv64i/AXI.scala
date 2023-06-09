@@ -88,7 +88,7 @@ class AXI extends Module {
   val write_data = (wstate === sWriteData).asBool
   val write_resp = (wstate === sWriteResp).asBool
 
-  val writing_data_sram = RegInit(0.U)
+  val writing_data_sram = RegInit(0.U(2.W))
 
   /*-----------------读请求通道状态机-----------------*/
   switch(rstate) {
@@ -116,7 +116,7 @@ class AXI extends Module {
   }
   //表示正在处理读指令事务，不允许其他操作,取数据优先级比取指令高
   when(!io.data_sram_req && io.inst_sram_req && !io.inst_sram_wr && write_init && read_ainit) {
-    reading_data_sram := true.B
+    reading_inst_sram := true.B
   }.elsewhen(read_rdata && io.rvalid && io.rready) {
     reading_inst_sram := false.B
   }.otherwise {
@@ -175,8 +175,6 @@ class AXI extends Module {
     writing_data_sram := 0.U
   }.elsewhen(io.awready || io.wready) {
     writing_data_sram := writing_data_sram + 1.U
-  }.otherwise {
-    writing_data_sram := writing_data_sram
   }
 
   //写事务输出信号赋值

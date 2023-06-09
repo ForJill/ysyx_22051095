@@ -95,22 +95,27 @@ int cmd_c()
         if (sim_time >= 2)
         {
           //printf("wb_pc = %lx wb_inst= %lx\n", now_pc, now_inst);
-          printf("ds_pc = %x ds_inst= %lx\n", now_pc,now_inst);
           cpu.gpr[0] = 0;
           for (int i = 1; i < 32; i++)
             cpu.gpr[i] = cpu_gpr[i];
-          //isa_reg_display();
           cpu.csr.mcause = cpu_gpr[33];
           cpu.csr.mepc = cpu_gpr[34];
           cpu.csr.mstatus = cpu_gpr[35];
           cpu.csr.mtvec = cpu_gpr[36];
+          if(dut->io_in_WB){
+            printf("ds_pc = %x ds_inst= %lx\n", now_pc,now_inst);
+            isa_reg_display();
+            printf("sim_time = %d\n", sim_time);
+          }
 
 #ifdef CONFIG_ITRACE
           itrace(&s, now_pc, now_inst);
 #endif
 #ifdef CONFIG_DIFFTEST
-        if(dut->io_in_WB)
+        if(dut->io_in_WB && sim_time >=16){
           difftest_step(cpu.pc);
+          printf("sim_time = %d\n", sim_time);
+        }
 #endif
 #ifdef CONFIG_FTRACE
           if ((BITS(now_inst, 6, 0) == 0x67 && BITS(now_inst, 14, 12) == 0x0 && now_inst != 0x8067) || BITS(now_inst, 6, 0) == 0x6f)
@@ -139,8 +144,8 @@ int cmd_c()
         //}
         if(dut->io_op == 255){ 
         printf("\n\033[36munvalid inst\n");
-        printf("pc = %lx inst= %lx\n", now_pc, now_inst);
-        isa_reg_display();
+        //printf("pc = %lx inst= %lx\n", now_pc, now_inst);
+        //isa_reg_display();
         return 1;
         }
       }

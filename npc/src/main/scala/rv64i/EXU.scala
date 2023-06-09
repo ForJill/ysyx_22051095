@@ -95,8 +95,6 @@ class EXU extends Module {
   div_32.dividend := src1(31, 0)
   div_32.divisor := src2(31, 0)
 
-  val mul_64_result = 
-
   result := MuxLookup(
     de_bus_r.OP,
     0.U,

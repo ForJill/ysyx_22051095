@@ -16,7 +16,6 @@ class Top extends Module {
     val wb_pc      = Output(UInt(32.W))
     val wb_inst    = Output(UInt(32.W))
     val ds_pc      = Output(UInt(32.W))
-    val clock      = Input(UInt(1.W))
     val mem_result = Output(UInt(64.W))
     val ld_type    = Output(UInt(3.W))
   })
@@ -32,6 +31,7 @@ class Top extends Module {
 
   // IFU
   //val inst_mem = Module(new memory)
+  ifu.io.reset <> reset
   ifu.io.ds_allowin <> idu.io.ds_allowin
   ifu.io.br_bus <> idu.io.br_bus
   ifu.io.inst_sram_rdata <> axi.io.inst_sram_rdata
@@ -114,7 +114,8 @@ class Top extends Module {
   axi.io.bvalid <> axi_mem.io.bvalid
 
   //axi_mem
-  axi_mem.io.clock <> io.clock
+  axi_mem.io.reset <> reset
+  axi_mem.io.clock <> clock
   axi_mem.io.arid <> axi.io.arid
   axi_mem.io.araddr <> axi.io.araddr
   axi_mem.io.arvalid <> axi.io.arvalid
