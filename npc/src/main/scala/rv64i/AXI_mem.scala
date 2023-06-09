@@ -106,12 +106,7 @@ class AXI_mem extends BlackBox with HasBlackBoxInline{
         |           end
         |       end
         |       READ_ARADDR: begin
-        |           if(read_araddr) begin
-        |               read_next_state = READ_RDATA;
-        |           end
-        |           else begin
-        |               read_next_state = READ_ARADDR;
-        |           end
+        |          read_next_state = READ_RDATA;
         |       end
         |       READ_RDATA: begin
         |           if(rready) begin

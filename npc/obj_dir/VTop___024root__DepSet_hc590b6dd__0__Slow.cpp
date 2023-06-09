@@ -81,7 +81,8 @@ void VTop___024unit____Vdpiimwrap_skip_ref_TOP____024unit(IData/*31:0*/ eval);
 void VTop___024unit____Vdpiimwrap_get_inst_TOP____024unit(QData/*63:0*/ inst);
 void VTop___024unit____Vdpiimwrap_get_pc_TOP____024unit(QData/*63:0*/ pc);
 void VTop___024unit____Vdpiimwrap_set_gpr_ptr__Vdpioc2_TOP____024unit(const VlUnpacked<QData/*63:0*/, 36> &a);
-extern const VlUnpacked<CData/*2:0*/, 16> VTop__ConstPool__TABLE_hbfad320d_0;
+extern const VlUnpacked<CData/*2:0*/, 64> VTop__ConstPool__TABLE_h3ceec7af_0;
+extern const VlUnpacked<CData/*2:0*/, 128> VTop__ConstPool__TABLE_h6a5d14e0_0;
 
 VL_ATTR_COLD void VTop___024root___stl_sequent__TOP__0(VTop___024root* vlSelf) {
     if (false && vlSelf) {}  // Prevent unused
@@ -92,12 +93,6 @@ VL_ATTR_COLD void VTop___024root___stl_sequent__TOP__0(VTop___024root* vlSelf) {
     VTop___024unit____Vdpiimwrap_get_inst_TOP____024unit(0ULL);
     VTop___024unit____Vdpiimwrap_get_pc_TOP____024unit(0ULL);
     VTop___024unit____Vdpiimwrap_set_gpr_ptr__Vdpioc2_TOP____024unit(vlSelf->Top__DOT__dpi__DOT__rf);
-    vlSelf->Top__DOT__axi_mem__DOT__read_next_state 
-        = ((1U == (IData)(vlSelf->Top__DOT__axi_mem__DOT__read_state))
-            ? 1U : ((2U == (IData)(vlSelf->Top__DOT__axi_mem__DOT__read_state))
-                     ? ((2U == (IData)(vlSelf->Top__DOT__axi_mem__DOT__read_state))
-                         ? 3U : 2U) : ((3U == (IData)(vlSelf->Top__DOT__axi_mem__DOT__read_state))
-                                        ? 3U : 1U)));
     vlSelf->io_fs_pc = (IData)(vlSelf->Top__DOT__ifu__DOT__fs_pc);
     vlSelf->Top__DOT__ifu__DOT___nextpc_T_4 = (QData)((IData)(
                                                               ((IData)(4U) 
@@ -114,10 +109,35 @@ VL_ATTR_COLD void VTop___024root___stl_sequent__TOP__0(VTop___024root* vlSelf) {
                                 : 0ULL) << 8U) | (QData)((IData)(
                                                                  (0xffU 
                                                                   & (IData)(vlSelf->Top__DOT__axi_mem_rdata)))));
-    vlSelf->__Vtableidx1 = (((2U == (IData)(vlSelf->Top__DOT__axi_mem__DOT__write_state)) 
-                             << 3U) | (IData)(vlSelf->Top__DOT__axi_mem__DOT__write_state));
+    vlSelf->Top__DOT__axi__DOT___GEN_2 = ((3U == (IData)(vlSelf->Top__DOT__axi_mem__DOT__read_state))
+                                           ? 0U : (IData)(vlSelf->Top__DOT__axi__DOT__rstate));
+    vlSelf->Top__DOT__axi__DOT___GEN_15 = ((3U == (IData)(vlSelf->Top__DOT__axi__DOT__wstate))
+                                            ? ((4U 
+                                                == (IData)(vlSelf->Top__DOT__axi_mem__DOT__write_state))
+                                                ? 0U
+                                                : (IData)(vlSelf->Top__DOT__axi__DOT__wstate))
+                                            : (IData)(vlSelf->Top__DOT__axi__DOT__wstate));
+    vlSelf->__Vtableidx1 = (((2U == (IData)(vlSelf->Top__DOT__axi__DOT__rstate)) 
+                             << 5U) | (((2U == (IData)(vlSelf->Top__DOT__axi_mem__DOT__read_state)) 
+                                        << 4U) | ((
+                                                   (1U 
+                                                    == (IData)(vlSelf->Top__DOT__axi__DOT__rstate)) 
+                                                   << 3U) 
+                                                  | (IData)(vlSelf->Top__DOT__axi_mem__DOT__read_state))));
+    vlSelf->Top__DOT__axi_mem__DOT__read_next_state 
+        = VTop__ConstPool__TABLE_h3ceec7af_0[vlSelf->__Vtableidx1];
+    vlSelf->__Vtableidx2 = (((1U == (IData)(vlSelf->Top__DOT__axi__DOT__wstate)) 
+                             << 6U) | (((2U == (IData)(vlSelf->Top__DOT__axi_mem__DOT__write_state)) 
+                                        << 5U) | ((
+                                                   (2U 
+                                                    == (IData)(vlSelf->Top__DOT__axi__DOT__wstate)) 
+                                                   << 4U) 
+                                                  | (((3U 
+                                                       == (IData)(vlSelf->Top__DOT__axi__DOT__wstate)) 
+                                                      << 3U) 
+                                                     | (IData)(vlSelf->Top__DOT__axi_mem__DOT__write_state)))));
     vlSelf->Top__DOT__axi_mem__DOT__write_next_state 
-        = VTop__ConstPool__TABLE_hbfad320d_0[vlSelf->__Vtableidx1];
+        = VTop__ConstPool__TABLE_h6a5d14e0_0[vlSelf->__Vtableidx2];
     vlSelf->Top__DOT__idu__DOT__dpi__DOT__rf[0U] = 
         vlSelf->Top__DOT__idu__DOT__Registers__DOT__registers
         [0U];

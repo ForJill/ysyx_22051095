@@ -23,11 +23,16 @@ class VTop___024root final : public VerilatedModule {
     VL_OUT8(io_op,6,0);
     VL_OUT8(io_in_WB,0,0);
     VL_OUT8(io_ld_type,2,0);
+    CData/*1:0*/ Top__DOT__axi__DOT__rstate;
+    CData/*1:0*/ Top__DOT__axi__DOT__wstate;
+    CData/*1:0*/ Top__DOT__axi__DOT___GEN_2;
+    CData/*1:0*/ Top__DOT__axi__DOT___GEN_15;
     CData/*2:0*/ Top__DOT__axi_mem__DOT__read_state;
     CData/*2:0*/ Top__DOT__axi_mem__DOT__read_next_state;
     CData/*2:0*/ Top__DOT__axi_mem__DOT__write_state;
     CData/*2:0*/ Top__DOT__axi_mem__DOT__write_next_state;
-    CData/*3:0*/ __Vtableidx1;
+    CData/*5:0*/ __Vtableidx1;
+    CData/*6:0*/ __Vtableidx2;
     CData/*0:0*/ __Vtrigrprev__TOP__clock;
     CData/*0:0*/ __Vtrigrprev__TOP__io_clock;
     CData/*0:0*/ __VactContinue;

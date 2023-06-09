@@ -23,7 +23,6 @@ class IFU extends Module {
   val fs_ready_go = Wire(Bool())
   val fs_allow_in = Wire(Bool())
   val to_fs_valid = Wire(Bool())
-
   val prefs_ready_go = Wire(Bool())
 
   val fs_inst = RegInit(0.U(32.W))
@@ -52,7 +51,7 @@ class IFU extends Module {
   seq_pc := fs_pc + 4.U
   nextpc := Mux(eval, csr_rdata, Mux(mret, csr_rdata + 4.U, Mux(br_taken, br_target, seq_pc)))
 
-  to_fs_valid       := prefs_ready_go
+  to_fs_valid       := true.B//prefs_ready_go
   fs_ready_go       := io.inst_sram_data_ok
   fs_allow_in       := !fs_valid || fs_ready_go && io.ds_allowin
   io.fs_to_ds_valid := fs_valid && fs_ready_go
@@ -63,7 +62,7 @@ class IFU extends Module {
     fs_valid := false.B
   }
 
-  when(fs_allow_in) {
+  when(fs_allow_in && prefs_ready_go) {
     fs_pc := nextpc
   }
 
@@ -78,7 +77,7 @@ class IFU extends Module {
   io.inst_sram_wr    := 0.U
   io.inst_sram_addr  := fs_pc
 
-  when(fs_ready_go && io.ds_allowin && io.inst_sram_data_ok) {
+  when(fs_ready_go && !io.ds_allowin && io.inst_sram_data_ok) {
     fs_inst := io.inst_sram_rdata(31, 0)
   }
 }

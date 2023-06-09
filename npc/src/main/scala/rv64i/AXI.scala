@@ -70,9 +70,9 @@ class AXI extends Module {
   val sIdle :: sReadAddr :: sReadData :: Nil = Enum(3)
   val rstate                                 = RegInit(sIdle)
 
-  val read_ainit  = (rstate == sIdle).asBool
-  val read_araddr = (rstate == sReadAddr).asBool
-  val read_rdata  = (rstate == sReadData).asBool
+  val read_ainit  = (rstate === sIdle).asBool
+  val read_araddr = (rstate === sReadAddr).asBool
+  val read_rdata  = (rstate === sReadData).asBool
 
   val reading_inst_sram = RegInit(false.B)
   val reading_data_sram = RegInit(false.B)
@@ -83,32 +83,34 @@ class AXI extends Module {
   val sWriteIdle :: sWriteAddr :: sWriteData :: sWriteResp :: Nil = Enum(4)
   val wstate                                                      = RegInit(sWriteIdle)
 
-  val write_init = (wstate == sWriteIdle).asBool
-  val write_addr = (wstate == sWriteAddr).asBool
-  val write_data = (wstate == sWriteData).asBool
-  val write_resp = (wstate == sWriteResp).asBool
+  val write_init = (wstate === sWriteIdle).asBool
+  val write_addr = (wstate === sWriteAddr).asBool
+  val write_data = (wstate === sWriteData).asBool
+  val write_resp = (wstate === sWriteResp).asBool
 
   val writing_data_sram = RegInit(0.U)
 
   /*-----------------读请求通道状态机-----------------*/
   switch(rstate) {
     is(sIdle) {
-      when((io.data_sram_req && !io.data_sram_wr) || (io.inst_sram_req && !io.inst_sram_wr) && write_init) {
+      when(((io.data_sram_req && !io.data_sram_wr) || (io.inst_sram_req && !io.inst_sram_wr)) && write_init) {
         rstate := sReadAddr
       }.otherwise {
         rstate := sIdle
       }
     }
     is(sReadAddr) {
-      when(io.arvalid && io.arready) {
+      when(io.arready) {
         rstate := sReadData
       }.otherwise {
         rstate := sReadAddr
       }
     }
     is(sReadData) {
-      when(io.rvalid && io.rready) {
+      when(io.rvalid) {
         rstate := sIdle
+      }.otherwise{
+        rstate := sReadData
       }
     }
   }
@@ -126,8 +128,6 @@ class AXI extends Module {
     reading_data_sram := true.B
   }.elsewhen(read_rdata && io.rvalid && io.rready) {
     reading_data_sram := false.B
-  }.otherwise {
-    reading_data_sram := reading_data_sram
   }
 
   //读事务输出信号赋值
@@ -150,21 +150,21 @@ class AXI extends Module {
       }
     }
     is(sWriteAddr) {
-      when(io.awvalid && io.awready) {
+      when(io.awready) {
         wstate := sWriteData
       }.otherwise {
         wstate := sWriteAddr
       }
     }
     is(sWriteData) {
-      when(io.wvalid && io.wready) {
+      when(io.wready) {
         wstate := sWriteResp
       }.otherwise {
         wstate := sWriteData
       }
     }
     is(sWriteResp) {
-      when(io.bvalid && io.bready) {
+      when(io.bvalid) {
         wstate := sWriteIdle
       }
     }

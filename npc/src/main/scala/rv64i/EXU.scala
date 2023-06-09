@@ -205,8 +205,8 @@ class EXU extends Module {
   io.es_dest_valid.es_is_ld        := de_bus_r.is_ld
   io.es_dest_valid.es_ready_go     := es_ready_go
 
-  io.data_sram_en    := de_bus_r.res_from_mem && es_valid
-  io.data_sram_we    := de_bus_r.MemWen && es_valid
+  io.data_sram_en    := de_bus_r.res_from_mem
+  io.data_sram_we    := de_bus_r.MemWen
   io.data_sram_addr  := result
   io.data_sram_wdata := src2
   io.data_sram_wmask := de_bus_r.wmask

@@ -1,28 +1,22 @@
 module IFU(
-  input         clock,
-  input         reset,
-  output [31:0] io_fd_bus_pc,
-  input  [63:0] io_br_bus_csr_rdata,
-  input         io_br_bus_eval,
-  input         io_br_bus_mret
+  input   clock,
+  input   reset,
+  input   io_br_bus_br_taken_cancel,
+  output  io_inst_sram_req
 );
 `ifdef RANDOMIZE_REG_INIT
-  reg [63:0] _RAND_0;
+  reg [31:0] _RAND_0;
 `endif // RANDOMIZE_REG_INIT
-  reg [63:0] fs_pc; // @[IFU.scala 30:24]
-  wire [63:0] _seq_pc_T_1 = fs_pc + 64'h4; // @[IFU.scala 52:19]
-  wire [63:0] _nextpc_T_1 = io_br_bus_csr_rdata + 64'h4; // @[IFU.scala 53:54]
-  wire [31:0] seq_pc = _seq_pc_T_1[31:0]; // @[IFU.scala 49:20 52:10]
-  wire [63:0] _nextpc_T_3 = io_br_bus_mret ? _nextpc_T_1 : {{32'd0}, seq_pc}; // @[IFU.scala 53:37]
-  wire [63:0] _nextpc_T_4 = io_br_bus_eval ? io_br_bus_csr_rdata : _nextpc_T_3; // @[IFU.scala 53:16]
-  wire [31:0] nextpc = _nextpc_T_4[31:0]; // @[IFU.scala 50:20 53:10]
-  wire [63:0] _GEN_2 = {{32'd0}, nextpc}; // @[IFU.scala 66:21 67:11 30:24]
-  assign io_fd_bus_pc = fs_pc[31:0]; // @[IFU.scala 32:19]
+  reg  fs_valid; // @[IFU.scala 22:28]
+  wire  fs_allow_in = ~fs_valid; // @[IFU.scala 56:24]
+  wire  _GEN_0 = io_br_bus_br_taken_cancel ? 1'h0 : fs_valid; // @[IFU.scala 61:31 62:14 22:28]
+  wire  _GEN_1 = fs_allow_in | _GEN_0; // @[IFU.scala 59:21 60:14]
+  assign io_inst_sram_req = ~fs_valid; // @[IFU.scala 56:24]
   always @(posedge clock) begin
-    if (reset) begin // @[IFU.scala 30:24]
-      fs_pc <= 64'h80000000; // @[IFU.scala 30:24]
+    if (reset) begin // @[IFU.scala 22:28]
+      fs_valid <= 1'h0; // @[IFU.scala 22:28]
     end else begin
-      fs_pc <= _GEN_2;
+      fs_valid <= _GEN_1;
     end
   end
 // Register and memory initialization
@@ -61,8 +55,8 @@ initial begin
       `endif
     `endif
 `ifdef RANDOMIZE_REG_INIT
-  _RAND_0 = {2{`RANDOM}};
-  fs_pc = _RAND_0[63:0];
+  _RAND_0 = {1{`RANDOM}};
+  fs_valid = _RAND_0[0:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial
@@ -421,8 +415,6 @@ end // initial
 endmodule
 module CSR(
   input         clock,
-  input         io_ren,
-  output [63:0] io_rdata,
   input  [4:0]  io_raddr,
   output [63:0] io_csrs_0,
   output [63:0] io_csrs_1,
@@ -540,7 +532,6 @@ module CSR(
   assign csr_MPORT_2_addr = 3'h0;
   assign csr_MPORT_2_mask = 1'h1;
   assign csr_MPORT_2_en = 1'h1;
-  assign io_rdata = io_ren ? csr_io_rdata_MPORT_data : 64'h0; // @[CSR.scala 22:18]
   assign io_csrs_0 = csr_io_csrs_0_MPORT_data; // @[CSR.scala 27:39]
   assign io_csrs_1 = csr_io_csrs_1_MPORT_data; // @[CSR.scala 27:39]
   assign io_csrs_2 = csr_io_csrs_2_MPORT_data; // @[CSR.scala 27:39]
@@ -612,13 +603,10 @@ end // initial
 `endif // SYNTHESIS
 endmodule
 module IDU(
-  input         clock,
-  output [7:0]  io_de_bus_OP,
-  output [2:0]  io_de_bus_csr_raddr,
-  output        io_de_bus_csr_ren,
-  output [63:0] io_br_bus_csr_rdata,
-  output        io_br_bus_eval,
-  output        io_br_bus_mret
+  input        clock,
+  output [7:0] io_de_bus_OP,
+  output [2:0] io_de_bus_csr_raddr,
+  output       io_br_bus_br_taken_cancel
 );
   wire  Registers_clock; // @[IDU.scala 282:25]
   wire [4:0] Registers_io_rs1; // @[IDU.scala 282:25]
@@ -656,8 +644,6 @@ module IDU(
   wire [63:0] Registers_io_regs_31; // @[IDU.scala 282:25]
   wire [31:0] DPI_EBREAK_flag; // @[IDU.scala 305:26]
   wire  CSR_clock; // @[IDU.scala 309:20]
-  wire  CSR_io_ren; // @[IDU.scala 309:20]
-  wire [63:0] CSR_io_rdata; // @[IDU.scala 309:20]
   wire [4:0] CSR_io_raddr; // @[IDU.scala 309:20]
   wire [63:0] CSR_io_csrs_0; // @[IDU.scala 309:20]
   wire [63:0] CSR_io_csrs_1; // @[IDU.scala 309:20]
@@ -748,8 +734,6 @@ module IDU(
   );
   CSR CSR ( // @[IDU.scala 309:20]
     .clock(CSR_clock),
-    .io_ren(CSR_io_ren),
-    .io_rdata(CSR_io_rdata),
     .io_raddr(CSR_io_raddr),
     .io_csrs_0(CSR_io_csrs_0),
     .io_csrs_1(CSR_io_csrs_1),
@@ -801,15 +785,11 @@ module IDU(
   );
   assign io_de_bus_OP = 8'hff; // @[Lookup.scala 34:39]
   assign io_de_bus_csr_raddr = eval ? 3'h4 : _io_de_bus_csr_raddr_T; // @[IDU.scala 228:29]
-  assign io_de_bus_csr_ren = eval | mret; // @[IDU.scala 231:32]
-  assign io_br_bus_csr_rdata = CSR_io_rdata; // @[IDU.scala 318:23]
-  assign io_br_bus_eval = io_de_bus_OP == 8'h3f; // @[IDU.scala 225:27]
-  assign io_br_bus_mret = io_de_bus_OP == 8'h40; // @[IDU.scala 226:27]
+  assign io_br_bus_br_taken_cancel = eval | mret; // @[IDU.scala 266:28]
   assign Registers_clock = clock;
   assign Registers_io_rs1 = ~eval ? 5'h0 : 5'h11; // @[IDU.scala 286:25]
   assign DPI_EBREAK_flag = 32'h0; // @[IDU.scala 306:25]
   assign CSR_clock = clock;
-  assign CSR_io_ren = io_de_bus_csr_ren; // @[IDU.scala 314:14]
   assign CSR_io_raddr = {{2'd0}, io_de_bus_csr_raddr}; // @[IDU.scala 315:14]
   assign dpi_rf_0 = Registers_io_regs_0; // @[IDU.scala 323:16]
   assign dpi_rf_1 = Registers_io_regs_1; // @[IDU.scala 324:16]
@@ -873,10 +853,120 @@ module MEM(
   assign io_ld_type = 3'h0; // @[MEM.scala 101:26]
 endmodule
 module AXI(
+  input         clock,
+  input         reset,
+  output        io_arvalid,
+  input         io_arready,
   input  [63:0] io_rdata,
+  input         io_rvalid,
+  output        io_rready,
+  output        io_awvalid,
+  input         io_awready,
+  output        io_wvalid,
+  input         io_wready,
+  input         io_bvalid,
+  output        io_bready,
+  input         io_inst_sram_req,
   output [63:0] io_data_sram_rdata
 );
-  assign io_data_sram_rdata = io_rdata; // @[AXI.scala 198:24]
+`ifdef RANDOMIZE_REG_INIT
+  reg [31:0] _RAND_0;
+  reg [31:0] _RAND_1;
+`endif // RANDOMIZE_REG_INIT
+  reg [1:0] rstate; // @[AXI.scala 71:55]
+  reg [1:0] wstate; // @[AXI.scala 84:76]
+  wire  write_init = wstate == 2'h0; // @[AXI.scala 86:28]
+  wire [1:0] _GEN_2 = io_rvalid ? 2'h0 : 2'h2; // @[AXI.scala 110:23 111:16 113:16]
+  wire [1:0] _GEN_13 = io_wready ? 2'h3 : 2'h2; // @[AXI.scala 162:23 163:16 165:16]
+  wire [1:0] _GEN_14 = io_bvalid ? 2'h0 : wstate; // @[AXI.scala 169:23 170:16 84:76]
+  wire [1:0] _GEN_15 = 2'h3 == wstate ? _GEN_14 : wstate; // @[AXI.scala 146:18 84:76]
+  assign io_arvalid = rstate == 2'h1; // @[AXI.scala 74:29]
+  assign io_rready = rstate == 2'h2; // @[AXI.scala 75:29]
+  assign io_awvalid = wstate == 2'h1; // @[AXI.scala 87:28]
+  assign io_wvalid = wstate == 2'h2; // @[AXI.scala 88:28]
+  assign io_bready = wstate == 2'h3; // @[AXI.scala 89:28]
+  assign io_data_sram_rdata = io_rdata; // @[AXI.scala 200:24]
+  always @(posedge clock) begin
+    if (reset) begin // @[AXI.scala 71:55]
+      rstate <= 2'h0; // @[AXI.scala 71:55]
+    end else if (2'h0 == rstate) begin // @[AXI.scala 94:18]
+      if (io_inst_sram_req & write_init) begin // @[AXI.scala 96:110]
+        rstate <= 2'h1; // @[AXI.scala 97:16]
+      end else begin
+        rstate <= 2'h0; // @[AXI.scala 99:16]
+      end
+    end else if (2'h1 == rstate) begin // @[AXI.scala 94:18]
+      if (io_arready) begin // @[AXI.scala 103:24]
+        rstate <= 2'h2; // @[AXI.scala 104:16]
+      end else begin
+        rstate <= 2'h1; // @[AXI.scala 106:16]
+      end
+    end else if (2'h2 == rstate) begin // @[AXI.scala 94:18]
+      rstate <= _GEN_2;
+    end
+    if (reset) begin // @[AXI.scala 84:76]
+      wstate <= 2'h0; // @[AXI.scala 84:76]
+    end else if (2'h0 == wstate) begin // @[AXI.scala 146:18]
+      wstate <= 2'h0;
+    end else if (2'h1 == wstate) begin // @[AXI.scala 146:18]
+      if (io_awready) begin // @[AXI.scala 155:24]
+        wstate <= 2'h2; // @[AXI.scala 156:16]
+      end else begin
+        wstate <= 2'h1; // @[AXI.scala 158:16]
+      end
+    end else if (2'h2 == wstate) begin // @[AXI.scala 146:18]
+      wstate <= _GEN_13;
+    end else begin
+      wstate <= _GEN_15;
+    end
+  end
+// Register and memory initialization
+`ifdef RANDOMIZE_GARBAGE_ASSIGN
+`define RANDOMIZE
+`endif
+`ifdef RANDOMIZE_INVALID_ASSIGN
+`define RANDOMIZE
+`endif
+`ifdef RANDOMIZE_REG_INIT
+`define RANDOMIZE
+`endif
+`ifdef RANDOMIZE_MEM_INIT
+`define RANDOMIZE
+`endif
+`ifndef RANDOM
+`define RANDOM $random
+`endif
+`ifdef RANDOMIZE_MEM_INIT
+  integer initvar;
+`endif
+`ifndef SYNTHESIS
+`ifdef FIRRTL_BEFORE_INITIAL
+`FIRRTL_BEFORE_INITIAL
+`endif
+initial begin
+  `ifdef RANDOMIZE
+    `ifdef INIT_RANDOM
+      `INIT_RANDOM
+    `endif
+    `ifndef VERILATOR
+      `ifdef RANDOMIZE_DELAY
+        #`RANDOMIZE_DELAY begin end
+      `else
+        #0.002 begin end
+      `endif
+    `endif
+`ifdef RANDOMIZE_REG_INIT
+  _RAND_0 = {1{`RANDOM}};
+  rstate = _RAND_0[1:0];
+  _RAND_1 = {1{`RANDOM}};
+  wstate = _RAND_1[1:0];
+`endif // RANDOMIZE_REG_INIT
+  `endif // RANDOMIZE
+end // initial
+`ifdef FIRRTL_AFTER_INITIAL
+`FIRRTL_AFTER_INITIAL
+`endif
+`endif // SYNTHESIS
 endmodule
 module Top(
   input         clock,
@@ -893,17 +983,12 @@ module Top(
 );
   wire  ifu_clock; // @[TopMain.scala 24:23]
   wire  ifu_reset; // @[TopMain.scala 24:23]
-  wire [31:0] ifu_io_fd_bus_pc; // @[TopMain.scala 24:23]
-  wire [63:0] ifu_io_br_bus_csr_rdata; // @[TopMain.scala 24:23]
-  wire  ifu_io_br_bus_eval; // @[TopMain.scala 24:23]
-  wire  ifu_io_br_bus_mret; // @[TopMain.scala 24:23]
+  wire  ifu_io_br_bus_br_taken_cancel; // @[TopMain.scala 24:23]
+  wire  ifu_io_inst_sram_req; // @[TopMain.scala 24:23]
   wire  idu_clock; // @[TopMain.scala 25:23]
   wire [7:0] idu_io_de_bus_OP; // @[TopMain.scala 25:23]
   wire [2:0] idu_io_de_bus_csr_raddr; // @[TopMain.scala 25:23]
-  wire  idu_io_de_bus_csr_ren; // @[TopMain.scala 25:23]
-  wire [63:0] idu_io_br_bus_csr_rdata; // @[TopMain.scala 25:23]
-  wire  idu_io_br_bus_eval; // @[TopMain.scala 25:23]
-  wire  idu_io_br_bus_mret; // @[TopMain.scala 25:23]
+  wire  idu_io_br_bus_br_taken_cancel; // @[TopMain.scala 25:23]
   wire [63:0] mem_io_data_sram_rdata; // @[TopMain.scala 27:23]
   wire [63:0] mem_io_mem_result; // @[TopMain.scala 27:23]
   wire [2:0] mem_io_ld_type; // @[TopMain.scala 27:23]
@@ -947,7 +1032,20 @@ module Top(
   wire [31:0] dpi_inst; // @[TopMain.scala 29:23]
   wire [63:0] dpi_pc; // @[TopMain.scala 29:23]
   wire [31:0] dpi_eval; // @[TopMain.scala 29:23]
+  wire  axi_clock; // @[TopMain.scala 30:23]
+  wire  axi_reset; // @[TopMain.scala 30:23]
+  wire  axi_io_arvalid; // @[TopMain.scala 30:23]
+  wire  axi_io_arready; // @[TopMain.scala 30:23]
   wire [63:0] axi_io_rdata; // @[TopMain.scala 30:23]
+  wire  axi_io_rvalid; // @[TopMain.scala 30:23]
+  wire  axi_io_rready; // @[TopMain.scala 30:23]
+  wire  axi_io_awvalid; // @[TopMain.scala 30:23]
+  wire  axi_io_awready; // @[TopMain.scala 30:23]
+  wire  axi_io_wvalid; // @[TopMain.scala 30:23]
+  wire  axi_io_wready; // @[TopMain.scala 30:23]
+  wire  axi_io_bvalid; // @[TopMain.scala 30:23]
+  wire  axi_io_bready; // @[TopMain.scala 30:23]
+  wire  axi_io_inst_sram_req; // @[TopMain.scala 30:23]
   wire [63:0] axi_io_data_sram_rdata; // @[TopMain.scala 30:23]
   wire  axi_mem_clock; // @[TopMain.scala 31:23]
   wire [3:0] axi_mem_arid; // @[TopMain.scala 31:23]
@@ -970,19 +1068,14 @@ module Top(
   IFU ifu ( // @[TopMain.scala 24:23]
     .clock(ifu_clock),
     .reset(ifu_reset),
-    .io_fd_bus_pc(ifu_io_fd_bus_pc),
-    .io_br_bus_csr_rdata(ifu_io_br_bus_csr_rdata),
-    .io_br_bus_eval(ifu_io_br_bus_eval),
-    .io_br_bus_mret(ifu_io_br_bus_mret)
+    .io_br_bus_br_taken_cancel(ifu_io_br_bus_br_taken_cancel),
+    .io_inst_sram_req(ifu_io_inst_sram_req)
   );
   IDU idu ( // @[TopMain.scala 25:23]
     .clock(idu_clock),
     .io_de_bus_OP(idu_io_de_bus_OP),
     .io_de_bus_csr_raddr(idu_io_de_bus_csr_raddr),
-    .io_de_bus_csr_ren(idu_io_de_bus_csr_ren),
-    .io_br_bus_csr_rdata(idu_io_br_bus_csr_rdata),
-    .io_br_bus_eval(idu_io_br_bus_eval),
-    .io_br_bus_mret(idu_io_br_bus_mret)
+    .io_br_bus_br_taken_cancel(idu_io_br_bus_br_taken_cancel)
   );
   MEM mem ( // @[TopMain.scala 27:23]
     .io_data_sram_rdata(mem_io_data_sram_rdata),
@@ -1032,7 +1125,20 @@ module Top(
     .eval(dpi_eval)
   );
   AXI axi ( // @[TopMain.scala 30:23]
+    .clock(axi_clock),
+    .reset(axi_reset),
+    .io_arvalid(axi_io_arvalid),
+    .io_arready(axi_io_arready),
     .io_rdata(axi_io_rdata),
+    .io_rvalid(axi_io_rvalid),
+    .io_rready(axi_io_rready),
+    .io_awvalid(axi_io_awvalid),
+    .io_awready(axi_io_awready),
+    .io_wvalid(axi_io_wvalid),
+    .io_wready(axi_io_wready),
+    .io_bvalid(axi_io_bvalid),
+    .io_bready(axi_io_bready),
+    .io_inst_sram_req(axi_io_inst_sram_req),
     .io_data_sram_rdata(axi_io_data_sram_rdata)
   );
   AXI_mem axi_mem ( // @[TopMain.scala 31:23]
@@ -1055,7 +1161,7 @@ module Top(
     .bvalid(axi_mem_bvalid),
     .bready(axi_mem_bready)
   );
-  assign io_fs_pc = ifu_io_fd_bus_pc; // @[TopMain.scala 86:17]
+  assign io_fs_pc = 32'h80000000; // @[TopMain.scala 86:17]
   assign io_op = 7'h7f; // @[TopMain.scala 87:17]
   assign io_in_WB = 1'h0; // @[TopMain.scala 88:17]
   assign io_wb_pc = 32'h0; // @[TopMain.scala 89:17]
@@ -1065,9 +1171,7 @@ module Top(
   assign io_ld_type = 3'h0; // @[TopMain.scala 93:17]
   assign ifu_clock = clock;
   assign ifu_reset = reset;
-  assign ifu_io_br_bus_csr_rdata = idu_io_br_bus_csr_rdata; // @[TopMain.scala 36:17]
-  assign ifu_io_br_bus_eval = idu_io_br_bus_eval; // @[TopMain.scala 36:17]
-  assign ifu_io_br_bus_mret = idu_io_br_bus_mret; // @[TopMain.scala 36:17]
+  assign ifu_io_br_bus_br_taken_cancel = idu_io_br_bus_br_taken_cancel; // @[TopMain.scala 36:17]
   assign idu_clock = clock;
   assign mem_io_data_sram_rdata = axi_io_data_sram_rdata; // @[TopMain.scala 71:26]
   assign dpi_rf_0 = 64'h0;
@@ -1110,17 +1214,25 @@ module Top(
   assign dpi_inst = 32'h0;
   assign dpi_pc = 64'h0;
   assign dpi_eval = 32'h0;
+  assign axi_clock = clock;
+  assign axi_reset = reset;
+  assign axi_io_arready = axi_mem_arready; // @[TopMain.scala 106:18]
   assign axi_io_rdata = axi_mem_rdata; // @[TopMain.scala 107:16]
-  assign axi_mem_clock = io_clock; // @[TopMain.scala 118:20]
-  assign axi_mem_arid = 4'h2; // @[TopMain.scala 119:19]
-  assign axi_mem_araddr = 64'h0; // @[TopMain.scala 120:21]
-  assign axi_mem_arvalid = 1'h0; // @[TopMain.scala 121:22]
-  assign axi_mem_rready = 1'h0; // @[TopMain.scala 123:21]
-  assign axi_mem_awid = 4'h1; // @[TopMain.scala 125:19]
-  assign axi_mem_awaddr = 64'h0; // @[TopMain.scala 126:21]
-  assign axi_mem_awvalid = 1'h0; // @[TopMain.scala 127:22]
-  assign axi_mem_wdata = 64'h0; // @[TopMain.scala 129:20]
-  assign axi_mem_wstrb = 8'h0; // @[TopMain.scala 130:20]
-  assign axi_mem_wvalid = 1'h0; // @[TopMain.scala 131:21]
-  assign axi_mem_bready = 1'h0; // @[TopMain.scala 133:21]
+  assign axi_io_rvalid = axi_mem_rvalid; // @[TopMain.scala 108:17]
+  assign axi_io_awready = axi_mem_awready; // @[TopMain.scala 110:18]
+  assign axi_io_wready = axi_mem_wready; // @[TopMain.scala 112:17]
+  assign axi_io_bvalid = axi_mem_bvalid; // @[TopMain.scala 114:17]
+  assign axi_io_inst_sram_req = ifu_io_inst_sram_req; // @[TopMain.scala 96:24]
+  assign axi_mem_clock = io_clock; // @[TopMain.scala 117:20]
+  assign axi_mem_arid = 4'h2; // @[TopMain.scala 118:19]
+  assign axi_mem_araddr = 64'h0; // @[TopMain.scala 119:21]
+  assign axi_mem_arvalid = axi_io_arvalid; // @[TopMain.scala 120:22]
+  assign axi_mem_rready = axi_io_rready; // @[TopMain.scala 122:21]
+  assign axi_mem_awid = 4'h1; // @[TopMain.scala 124:19]
+  assign axi_mem_awaddr = 64'h0; // @[TopMain.scala 125:21]
+  assign axi_mem_awvalid = axi_io_awvalid; // @[TopMain.scala 126:22]
+  assign axi_mem_wdata = 64'h0; // @[TopMain.scala 128:20]
+  assign axi_mem_wstrb = 8'h0; // @[TopMain.scala 129:20]
+  assign axi_mem_wvalid = axi_io_wvalid; // @[TopMain.scala 130:21]
+  assign axi_mem_bready = axi_io_bready; // @[TopMain.scala 132:21]
 endmodule

@@ -112,7 +112,6 @@ class Top extends Module {
   axi.io.wready <> axi_mem.io.wready
 
   axi.io.bvalid <> axi_mem.io.bvalid
-  axi.io.bready <> axi_mem.io.bready
 
   //axi_mem
   axi_mem.io.clock <> io.clock
