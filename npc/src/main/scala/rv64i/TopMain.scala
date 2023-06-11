@@ -61,7 +61,6 @@ class Top extends Module {
   exu.io.ms_allowin <> mem.io.ms_allowin
   exu.io.ds_to_es_valid <> idu.io.ds_to_es_valid
   exu.io.de_bus <> idu.io.de_bus
-  exu.io.data_sram_addr_ok <> axi.io.data_sram_addr_ok
 
   // MEM
   mem.io.ws_allowin <> wbu.io.ws_allowin
@@ -69,7 +68,7 @@ class Top extends Module {
   mem.io.em_bus <> exu.io.em_bus
   mem.io.data_sram_data_ok <> axi.io.data_sram_data_ok
   mem.io.data_sram_rdata <> axi.io.data_sram_rdata
-  //mem.io.data_sram_rdata <> data_sram.io.rdata
+  mem.io.data_sram_addr_ok <> axi.io.data_sram_addr_ok
 
   //data_sram.io.waddr <> mem.io.data_sram_addr
   //data_sram.io.wdata <> mem.io.data_sram_wdata
@@ -97,11 +96,11 @@ class Top extends Module {
   axi.io.inst_sram_wr <> ifu.io.inst_sram_wr
   axi.io.inst_sram_addr <> ifu.io.inst_sram_addr
 
-  axi.io.data_sram_req <> exu.io.data_sram_req
-  axi.io.data_sram_wr <> exu.io.data_sram_we
-  axi.io.data_sram_addr <> exu.io.data_sram_addr
-  axi.io.data_sram_wdata <> exu.io.data_sram_wdata
-  axi.io.data_sram_wstrb <> exu.io.data_sram_wmask
+  axi.io.data_sram_req <> mem.io.data_sram_req
+  axi.io.data_sram_wr <> mem.io.data_sram_we
+  axi.io.data_sram_addr <> mem.io.data_sram_addr
+  axi.io.data_sram_wdata <> mem.io.data_sram_wdata
+  axi.io.data_sram_wstrb <> mem.io.data_sram_wmask
 
   axi.io.arready <> axi_mem.io.arready
   axi.io.rdata <> axi_mem.io.rdata

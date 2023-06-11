@@ -88,16 +88,21 @@ VL_INLINE_OPT void VTop___024root___ico_sequent__TOP__0(VTop___024root* vlSelf) 
                                                   ((IData)(vlSelf->Top__DOT__idu__DOT__rawblock) 
                                                    | (IData)(vlSelf->Top__DOT__ifu__DOT__mid_handshake_inst))) 
                                                  & (IData)(vlSelf->Top__DOT__ifu__DOT__fs_allow_in)));
-    vlSelf->Top__DOT__ifu__DOT___GEN_4 = (((IData)(vlSelf->Top__DOT__ifu_io_inst_sram_addr_ok) 
+    vlSelf->Top__DOT__ifu__DOT___GEN_7 = (((IData)(vlSelf->Top__DOT__ifu_io_inst_sram_addr_ok) 
                                            & ((~ (IData)(vlSelf->Top__DOT__ifu__DOT__fs_allow_in)) 
                                               & (IData)(vlSelf->Top__DOT__ifu_io_inst_sram_req))) 
                                           | ((~ (IData)(vlSelf->Top__DOT__ifu__DOT__fs_allow_in)) 
                                              & (IData)(vlSelf->Top__DOT__ifu__DOT__mid_handshake_inst)));
-    vlSelf->Top__DOT__axi__DOT___GEN_7 = (((~ (IData)(vlSelf->Top__DOT__exu_io_data_sram_req)) 
+    vlSelf->Top__DOT__axi__DOT___GEN_7 = (((~ (IData)(vlSelf->Top__DOT__mem_io_data_sram_req)) 
                                            & ((IData)(vlSelf->Top__DOT__ifu_io_inst_sram_req) 
                                               & (IData)(vlSelf->Top__DOT__axi__DOT____VdfgTmp_h0ac213f2__0))) 
                                           | ((~ (IData)(vlSelf->Top__DOT__axi__DOT___T_16)) 
                                              & (IData)(vlSelf->Top__DOT__axi__DOT__reading_inst_sram)));
+    vlSelf->Top__DOT__ifu__DOT__prefs_ready_go = ((IData)(vlSelf->Top__DOT__ifu_io_inst_sram_req) 
+                                                  & (IData)(vlSelf->Top__DOT__ifu_io_inst_sram_addr_ok));
+    vlSelf->Top__DOT__ifu__DOT___GEN_1 = (((~ (IData)(vlSelf->Top__DOT__ifu__DOT__prefs_ready_go)) 
+                                           & (IData)(vlSelf->Top__DOT__idu__DOT__br_taken)) 
+                                          | (IData)(vlSelf->Top__DOT__ifu__DOT__br_taken_R));
 }
 
 void VTop___024root___eval_ico(VTop___024root* vlSelf) {
@@ -150,7 +155,7 @@ void VTop___024root___eval(VTop___024root* vlSelf) {
 #ifdef VL_DEBUG
                 VTop___024root___dump_triggers__ico(vlSelf);
 #endif
-                VL_FATAL_MT("vsrc/Top.v", 6832, "", "Input combinational region did not converge.");
+                VL_FATAL_MT("vsrc/Top.v", 6890, "", "Input combinational region did not converge.");
             }
             vlSelf->__VicoIterCount = ((IData)(1U) 
                                        + vlSelf->__VicoIterCount);
@@ -173,7 +178,7 @@ void VTop___024root___eval(VTop___024root* vlSelf) {
 #ifdef VL_DEBUG
                     VTop___024root___dump_triggers__act(vlSelf);
 #endif
-                    VL_FATAL_MT("vsrc/Top.v", 6832, "", "Active region did not converge.");
+                    VL_FATAL_MT("vsrc/Top.v", 6890, "", "Active region did not converge.");
                 }
                 vlSelf->__VactIterCount = ((IData)(1U) 
                                            + vlSelf->__VactIterCount);
@@ -188,7 +193,7 @@ void VTop___024root___eval(VTop___024root* vlSelf) {
 #ifdef VL_DEBUG
                 VTop___024root___dump_triggers__nba(vlSelf);
 #endif
-                VL_FATAL_MT("vsrc/Top.v", 6832, "", "NBA region did not converge.");
+                VL_FATAL_MT("vsrc/Top.v", 6890, "", "NBA region did not converge.");
             }
             __VnbaIterCount = ((IData)(1U) + __VnbaIterCount);
             VTop___024root___eval_nba(vlSelf);

@@ -105,16 +105,15 @@ int cmd_c()
           if(dut->io_in_WB){
             printf("ds_pc = %x ds_inst= %lx\n", now_pc,now_inst);
             isa_reg_display();
-            printf("sim_time = %d\n", sim_time);
+            //printf("sim_time = %d\n", sim_time);
           }
 
 #ifdef CONFIG_ITRACE
           itrace(&s, now_pc, now_inst);
 #endif
 #ifdef CONFIG_DIFFTEST
-        if(dut->io_in_WB && sim_time >=16){
+        if(dut->io_in_WB){
           difftest_step(cpu.pc);
-          printf("sim_time = %d\n", sim_time);
         }
 #endif
 #ifdef CONFIG_FTRACE

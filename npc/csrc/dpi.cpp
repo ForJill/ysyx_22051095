@@ -68,12 +68,12 @@ extern "C" void pmem_read(long long raddr, long long *rdata)
     return ;
   }
   *rdata = *((long long *)guest_to_host(raddr));
-  // printf("pmem_read: 0x%llx -> 0x%llx\n", raddr, *rdata);
+  printf("pmem_read: 0x%llx -> 0x%llx\n", raddr, *rdata);
 }
 extern "C" void pmem_write(long long waddr, long long wdata, char wmask)
 {
   
-  //printf("pmem_write: 0x%llx -> 0x%llx\n", waddr, wdata);
+  printf("pmem_write: 0x%llx -> 0x%llx\n", waddr, wdata);
   if (waddr == SERIAL_PORT)
   {
     //difftest_skip_ref();

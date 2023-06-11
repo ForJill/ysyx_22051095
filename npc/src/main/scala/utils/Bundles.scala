@@ -97,6 +97,8 @@ class em_bus extends Bundle{
   val csrs = Output(Vec(5, UInt(DATA_WIDTH.W)))
   val is_ld = Output(Bool())
   val MemWen = Output(Bool())
+  val Memwdata = Output(UInt(DATA_WIDTH.W))
+  val wmask = Output(UInt(8.W))
   //val is_csr = Output(Bool())
 }
 

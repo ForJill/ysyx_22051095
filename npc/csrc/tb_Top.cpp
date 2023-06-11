@@ -66,12 +66,12 @@ int main(int argc, char **argv, char **env)
   init_difftest(img_size);
 #endif
   init();
-  while(!stop && !is_exit)
-  {
-char input = readChar();
-executeCommand(input);
-}
-  //while (!cmd_c());
+  //while(!stop && !is_exit)
+  //{
+//char input = readChar();
+//executeCommand(input);
+//}
+  while (!cmd_c());
   if (stop)
   {
     // if(cpu.gpr[10] != 0) printf("\033[1;31mHIT BAD TRAP\33[0m\n");

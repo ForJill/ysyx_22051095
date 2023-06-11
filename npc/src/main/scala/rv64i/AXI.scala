@@ -113,6 +113,7 @@ class AXI extends Module {
         rstate := sReadData
       }
     }
+    
   }
   //表示正在处理读指令事务，不允许其他操作,取数据优先级比取指令高
   when(!io.data_sram_req && io.inst_sram_req && !io.inst_sram_wr && write_init && read_ainit) {
@@ -191,7 +192,7 @@ class AXI extends Module {
   io.inst_sram_addr_ok := reading_inst_sram && io.arready
   io.data_sram_addr_ok := reading_data_sram && io.arready || writing_data_sram === 2.U
   io.inst_sram_data_ok := reading_inst_sram && io.rvalid
-  io.data_sram_data_ok := reading_data_sram && io.rvalid || io.bvalid
-  io.inst_sram_rdata   := io.rdata
+  io.data_sram_data_ok := reading_data_sram && io.rvalid || io.bready
   io.data_sram_rdata   := io.rdata
+  io.inst_sram_rdata   := io.rdata
 }

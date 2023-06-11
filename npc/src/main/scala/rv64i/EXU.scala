@@ -19,13 +19,6 @@ class EXU extends Module {
     val de_bus          = Flipped(new de_bus)
     val em_bus          = Output(new em_bus)
     val es_dest_valid   = Output(new (es_dest_valid))
-    val data_sram_req     = Output(Bool())
-    val data_sram_en      = Output(Bool())
-    val data_sram_we      = Output(Bool())
-    val data_sram_addr    = Output(UInt(32.W))
-    val data_sram_wdata   = Output(UInt(64.W))
-    val data_sram_wmask   = Output(UInt(8.W))
-    val data_sram_addr_ok = Input(Bool())
   })
   val de_bus_r    = RegInit(0.U.asTypeOf(new de_bus))
   val es_valid    = RegInit(false.B)
@@ -191,10 +184,12 @@ class EXU extends Module {
   io.em_bus.csr_raddr   := de_bus_r.csr_raddr
   io.em_bus.eval       := de_bus_r.eval
   io.em_bus.mret        := de_bus_r.mret
-  io.em_bus.csrs        := de_bus_r.csrs
+  io.em_bus.csrs        := de_bus_r.csrs         
   io.em_bus.is_ld       := de_bus_r.is_ld
   io.em_bus.csr_rdata   := de_bus_r.csr_rdata
   io.em_bus.MemWen     := de_bus_r.MemWen
+  io.em_bus.Memwdata   := src2
+  io.em_bus.wmask     := de_bus_r.wmask
 
   io.es_dest_valid.es_forward_data := result
   io.es_dest_valid.gr_we           := de_bus_r.gr_we
@@ -202,13 +197,6 @@ class EXU extends Module {
   io.es_dest_valid.es_valid        := es_valid
   io.es_dest_valid.es_is_ld        := de_bus_r.is_ld
   io.es_dest_valid.es_ready_go     := es_ready_go
-
-  io.data_sram_en    := de_bus_r.res_from_mem
-  io.data_sram_we    := de_bus_r.MemWen
-  io.data_sram_addr  := result
-  io.data_sram_wdata := src2
-  io.data_sram_wmask := de_bus_r.wmask
-  io.data_sram_req   := (de_bus_r.res_from_mem || de_bus_r.MemWen) && es_valid
   
   val mul_end = mul_64.out_valid || mul_32.out_valid
   val muling  = (is_mul_64 && !mul_64.out_valid) || (is_mul_32 && !mul_32.out_valid)
@@ -217,7 +205,7 @@ class EXU extends Module {
   val reming  = (is_rem_64 && !div_64.out_valid) || (is_rem_32 && !div_32.out_valid)
   es_ready_go       := Mux(mul_end || div_end,true.B,
                        Mux(muling || diving || reming,false.B,
-                       Mux(de_bus_r.res_from_mem || de_bus_r.MemWen, io.data_sram_req && io.data_sram_addr_ok, true.B)))
+                       true.B))
   io.es_allowin     := !es_valid || es_ready_go && io.ms_allowin
   io.es_to_ms_valid := es_valid && es_ready_go
 }

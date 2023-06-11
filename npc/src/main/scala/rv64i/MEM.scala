@@ -17,6 +17,13 @@ class MEM extends Module {
     val mem_result        = Output(UInt(64.W))
     val ld_type           = Output(UInt(3.W))
     val data_sram_data_ok = Input(Bool())
+    val data_sram_req     = Output(Bool())
+    val data_sram_en      = Output(Bool())
+    val data_sram_we      = Output(Bool())
+    val data_sram_addr    = Output(UInt(32.W))
+    val data_sram_wdata   = Output(UInt(64.W))
+    val data_sram_wmask   = Output(UInt(8.W))
+    val data_sram_addr_ok = Input(Bool())
   })
 
   def Sext(x: UInt, n: Int): UInt = Cat(Fill(64 - n, x(n - 1)), x)
@@ -24,8 +31,10 @@ class MEM extends Module {
   val ms_valid    = RegInit(false.B)
   val ms_ready_go = Wire(Bool())
   val em_bus_r    = RegInit(0.U.asTypeOf(new em_bus))
+  val data_sram_rdata_valid = RegInit(false.B)
+  val mid_handshake_data   = RegInit(false.B)
 
-  ms_ready_go       := Mux(em_bus_r.res_from_mem || em_bus_r.MemWen, (io.data_sram_data_ok),true.B)
+  ms_ready_go       := Mux(em_bus_r.res_from_mem || em_bus_r.MemWen, io.data_sram_data_ok,true.B)
   io.ms_allowin     := !ms_valid || ms_ready_go && io.ws_allowin
   io.ms_to_ws_valid := ms_valid && ms_ready_go
 
@@ -43,7 +52,6 @@ class MEM extends Module {
   val alu_result            = em_bus_r.alu_result
   val mem_pc                = em_bus_r.ex_pc
   val final_result          = WireDefault(0.U(DATA_WIDTH.W))
-  val data_sram_rdata_valid = WireDefault(false.B)
   val data_sram_rdata_R     = RegInit(0.U(64.W))
   val final_data_sram_rdata = WireDefault(0.U(64.W))
 
@@ -56,6 +64,15 @@ class MEM extends Module {
   }.elsewhen(ms_ready_go && io.ms_allowin) {
     data_sram_rdata_valid := false.B
   }
+
+  when(io.data_sram_data_ok){
+    mid_handshake_data := false.B
+  }.elsewhen(io.data_sram_addr_ok && io.data_sram_req && !io.ms_allowin){
+    mid_handshake_data := true.B
+  }.elsewhen(io.ms_allowin){
+    mid_handshake_data := false.B
+  }
+
 
   final_data_sram_rdata := Mux(data_sram_rdata_valid, data_sram_rdata_R,io.data_sram_rdata) //Mux(data_sram_rdata_valid === 1.U, data_sram_rdata_R, io.data_sram_rdata)
 
@@ -78,7 +95,7 @@ class MEM extends Module {
 
   io.ms_dest_valid.gr_we    := gr_we
   io.ms_dest_valid.dest     := dest
-  io.ms_dest_valid.ms_valid := ms_valid
+  io.ms_dest_valid.ms_valid := io.ms_to_ws_valid
   io.ms_dest_valid.ms_is_ld := io.em_bus.is_ld
 
   io.mw_bus.gr_we        := gr_we
@@ -99,4 +116,11 @@ class MEM extends Module {
   io.mw_bus.csrs         := em_bus_r.csrs
   io.mw_bus.csr_rdata    := em_bus_r.csr_rdata
   io.ld_type             := em_bus_r.ld_type
+
+  io.data_sram_en    := em_bus_r.res_from_mem
+  io.data_sram_we    := em_bus_r.MemWen
+  io.data_sram_addr  := em_bus_r.alu_result
+  io.data_sram_wdata := em_bus_r.Memwdata
+  io.data_sram_wmask := em_bus_r.wmask
+  io.data_sram_req   := (em_bus_r.res_from_mem || em_bus_r.MemWen) && !mid_handshake_data && ms_valid
 }

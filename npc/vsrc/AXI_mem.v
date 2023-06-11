@@ -92,6 +92,10 @@ localparam WRITE_BRESP  = 3'b100;
 
 reg [2:0] write_state;
 reg [2:0] write_next_state;
+reg [63:0] wdata_R;
+reg [7:0] wstrb_R;
+reg [63:0] awaddr_R;
+
 wire write_ainit = (write_state == WRITE_AINIT);
 wire write_awaddr = (write_state == WRITE_AWADDR);
 wire write_wdata = (write_state == WRITE_WDATA);
@@ -134,12 +138,21 @@ always@(*) begin
     end
    endcase
 end
+always@(posedge clock) begin
+    if(awvalid) begin
+       awaddr_R <= awaddr;
+    end
+    if(wvalid) begin
+       wdata_R <= wdata;
+       wstrb_R <= wstrb;
+    end
+end
 assign awready = write_awaddr;
 assign wready = write_bresp;
 assign bvalid = write_bresp;
 always@(posedge clock) begin
    if(write_wdata)begin
-       pmem_write(awaddr, wdata, wstrb);
+       pmem_write(awaddr_R, wdata_R, wstrb_R);
    end
 end
 endmodule
