@@ -47,11 +47,12 @@ class IDU extends Module {
   val br_taken        = Wire(Bool())
   val br_target       = Wire(UInt(32.W))
   val br_taken_cancel = Wire(Bool())
+  val rawblock        = Wire(Bool())
   io.br_bus.br_taken        := br_taken
   io.br_bus.br_target       := br_target
   io.br_bus.br_taken_cancel := br_taken_cancel
 
-  io.ds_allowin     := !ds_valid || ds_ready_go && io.es_allowin
+  io.ds_allowin     := (!ds_valid || ds_ready_go && io.es_allowin) && !rawblock
   io.ds_to_es_valid := ds_valid && ds_ready_go
 
   when(br_taken_cancel && io.ds_allowin) {
@@ -231,21 +232,21 @@ class IDU extends Module {
   io.de_bus.csr_ren    := eval || mret || csr_index =/= 0.U
   io.de_bus.eval      := eval
   io.de_bus.mret      := mret
-  io.br_bus.eval            := eval
-  io.br_bus.mret            := mret
+  io.br_bus.eval      := eval
+  io.br_bus.mret      := mret
   
   br_taken := MuxLookup(
     io.de_bus.OP,
     false.B,
     Array(
-      ALU_BEQ -> ((rf_rdata1 === rf_rdata2) && ds_valid),
-      ALU_BNE -> ((rf_rdata1 =/= rf_rdata2) && ds_valid),
-      ALU_BLT -> ((rf_rdata1.asSInt < rf_rdata2.asSInt) && ds_valid),
-      ALU_BGE -> ((rf_rdata1.asSInt >= rf_rdata2.asSInt) && ds_valid),
-      ALU_BLTU -> ((rf_rdata1 < rf_rdata2) && ds_valid),
-      ALU_BGEU -> ((rf_rdata1 >= rf_rdata2) && ds_valid),
-      ALU_JAL -> (true.B && ds_valid),
-      ALU_JALR -> (true.B && ds_valid),
+      ALU_BEQ -> ((rf_rdata1 === rf_rdata2) && ds_valid && !rawblock),
+      ALU_BNE -> ((rf_rdata1 =/= rf_rdata2) && ds_valid && !rawblock),
+      ALU_BLT -> ((rf_rdata1.asSInt < rf_rdata2.asSInt) && ds_valid && !rawblock),
+      ALU_BGE -> ((rf_rdata1.asSInt >= rf_rdata2.asSInt) && ds_valid && !rawblock),
+      ALU_BLTU -> ((rf_rdata1 < rf_rdata2) && ds_valid && !rawblock),
+      ALU_BGEU -> ((rf_rdata1 >= rf_rdata2) && ds_valid && !rawblock),
+      ALU_JAL -> (true.B && ds_valid && !rawblock),
+      ALU_JALR -> (true.B && ds_valid && !rawblock),
     )
   )
   br_target := MuxLookup(
@@ -273,7 +274,7 @@ class IDU extends Module {
 
   val es_rawblock = (rs1 === io.es_dest_valid.dest || rs2 === io.es_dest_valid.dest) && io.es_dest_valid.dest =/= 0.U && (io.es_dest_valid.es_is_ld) && ds_valid
   val ms_rawblock = (rs1 === io.ms_dest_valid.dest || rs2 === io.ms_dest_valid.dest) && io.ms_dest_valid.dest =/= 0.U && (io.ms_dest_valid.ms_is_ld) && ds_valid
-  val rawblock = io.es_dest_valid.es_valid && es_rawblock || io.ms_dest_valid.ms_valid && ms_rawblock
+  rawblock := io.es_dest_valid.es_valid && es_rawblock || io.ms_dest_valid.ms_valid && ms_rawblock
   ds_ready_go := !rawblock
   io.br_bus.rawblock        := rawblock
   //io.de_bus.csr_rdata := csr(csr_index)
@@ -288,16 +289,16 @@ class IDU extends Module {
   rf_rdata1 := MuxCase(
     registers.rdata1,
     Array(
-      ((registers.rs1 === io.es_dest_valid.dest && io.es_dest_valid.dest =/= 0.U) && io.es_dest_valid.es_valid && io.es_dest_valid.gr_we && io.es_dest_valid.es_ready_go ) -> io.es_dest_valid.es_forward_data,
-      ((registers.rs1 === io.ms_dest_valid.dest && io.ms_dest_valid.dest =/= 0.U) && io.ms_dest_valid.ms_valid && io.ms_dest_valid.gr_we ) -> io.ms_dest_valid.ms_forward_data,
+      ((registers.rs1 === io.es_dest_valid.dest && io.es_dest_valid.dest =/= 0.U) && io.es_dest_valid.es_to_ms_valid && io.es_dest_valid.gr_we && io.es_dest_valid.es_ready_go ) -> io.es_dest_valid.es_forward_data,
+      ((registers.rs1 === io.ms_dest_valid.dest && io.ms_dest_valid.dest =/= 0.U) && io.ms_dest_valid.ms_to_ws_valid && io.ms_dest_valid.gr_we && io.ms_dest_valid.ms_ready_go ) -> io.ms_dest_valid.ms_forward_data,
       ((registers.rs1 === io.ws_dest_valid.dest && io.ws_dest_valid.dest =/= 0.U) && io.ws_dest_valid.ws_valid && io.ws_dest_valid.gr_we ) -> io.ws_dest_valid.ws_forward_data
     )
   )
   rf_rdata2 := MuxCase(
     registers.rdata2,
     Array(
-      ((rs2 === io.es_dest_valid.dest && io.es_dest_valid.dest =/= 0.U) && io.es_dest_valid.es_valid && io.es_dest_valid.gr_we) -> io.es_dest_valid.es_forward_data,
-      ((rs2 === io.ms_dest_valid.dest && io.ms_dest_valid.dest =/= 0.U) && io.ms_dest_valid.ms_valid && io.ms_dest_valid.gr_we) -> io.ms_dest_valid.ms_forward_data,
+      ((rs2 === io.es_dest_valid.dest && io.es_dest_valid.dest =/= 0.U ) && io.es_dest_valid.es_to_ms_valid && io.es_dest_valid.gr_we  && io.es_dest_valid.es_ready_go ) -> io.es_dest_valid.es_forward_data,
+      ((rs2 === io.ms_dest_valid.dest && io.ms_dest_valid.dest =/= 0.U) && io.ms_dest_valid.ms_to_ws_valid && io.ms_dest_valid.gr_we && io.ms_dest_valid.ms_ready_go ) -> io.ms_dest_valid.ms_forward_data,
       ((rs2 === io.ws_dest_valid.dest && io.ws_dest_valid.dest =/= 0.U) && io.ws_dest_valid.ws_valid && io.ws_dest_valid.gr_we) -> io.ws_dest_valid.ws_forward_data
     )
   )
@@ -352,8 +353,8 @@ class IDU extends Module {
   dpi.io.rf_29 := registers.regs(29)
   dpi.io.rf_30 := registers.regs(30)
   dpi.io.rf_31 := registers.regs(31)
-  dpi.io.inst  := ds_inst
-  dpi.io.pc    := ds_pc
+  dpi.io.inst  := io.rf_bus.wb_inst
+  dpi.io.pc    := io.rf_bus.wb_pc
   dpi.io.csr_0 := csr.csrs(0)
   dpi.io.csr_1 := csr.csrs(1)
   dpi.io.csr_2 := csr.csrs(2)

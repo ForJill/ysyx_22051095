@@ -50,6 +50,7 @@ class WBU extends Module {
   io.rf_bus.rf_waddr := rf_waddr
   io.rf_bus.rf_wdata := rf_wdata
   io.rf_bus.wb_pc   := mw_bus_r.mem_pc
+  io.rf_bus.wb_inst := mw_bus_r.inst
   io.rf_bus.eval    := mw_bus_r.eval
   io.wb_pc           := mw_bus_r.mem_pc
   io.wb_inst         := mw_bus_r.inst

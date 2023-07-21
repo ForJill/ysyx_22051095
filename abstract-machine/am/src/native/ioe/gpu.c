@@ -1,5 +1,4 @@
 #include <am.h>
-#include <npc.h>
 
 //#define MODE_800x600
 #ifdef MODE_800x600

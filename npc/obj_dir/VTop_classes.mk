@@ -25,7 +25,13 @@ VM_TRACE_FST = 0
 VM_CLASSES_FAST += \
 	VTop \
 	VTop___024root__DepSet_hc590b6dd__0 \
+	VTop___024root__DepSet_hc590b6dd__1 \
+	VTop___024root__DepSet_hc590b6dd__2 \
 	VTop___024root__DepSet_h0d2e5939__0 \
+	VTop___024root__DepSet_h0d2e5939__1 \
+	VTop___024root__DepSet_h0d2e5939__2 \
+	VTop___024root__DepSet_h0d2e5939__3 \
+	VTop___024root__DepSet_h0d2e5939__4 \
 	VTop___024unit__DepSet_hd7ebdb33__0 \
 	VTop_BOOTH_gen__DepSet_h3f0f540c__0 \
 
@@ -34,7 +40,10 @@ VM_CLASSES_SLOW += \
 	VTop__ConstPool_0 \
 	VTop___024root__Slow \
 	VTop___024root__DepSet_hc590b6dd__0__Slow \
+	VTop___024root__DepSet_hc590b6dd__1__Slow \
 	VTop___024root__DepSet_h0d2e5939__0__Slow \
+	VTop___024root__DepSet_h0d2e5939__1__Slow \
+	VTop___024root__DepSet_h0d2e5939__2__Slow \
 	VTop___024unit__Slow \
 	VTop___024unit__DepSet_h1b4533a7__0__Slow \
 	VTop_BOOTH_gen__Slow \

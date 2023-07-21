@@ -95,8 +95,10 @@ class MEM extends Module {
 
   io.ms_dest_valid.gr_we    := gr_we
   io.ms_dest_valid.dest     := dest
-  io.ms_dest_valid.ms_valid := io.ms_to_ws_valid
-  io.ms_dest_valid.ms_is_ld := io.em_bus.is_ld
+  io.ms_dest_valid.ms_valid := ms_valid
+  io.ms_dest_valid.ms_is_ld := em_bus_r.is_ld
+  io.ms_dest_valid.ms_to_ws_valid := io.ms_to_ws_valid
+  io.ms_dest_valid.ms_ready_go := ms_ready_go
 
   io.mw_bus.gr_we        := gr_we
   io.mw_bus.dest         := dest

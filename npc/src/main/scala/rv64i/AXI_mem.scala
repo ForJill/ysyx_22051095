@@ -19,6 +19,7 @@ class AXI_mem extends BlackBox with HasBlackBoxInline{
         //读响应通道
         //val rid    = Output(UInt(4.W))
         val rdata  = Output(UInt(64.W))
+        val icache_rdata = Output(UInt(128.W))
         //val rresp  = Output(UInt(2.W))
         val rvalid = Output(Bool())
         val rready = Input(Bool())
@@ -62,6 +63,7 @@ class AXI_mem extends BlackBox with HasBlackBoxInline{
         |    output arready,
         |    //output [3:0] rid,
         |    output [63:0] rdata,
+        |    output [127:0] icache_rdata,
         |    //output [1:0] rresp,
         |    output rvalid,
         |    input rready,
@@ -133,6 +135,8 @@ class AXI_mem extends BlackBox with HasBlackBoxInline{
         |always@(posedge clock) begin
         |   if(arvalid)begin
         |       pmem_read(araddr, rdata);
+        |       pmem_read(araddr, icache_rdata[63:0]);
+        |       pmem_read(araddr+8, icache_rdata[127:64]);
         |   end
         |end
         |

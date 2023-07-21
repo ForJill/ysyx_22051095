@@ -84,7 +84,7 @@ int fs_close(int fd) {
 }
 void init_fs() {
   // TODO: initialize the size of /dev/fb
-  file_table[FD_FB].size = io_read(AM_GPU_CONFIG).width / N * io_read(AM_GPU_CONFIG).height / N * 4;
-  printf("file_width = %d, file_height = %d\n", io_read(AM_GPU_CONFIG).width, io_read(AM_GPU_CONFIG).height);
-  printf("init_fs: file_table[FD_FB].size = %d\n", file_table[FD_FB].size);
+  file_table[FD_FB].size = io_read(AM_GPU_CONFIG).width / N * io_read(AM_GPU_CONFIG).height / N * 1000;
+  //printf("file_width = %d, file_height = %d\n", io_read(AM_GPU_CONFIG).width, io_read(AM_GPU_CONFIG).height);
+  //printf("init_fs: file_table[FD_FB].size = %d\n", file_table[FD_FB].size);
 }

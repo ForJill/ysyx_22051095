@@ -53,35 +53,35 @@ class EXU extends Module {
   val is_mul_64 = de_bus_r.OP === ALU_MUL
   val is_mul_32 = de_bus_r.OP === ALU_MULW
 
-  mul_64.mul_valid := is_mul_64
+  mul_64.mul_valid := is_mul_64 && es_valid
   mul_64.flush := false.B
   mul_64.mulw := false.B
   mul_64.mul_signed := 3.U
   mul_64.multiplicand := src1
   mul_64.multiplier := src2
 
-  mul_32.mul_valid := is_mul_32
+  mul_32.mul_valid := is_mul_32 && es_valid
   mul_32.flush := false.B
   mul_32.mulw := true.B
   mul_32.mul_signed := 0.U
   mul_32.multiplicand := src1(31, 0)
   mul_32.multiplier := src2(31, 0)
 
-  val div_64 = (Module(new div(64)).io)
+  val div_64 = (Module(new div(64)).io) 
   val div_32 = (Module(new div(32)).io)
-  val is_div_64 = de_bus_r.OP === ALU_DIV || de_bus_r.OP === ALU_DIVU
-  val is_div_32 = de_bus_r.OP === ALU_DIVW || de_bus_r.OP === ALU_DIVUW
-  val is_rem_64 = de_bus_r.OP === ALU_REM || de_bus_r.OP === ALU_REMU
-  val is_rem_32 = de_bus_r.OP === ALU_REMW || de_bus_r.OP === ALU_REMUW
+  val is_div_64 = (de_bus_r.OP === ALU_DIV || de_bus_r.OP === ALU_DIVU)
+  val is_div_32 = (de_bus_r.OP === ALU_DIVW || de_bus_r.OP === ALU_DIVUW)
+  val is_rem_64 = (de_bus_r.OP === ALU_REM || de_bus_r.OP === ALU_REMU)
+  val is_rem_32 = (de_bus_r.OP === ALU_REMW || de_bus_r.OP === ALU_REMUW)
 
-  div_64.div_valid := is_div_64 || is_rem_64
+  div_64.div_valid := (is_div_64 || is_rem_64) && es_valid
   div_64.flush := false.B
   div_64.divw := false.B
   div_64.div_signed := de_bus_r.OP === ALU_DIV || de_bus_r.OP === ALU_REM
   div_64.dividend := src1
   div_64.divisor := src2
 
-  div_32.div_valid := is_div_32 || is_rem_32
+  div_32.div_valid := (is_div_32 || is_rem_32) && es_valid
   div_32.flush := false.B
   div_32.divw := true.B
   div_32.div_signed := de_bus_r.OP === ALU_DIVW || de_bus_r.OP === ALU_REMW
@@ -197,6 +197,7 @@ class EXU extends Module {
   io.es_dest_valid.es_valid        := es_valid
   io.es_dest_valid.es_is_ld        := de_bus_r.is_ld
   io.es_dest_valid.es_ready_go     := es_ready_go
+  io.es_dest_valid.es_to_ms_valid  := io.es_to_ms_valid
   
   val mul_end = mul_64.out_valid || mul_32.out_valid
   val muling  = (is_mul_64 && !mul_64.out_valid) || (is_mul_32 && !mul_32.out_valid)

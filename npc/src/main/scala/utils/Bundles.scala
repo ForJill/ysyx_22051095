@@ -63,6 +63,7 @@ class rf_bus extends Bundle {
   val rf_waddr = Output(UInt(5.W))
   val rf_wdata = Output(UInt(64.W))
   val wb_pc = Output(UInt(32.W))
+  val wb_inst = Output(UInt(32.W))
   val csr_wdata = Output(UInt(DATA_WIDTH.W))
   val csr_wen = Output(Bool())
   val csr_waddr1 = Output(UInt(3.W))
@@ -135,6 +136,8 @@ class ms_dest_valid extends Bundle{
   val dest = Output(UInt(5.W))
   val ms_forward_data = Output(UInt(DATA_WIDTH.W))
   val ms_is_ld = Output(Bool())
+  val ms_to_ws_valid = Output(Bool())
+  val ms_ready_go = Output(Bool())
 }
 
 class es_dest_valid extends Bundle{
@@ -144,6 +147,7 @@ class es_dest_valid extends Bundle{
   val es_forward_data = Output(UInt(DATA_WIDTH.W))
   val es_is_ld = Output(Bool())
   val es_ready_go = Output(Bool())
+  val es_to_ms_valid = Output(Bool())
 }
 
 class ws_dest_valid extends Bundle{

@@ -81,6 +81,7 @@ void isa_reg_display()
   printf("mtvec\t0x%08lx\n", cpu.csr.mtvec);
 }
 
+
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t npc)
 {
   bool eqreg = true;
@@ -90,9 +91,23 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t npc)
     {
       eqreg = false;
       printf("difftest:\n\033[36m%s \033[34mis different at pc = 0x%08lx\n", reg_name(i), cpu.pc);
-      printf("right %08lx, wrong %08lx\033[0m\n", ref_r->gpr[i], cpu.gpr[i]);
+      printf("right %08lx, wrong %08lx\n", ref_r->gpr[i], cpu.gpr[i]);
+      //printf("\033[36mref_regs\n");
+      //for (int i = 0; i < 32; i = i + 2)
+      //{
+      //  printf("%s\t0x%08lx\t", regs[i], ref_r->gpr[i]);
+      //  printf("%s\t0x%08lx\n", regs[i + 1], ref_r->gpr[i + 1]);
+      //}
+      //printf("pc\t0x%08lx\033[0m\n", ref_r->pc);
     }
   }
+  //printf("\033[36mref_regs\n");
+  //  for (int i = 0; i < 32; i = i + 2)
+  //    {
+  //      printf("%s\t0x%08lx\t", regs[i], ref_r->gpr[i]);
+  //      printf("%s\t0x%08lx\n", regs[i + 1], ref_r->gpr[i + 1]);
+  //    }
+  //printf("pc\t0x%08lx\033[0m\n", ref_r->pc);
   /*
   if(ref_r->pc != npc) {
     printf("difftest:\nref_r->pc:%08lx\nnpc:%08lx\n",ref_r->pc,npc);

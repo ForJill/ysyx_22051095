@@ -16,6 +16,7 @@ class AXI extends Module {
     //读响应通道
     //val rid    = Input(UInt(4.W))
     val rdata  = Input(UInt(64.W))
+    val icache_rdata = Input(UInt(128.W))
     //val rresp  = Input(UInt(2.W))
     val rvalid = Input(Bool())
     val rready = Output(Bool())
@@ -50,7 +51,7 @@ class AXI extends Module {
     val inst_sram_req     = Input(Bool())
     val inst_sram_wr      = Input(Bool())
     val inst_sram_addr    = Input(UInt(64.W))
-    val inst_sram_rdata   = Output(UInt(64.W))
+    val inst_sram_rdata   = Output(UInt(128.W))//Output(UInt(64.W))
     val inst_sram_addr_ok = Output(Bool())
     val inst_sram_data_ok = Output(Bool())
 
@@ -89,7 +90,6 @@ class AXI extends Module {
   val write_resp = (wstate === sWriteResp).asBool
 
   val writing_data_sram = RegInit(0.U(2.W))
-
   /*-----------------读请求通道状态机-----------------*/
   switch(rstate) {
     is(sIdle) {
@@ -194,5 +194,5 @@ class AXI extends Module {
   io.inst_sram_data_ok := reading_inst_sram && io.rvalid
   io.data_sram_data_ok := reading_data_sram && io.rvalid || io.bready
   io.data_sram_rdata   := io.rdata
-  io.inst_sram_rdata   := io.rdata
+  io.inst_sram_rdata   := io.icache_rdata
 }

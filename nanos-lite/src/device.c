@@ -40,15 +40,16 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
   AM_GPU_CONFIG_T cfg = io_read(AM_GPU_CONFIG);
+  printf("fb_write_cfg: %d %d\n", cfg.width, cfg.height);
   AM_GPU_FBDRAW_T ctl;
   ctl.pixels = (void*)buf;
   ctl.sync = true;
-  ctl.w = (len >> 32) & 0xffff;
-  ctl.h = len & 0xffff;
+  ctl.w = (len >> 32) & 0xffffffff;
+  ctl.h = len & 0xffffffff;
   ctl.x = offset % cfg.width;
   ctl.y = offset / cfg.width;
+  printf("fb_write: %d %d %d %d\n", ctl.x, ctl.y, ctl.w, ctl.h);
   ioe_write(AM_GPU_FBDRAW, &ctl);
-
   return len;
 }
 

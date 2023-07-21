@@ -11,6 +11,7 @@ module AXI_mem(
     output arready,
     //output [3:0] rid,
     output [63:0] rdata,
+    output [127:0] icache_rdata,
     //output [1:0] rresp,
     output rvalid,
     input rready,
@@ -82,6 +83,8 @@ assign rvalid = read_rdata;
 always@(posedge clock) begin
    if(arvalid)begin
        pmem_read(araddr, rdata);
+       pmem_read(araddr, icache_rdata[63:0]);
+       pmem_read(araddr+8, icache_rdata[127:64]);
    end
 end
 

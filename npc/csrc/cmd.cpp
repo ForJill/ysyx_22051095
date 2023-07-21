@@ -103,9 +103,8 @@ int cmd_c()
           cpu.csr.mstatus = cpu_gpr[35];
           cpu.csr.mtvec = cpu_gpr[36];
           if(dut->io_in_WB){
-            printf("ds_pc = %x ds_inst= %lx\n", now_pc,now_inst);
-            isa_reg_display();
-            //printf("sim_time = %d\n", sim_time);
+            printf("ws_pc = %x ws_inst= %lx\n", now_pc,now_inst);
+            //isa_reg_display();
           }
 
 #ifdef CONFIG_ITRACE

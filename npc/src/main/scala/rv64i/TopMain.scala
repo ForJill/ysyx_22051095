@@ -28,16 +28,16 @@ class Top extends Module {
   val dpi     = Module(new DPI)
   val axi     = Module(new AXI)
   val axi_mem = Module(new AXI_mem)
+  val icache   = Module(new icache).io
 
   // IFU
   //val inst_mem = Module(new memory)
   ifu.io.reset <> reset
   ifu.io.ds_allowin <> idu.io.ds_allowin
   ifu.io.br_bus <> idu.io.br_bus
-  ifu.io.inst_sram_rdata <> axi.io.inst_sram_rdata
-  ifu.io.inst_sram_data_ok <> axi.io.inst_sram_data_ok
-  ifu.io.inst_sram_addr_ok <> axi.io.inst_sram_addr_ok
-  ifu.io.inst_sram_rdata <> axi.io.inst_sram_rdata
+  ifu.io.inst_sram_rdata <> icache.rdata//axi.io.inst_sram_rdata
+  ifu.io.inst_sram_data_ok <> icache.data_ok//axi.io.inst_sram_data_ok
+  ifu.io.inst_sram_addr_ok <> icache.addr_ok//axi.io.inst_sram_addr_ok
   //ifu.io.inst_sram_rdata <> inst_mem.io.rdata
 
   ifu.io.wf_bus <> wbu.io.wf_bus
@@ -92,26 +92,37 @@ class Top extends Module {
   io.ld_type    := mem.io.ld_type
 
   // AXI
-  axi.io.inst_sram_req <> ifu.io.inst_sram_req
-  axi.io.inst_sram_wr <> ifu.io.inst_sram_wr
-  axi.io.inst_sram_addr <> ifu.io.inst_sram_addr
-
+  axi.io.inst_sram_req <> icache.rd_req
+  axi.io.inst_sram_wr <> 0.U
+  axi.io.inst_sram_addr <> icache.rd_addr
   axi.io.data_sram_req <> mem.io.data_sram_req
   axi.io.data_sram_wr <> mem.io.data_sram_we
   axi.io.data_sram_addr <> mem.io.data_sram_addr
   axi.io.data_sram_wdata <> mem.io.data_sram_wdata
   axi.io.data_sram_wstrb <> mem.io.data_sram_wmask
-
   axi.io.arready <> axi_mem.io.arready
   axi.io.rdata <> axi_mem.io.rdata
+  axi.io.icache_rdata <> axi_mem.io.icache_rdata
   axi.io.rvalid <> axi_mem.io.rvalid
-
   axi.io.awready <> axi_mem.io.awready
-
+  axi.io.awready <> axi_mem.io.awready
   axi.io.wready <> axi_mem.io.wready
-
   axi.io.bvalid <> axi_mem.io.bvalid
-
+  //axi.io.data_sram_req <> mem.io.data_sram_req
+  //axi.io.data_sram_wr <> mem.io.data_sram_we
+  //axi.io.data_sram_addr <> mem.io.data_sram_addr
+  //axi.io.data_sram_wdata <> mem.io.data_sram_wdata
+  //axi.io.data_sram_wstrb <> mem.io.data_sram_wmask
+//
+  //axi.io.arready <> axi_mem.io.arready
+  //axi.io.rdata <> axi_mem.io.rdata
+  //axi.io.rvalid <> axi_mem.io.rvalid
+//
+  //axi.io.awready <> axi_mem.io.awready
+//
+  //axi.io.wready <> axi_mem.io.wready
+//
+  //axi.io.bvalid <> axi_mem.io.bvalid
   //axi_mem
   axi_mem.io.reset <> reset
   axi_mem.io.clock <> clock
@@ -131,6 +142,15 @@ class Top extends Module {
 
   axi_mem.io.bready <> axi.io.bready
 
+//CPU-icache 
+  icache.valid <> ifu.io.inst_sram_req
+  //icache.op <> ifu.io.inst_sram_wr
+  icache.addr <> ifu.io.inst_sram_addr
+//icache-AXI-ram
+  icache.rd_rdy <> axi.io.inst_sram_addr_ok
+  icache.rd_data <> axi.io.inst_sram_rdata
+  icache.inst_sram_addr_ok <> axi.io.inst_sram_addr_ok
+  icache.inst_sram_data_ok <> axi.io.inst_sram_data_ok
 }
 
 object TopMain extends App {
